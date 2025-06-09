@@ -87,25 +87,23 @@ export const SubscribeForm = () => {
   };
 
   return (
-    <>
-      <form class="input-group">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Enter email to receive updates and newsletter"
-          aria-label="Subscribe"
-          aria-describedby="basic-addon2"
-          value={values.email}
-          onChange={handleemailInputChange}
-        />
-        <span
-          className="input-group-text btn border text-white "
-          id="basic-addon2"
-          onClick={handleSubmit}
-        >
-          SUBSCRIBE
-        </span>
-      </form>
-    </>
+    <form class="input-group">
+      <input
+        type="text"
+        className="form-control p-3 rounded-4"
+        placeholder="Enter email to receive updates and newsletter"
+        aria-label="Subscribe"
+        aria-describedby="basic-addon2"
+        value={values.email}
+        onChange={handleemailInputChange}
+      />
+      <span
+        className="input-group-text btn border text-white bg-success  "
+        id="basic-addon2"
+        onClick={handleSubmit}
+      >
+        SUBSCRIBE
+      </span>
+    </form>
   );
 };

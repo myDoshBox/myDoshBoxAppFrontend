@@ -37,14 +37,14 @@ const CustomerCareDashboard = () => {
     <>
       <div>
         <CustomerCareTickets />
-        <div className="row">
-          <div className="col-lg-4 col-sm-12 mt-0 mt-lg-0">
+        <div className="row align-items-stretch">
+          <div className="col-lg-4 col-sm-12 mt-0 mt-lg-0 h-100">
             <SmallAdminRecentTransactions />
           </div>
-          <div className="col-lg-5 col-sm-12 mt-5 mt-lg-0">
+          <div className="col-lg-5 col-sm-12 mt-5 mt-lg-0 h-100">
             <MiniUsersCard />
           </div>
-          <div className="col-lg-3 col-sm-12">
+          <div className="col-lg-3 col-sm-12 h-100">
             <AnalyticsCard
               value="100"
               text="Open Conflicts"

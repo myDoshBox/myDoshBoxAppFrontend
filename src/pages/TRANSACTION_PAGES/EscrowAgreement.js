@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
 import { GeneralModal } from "../../components/Modal";
 import { UserDashboardNavbar } from "../../components/NavbarComponents/TopNavbars";
-import { Ireject } from "../../components/ButtonsComponent/OtherButtons";
+// import { Ireject } from "../../components/ButtonsComponent/OtherButtons";
+import { Button } from "react-bootstrap";
+import { useInitiateEscrowProductTransactionMutation } from "../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
+// import { useVerifyEscrowProductTransactionPaymentMutation } from "../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const EscrowAgreement = () => {
   return (
@@ -23,6 +30,72 @@ const EscrowAgreement = () => {
 };
 
 const EscrowAgreementText = () => {
+  const [initiateEscrowProduct, { data }] =
+    useInitiateEscrowProductTransactionMutation();
+
+  // const [verifyEscrowProductTransactionPayment] =
+  //   useVerifyEscrowProductTransactionPaymentMutation();
+
+  const { escrowProductInfo } = useSelector((state) => state.escrowProductInfo);
+  // const loggedInUser = localStorage.getItem("userInfo");
+  // const userInfo = JSON.parse(loggedInUser).user.email;
+
+  const { userInfo } = useSelector((state) => state.usersauth);
+
+  // console.log("userEmail", userEmail);
+  const userEmail = userInfo?.user?.email;
+
+  // const navigate = useNavigate();
+
+  // // Get the current URL's query parameters
+  // const urlParams = new URLSearchParams(window.location.search);
+
+  // // Extract the 'reference' parameter from the URL
+  // const reference = urlParams.get("reference");
+
+  // // Log or use the 'reference'
+  // console.log(reference); // This will output: db917a34-7d04-4400-85fc-4c8d1918cbda
+
+  // // console.log(escrowProductInfo);
+  // // console.log(userInfo);
+
+  // useEffect(() => {
+  //   if (reference) {
+  //     const verifyEscrowProductTransaction = async () => {
+  //       await verifyEscrowProductTransactionPayment(reference)
+  //         .unwrap()
+  //         .then((res) => {
+  //           // console.log(res);
+
+  //           toast.success(res?.message);
+  //         })
+  //         .catch((error) => {
+  //           // console.log(error);
+  //         });
+  //     };
+  //     verifyEscrowProductTransaction();
+  //   }
+  // }, [reference, verifyEscrowProductTransactionPayment]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    await initiateEscrowProduct({
+      ...escrowProductInfo,
+      buyer_email: userEmail,
+    })
+      .unwrap()
+      .then((res) => {
+        // const { buyerPaysForEscrow } = data || {};
+        // console.log("res", res.buyerPaysForEscrow.data.authorization_url);
+        window.open(res.buyerPaysForEscrow.data.authorization_url, "_blank");
+      })
+      .catch((error) => {
+        // console.log(error);
+        toast.error(error?.data?.message);
+      });
+  };
+
   return (
     <div className="w-100 mt-5 shadow InitiateEscrow p-3 p-lg-5 rounded">
       <h1 className="fs-4 text-center">Escrow Initiation Agreement</h1>
@@ -100,17 +173,34 @@ const EscrowAgreementText = () => {
         </div>
       </div>
       <div className="d-flex justify-content-center mt-5">
-        <Link to={-1}>
+        {/* <Link to={-1}>
           <Ireject />
+        </Link> */}
+
+        <Link
+          to="/userdashboard/transactionsummary"
+          className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white pale-red  me-3"
+          style={{ width: "110px" }}
+        >
+          I Reject
         </Link>
-        <GeneralModal
+
+        <Button
+          className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
+          style={{ width: "110px" }}
+          onClick={handleSubmit}
+        >
+          I Agree
+        </Button>
+
+        {/* <GeneralModal
           openModalText="I Agree"
           modalBtnStyle="GeneralBtnStyle1 btn all-btn text-white mx-5 my-3"
           modalTitle="User Notified"
           modalMessage="User Opeyemi Andrewson has just been notified of the transaction you created. You will be notified once the transaction is accepted"
           modalRoute="../../userdashboard"
           closeModalText="Home"
-        />
+        /> */}
       </div>
     </div>
   );

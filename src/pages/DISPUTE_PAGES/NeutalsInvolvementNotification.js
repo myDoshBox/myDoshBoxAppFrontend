@@ -1,5 +1,5 @@
 import { UserSidenav } from "../../components/NavbarComponents/SideNavbar";
-import { GeneralBtn } from "../../components/ButtonsComponent/GenandAuthBtn";
+// import { CustomBtn } from "../../components/ButtonsComponent/GenandAuthBtn";
 import { CautionIcon } from "../../components/IconComponent/UserdashboardIcons";
 import { Cancel } from "../../components/IconComponent/NeutralsDashboardIcons";
 
@@ -19,7 +19,7 @@ export const NeutalsInvolvementNotification = () => {
       >
         <div className="d-flex mb-4 p-4 mt-4">
           <span className="">
-            <GeneralBtn righticon={<CautionIcon />} />
+            {/* <CustomBtn righticon={<CautionIcon />} /> */}
           </span>
           <div>
             <p>
@@ -29,12 +29,12 @@ export const NeutalsInvolvementNotification = () => {
             </p>
           </div>
         </div>
-        <div className="align-self-end">
-          <GeneralBtn
-            text="PROCEED"
+        {/* <div className="align-self-end">
+          <CustomBtn
+            value="Proceed"
             styles=" GeneralBtnStyle1 btn all-btn text-white rounded-1"
           />
-        </div>
+        </div> */}
       </div>
     </section>
   );

@@ -43,7 +43,7 @@ export const BackButton = () => {
 export const NewTransaction = () => {
   return (
     <Button
-      className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
+      className="all-btn border-0 mt-3 rounded-1 GeneralBtnStyle1 btn all-btn text-white"
       style={{ width: "170px" }}
     >
       New Transaction
@@ -84,6 +84,7 @@ export const ViewMoreButton = () => {
     </Button>
   );
 };
+
 export const ViewBtn = () => {
   return (
     <Button
@@ -94,6 +95,17 @@ export const ViewBtn = () => {
     </Button>
   );
 };
+export const ViewMoreDisputeBtn = ({ styling }) => {
+  return (
+    <Button
+      className={`border-0  GeneralBtnStyle1 btn all-btn text-white ${styling}`}
+      style={{ width: "60px" }}
+    >
+      view
+    </Button>
+  );
+};
+
 // ConfirmDelivery;
 export const ConfirmDelivery = () => {
   return (
@@ -111,6 +123,15 @@ export const ViewComplaintButton = () => {
   return (
     <Button className="ViewComplaintBtnStyle border-0 mt-5 ms-3">
       View Complaint
+    </Button>
+  );
+};
+
+// ReadMore
+export const ReadMore = () => {
+  return (
+    <Button className="bg-white p-3 rounded-1 text-success">
+      <i class="bi bi-arrow-right-square-fill me-2"></i>Read More
     </Button>
   );
 };

@@ -10,9 +10,13 @@ import {
   NotificationIcon,
   SettingsIcon,
 } from "../IconComponent/SideNavIcons";
-import doshlogo from "../../images/doshlogolight.png";
+import doshlogo from "../../images/NewDoshLogo.png";
+import smdoshlogo from "../../images/doshnewlogo.png";
 import { Link, Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/slices/userSlices/allUsersAuthSlice";
+import { useLogoutMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
 
 const UsersSideNav = () => {
   return (
@@ -40,12 +44,26 @@ const MobileScreenSideNav = ({ name, ...props }) => {
   const handleDisappear = () => {
     disappearEl.style.display = "none";
   };
-  let activeClassName = "active-link";
-  let baseClassName = "text-decoration-none text-white";
-  const navigate = useNavigate();
+  let activeClassName = "active-linkSm";
+  let baseClassName = "inactive-linkSm";
 
   const nav = () => {
     navigate("/");
+  };
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const logoutHandler = async () => {
+    try {
+      // await logout().unwrap();
+      console.log("Dispatching logout action");
+      dispatch(logout());
+      console.log("Navigating to home");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -72,55 +90,94 @@ const MobileScreenSideNav = ({ name, ...props }) => {
         show={show}
         onHide={handleClose}
         responsive="lg"
-        className="w-75 d-lg-none text-white"
+        className="d-lg-none text-white border-0 shadow"
+        style={{ width: "6rem" }}
         {...props}
         ref={disappearEl}
         // id="off-canvas"x
       >
-        <Offcanvas.Header closeButton>
+        <Offcanvas.Header>
           <Offcanvas.Title>
             <Link to={"/"}>
-              <img src={doshlogo} alt="logo" />
+              <img src={smdoshlogo} alt="logo" className="smlogo" />
             </Link>
           </Offcanvas.Title>
-          {/* <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            data-bs-dismiss="off-canvas"
-          ></button> */}
         </Offcanvas.Header>
         <Offcanvas.Body>
           <div className="d-flex justify-content-between flex-column">
             <ul className="ps-2">
-              <li className="d-flex mb-5 align-items-center SideNavItem">
-                <div className="me-3">
-                  <DashboardIcon />
+              <li className="d-flex mb-5 align-items-center">
+                <div>
+                  <NavLink
+                    to="../../userdashboard"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <DashboardIcon />
+                  </NavLink>
                 </div>
-                <NavLink
-                  to="../../userdashboard"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                  onClick={handleDisappear}
-                >
-                  <span>Dashboard</span>
-                </NavLink>
               </li>
               <li className="d-flex mb-5 align-items-center SideNavItem">
                 <div className="me-3">
-                  <NavTransactionIcon />
+                  <NavLink
+                    to="transaction-history"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <NavTransactionIcon />
+                  </NavLink>
                 </div>
-                <NavLink
-                  to="transaction"
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                  onClick={handleDisappear}
-                >
-                  <span>Transactions</span>
-                </NavLink>
+              </li>
+
+              <li className="d-flex mb-5 align-items-center SideNavItem">
+                <div className="me-3">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/transactions-in-progress-history"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <NavTransactionIcon />
+                  </NavLink>
+                </div>
+              </li>
+
+              <li className="d-flex mb-5 align-items-center SideNavItem">
+                <div className="me-3">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <NavTransactionIcon />
+                  </NavLink>
+                </div>
+              </li>
+
+              <li className="d-flex mb-5 align-items-center SideNavItem">
+                <div className="me-3">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/shipping-history"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <NavTransactionIcon />
+                  </NavLink>
+                </div>
               </li>
 
               {/* <li className="d-flex align-items-center SideNavItem mb-5">
@@ -130,48 +187,51 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                 <span className="my-1">Chats</span>
               </li> */}
               <li className="d-flex align-items-center SideNavItem mb-5">
-                <div className="me-3">
-                  <NotificationIcon />
+                <div>
+                  <NavLink
+                    to="notification"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <NotificationIcon />
+                  </NavLink>
                 </div>
-                <NavLink
-                  to="notification"
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                  onClick={handleDisappear}
-                >
-                  <span>Notifications</span>
-                </NavLink>
               </li>
+
               <li className="d-flex  align-items-center SideNavItem mb-5">
                 <div className="me-3">
-                  <DisputeIcon />
+                  <NavLink
+                    to="dispute"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <DisputeIcon />
+                  </NavLink>
                 </div>
-                <NavLink
-                  to="dispute"
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                  onClick={handleDisappear}
-                >
-                  <span>Disputes</span>
-                </NavLink>
               </li>
+
               <li className="d-flex align-items-center SideNavItem mb-5">
                 <div className="me-3">
-                  <SettingsIcon />
+                  <NavLink
+                    to="settings"
+                    end
+                    className={({ isActive }) =>
+                      isActive ? activeClassName : baseClassName
+                    }
+                    onClick={handleDisappear}
+                  >
+                    <SettingsIcon />
+                  </NavLink>
                 </div>
-                <NavLink
-                  to="settings"
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                  onClick={handleDisappear}
-                >
-                  <span>Settings</span>
-                </NavLink>
               </li>
             </ul>
+
             <ul className="ps-3">
               <li className="d-flex align-items-center SideNavItem mt-5 position-fixed bottom">
                 <div className="me-3">
@@ -179,13 +239,12 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                 </div>
                 <li
                   className="d-flex align-items-center SideNavItem mt-5 bottom position-fixed"
-                  onClick={nav}
+                  onClick={logoutHandler}
                   style={{ cursor: "pointer" }}
                 >
                   <div className="me-3">
                     <LogoutIcon />
                   </div>
-                  <span className="text-white">Logout</span>
                 </li>
               </li>
             </ul>
@@ -198,49 +257,113 @@ const MobileScreenSideNav = ({ name, ...props }) => {
 
 const DesktopScreen = ({ name, ...props }) => {
   let activeClassName = "active-link";
-  let baseClassName = "text-decoration-none text-white";
+  let baseClassName = "inactive-link";
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const nav = () => {
-    navigate("/");
+  // const nav = () => {
+  //   navigate("/");
+  // };
+
+  // const { userInfo } = useSelector((state) => state.usersauth);
+  // const [logout] = useLogoutMutation();
+  // console.log(logout());
+
+  const logoutHandler = async () => {
+    try {
+      // await logout().unwrap();
+      console.log("Dispatching logout action");
+      dispatch(logout());
+      console.log("Navigating to home");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <>
-      <div className="d-none d-lg-block big-side-nav">
+      <div className="d-none d-lg-block big-side-nav shadow">
         <Link to="/">
-          <img src={doshlogo} alt="logo" className="mb-5" />
+          <img src={doshlogo} alt="logo" className="mb-5 w-50" />
         </Link>
 
         <div className="d-flex justify-content-between flex-column">
           <ul className="ps-2">
             <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div className="me-3">
-                <DashboardIcon />
+              <div>
+                <NavLink
+                  to="../../userdashboard"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <DashboardIcon />
+                  <span>Dashboards</span>
+                </NavLink>
               </div>
-              <NavLink
-                to="../../userdashboard"
-                end
-                className={({ isActive }) =>
-                  isActive ? activeClassName : baseClassName
-                }
-              >
-                <span>Dashboard</span>
-              </NavLink>
             </li>
+
             <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div className="me-3">
-                <NavTransactionIcon />
+              <div>
+                <NavLink
+                  to="transaction-history"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <NavTransactionIcon />
+                  <span>Transactions</span>
+                </NavLink>
               </div>
-              <NavLink
-                to="transaction"
-                className={({ isActive }) =>
-                  isActive ? activeClassName : baseClassName
-                }
-              >
-                <span>Transactions</span>
-              </NavLink>
+            </li>
+
+            <li className="d-flex mb-5 align-items-center SideNavItem">
+              <div>
+                <NavLink
+                  to="transaction-history/confirm-escrow-product-transaction/transactions-in-progress-history"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <NavTransactionIcon />
+                  <span>Transactions in Progress</span>
+                </NavLink>
+              </div>
+            </li>
+
+            <li className="d-flex mb-5 align-items-center SideNavItem">
+              <div>
+                <NavLink
+                  to="transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <NavTransactionIcon />
+                  <span>Settled Transactions</span>
+                </NavLink>
+              </div>
+            </li>
+
+            <li className="d-flex mb-5 align-items-center SideNavItem">
+              <div>
+                <NavLink
+                  to="transaction-history/confirm-escrow-product-transaction/shipping-history"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <NavTransactionIcon />
+                  <span>Shipping Details</span>
+                </NavLink>
+              </div>
             </li>
 
             {/* <li className="d-flex align-items-center SideNavItem mb-5">
@@ -251,56 +374,62 @@ const DesktopScreen = ({ name, ...props }) => {
             </li> */}
             <li className="d-flex align-items-center SideNavItem mb-5">
               <div className="me-3">
-                <NotificationIcon />
+                <NavLink
+                  to="notification"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <NotificationIcon />
+                  <span>Notifications</span>
+                </NavLink>
               </div>
-              <NavLink
-                to="notification"
-                className={({ isActive }) =>
-                  isActive ? activeClassName : baseClassName
-                }
-              >
-                <span>Notifications</span>
-              </NavLink>
             </li>
 
             <li className="d-flex  align-items-center SideNavItem mb-5">
-              <div className="me-3">
-                <DisputeIcon />
+              <div>
+                <NavLink
+                  to="dispute"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <DisputeIcon />
+                  <span>Disputes</span>
+                </NavLink>
               </div>
-              <NavLink
-                to="dispute"
-                className={({ isActive }) =>
-                  isActive ? activeClassName : baseClassName
-                }
-              >
-                <span>Disputes</span>
-              </NavLink>
             </li>
 
             <li className="d-flex align-items-center SideNavItem mb-5">
-              <div className="me-3">
-                <SettingsIcon />
+              <div>
+                <NavLink
+                  to="settings"
+                  end
+                  className={({ isActive }) =>
+                    isActive ? activeClassName : baseClassName
+                  }
+                >
+                  <SettingsIcon />
+
+                  <span>Settings</span>
+                </NavLink>
               </div>
-              <NavLink
-                to="settings"
-                className={({ isActive }) =>
-                  isActive ? activeClassName : baseClassName
-                }
-              >
-                <span>Settings</span>
-              </NavLink>
             </li>
           </ul>
           <ul className="ps-3">
             <li
               className="d-flex align-items-center SideNavItem mt-5 bottom position-fixed"
-              onClick={nav}
+              // onClick={nav}
               style={{ cursor: "pointer" }}
             >
               <div className="me-3">
                 <LogoutIcon />
               </div>
-              <span className="text-white">Logout</span>
+              <span className="inactive-link" onClick={logoutHandler}>
+                Logout
+              </span>
             </li>
           </ul>
         </div>

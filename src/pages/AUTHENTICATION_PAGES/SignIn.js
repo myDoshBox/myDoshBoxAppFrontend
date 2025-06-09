@@ -1,11 +1,20 @@
-import { useState } from "react";
-import { GoogleIcon } from "../../components/IconComponent/SocialMediaIcons";
+import { useState, useEffect } from "react";
+// import { GoogleIcon } from "../../components/IconComponent/SocialMediaIcons";
 import logo from "../../images/doshlogolight.png";
 import {
   SignInButton,
-  GoogleSignInButton,
+  // GoogleSignInButton,
 } from "../../components/ButtonsComponent/AuthenticationButtons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+// import { addUser, setCredentials } from "../../redux/slices/authSlice";
+import { useLoginMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
+import { setCredentials } from "../../redux/slices/userSlices/allUsersAuthSlice";
+import { toast } from "react-toastify";
+import Loader from "../../components/Loader";
+// import OAuthLogin from "../../components/GoogleAuth/OAuthLogin";
+// import OAuth from "../../components/GoogleAuth/OAuth";
+// import forgetPassword from "../AUTHENTICATION_PAGES/forgetPassword";
 
 const SignInPage = () => {
   return (
@@ -26,8 +35,22 @@ const SignInPage = () => {
 
 export const SignInForm = () => {
   const [passwordToggle, setpasswordToggle] = useState(false);
-  const [user, setUser] = useState({ email: "", password: "" });
-  const [userDetails, setUserDetails] = useState([]);
+  const [user, setUser] = useState({ email: "", user_password: "" });
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [login, { isLoading }] = useLoginMutation();
+  const [loading, setLoading] = useState(false);
+
+  const { userInfo } = useSelector((state) => state.usersauth);
+  // console.log(userInfo);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/userdashboard");
+    }
+  }, [navigate, userInfo]);
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -39,17 +62,40 @@ export const SignInForm = () => {
     e.preventDefault();
     setpasswordToggle(!passwordToggle);
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (user.email && user.password) {
-      setUserDetails([...userDetails, user]);
-      setUser({ email: "", password: "" });
+    setLoading(true);
+    if (!user.email || !user.user_password) {
+      return toast.error("all fields are required");
+    }
+
+    try {
+      const res = await login({ ...user }).unwrap();
+      // if (res?.status === "true") {
+      //   dispatch(setCredentials({ ...res }));
+      //   navigate("/userdashboard");
+      // }
+
+      if (res?.status === "false") {
+        toast.error(res?.message);
+        navigate("/signin");
+        // setLoading(false);
+      } else {
+        dispatch(setCredentials({ ...res }));
+        navigate("/userdashboard");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.data?.message || err?.error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  //   const dontSubmit = (e) => {
-  //     e.preventDefault();
-  //   };
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -73,9 +119,9 @@ export const SignInForm = () => {
           <div className="form-outline mb-2 d-flex">
             <input
               type={passwordToggle ? "text" : "password"}
-              id="password"
-              name="password"
-              value={user.password}
+              id="user_password"
+              name="user_password"
+              value={user.user_password}
               onChange={handleChange}
               className="border border-end-0 rounded-start p-2 w-100 labelStyle"
               placeholder="Password"
@@ -96,11 +142,12 @@ export const SignInForm = () => {
                 id="flexCheckDefault"
                 // onClick={dontSubmit}
               />
-              <label className="text-success" for="flexCheckDefault">
+              <label className="text-success" htmlFor="flexCheckDefault">
                 Remember Information
               </label>
             </div>
             <Link
+              to={"../VerifyEmailForm"}
               className="text-success text-decoration-none"
               style={{ fontSize: "14px" }}
             >
@@ -112,22 +159,24 @@ export const SignInForm = () => {
               <SignInButton />
             </div>
           </div>
+          {/* <div className="d-flex justify-content-center ">
+        
+            <OAuth />
+          </div> */}
+
+          <div className="d-flex justify-content-center mt-2">
+            <p>
+              <span style={{ fontSize: "14px" }}>Don't have an account?</span>
+              <Link
+                to={"../signup"}
+                className="text-decoration-none ms-1 text-success"
+                style={{ fontSize: "14px" }}
+              >
+                Sign Up
+              </Link>
+            </p>
+          </div>
         </form>
-        <div className="d-flex justify-content-center ">
-          <GoogleSignInButton />
-        </div>
-        <div className="d-flex justify-content-center mt-2">
-          <p>
-            <span style={{ fontSize: "14px" }}>Don't have an account?</span>
-            <Link
-              to={"../signup"}
-              className="text-decoration-none ms-1 text-success"
-              style={{ fontSize: "14px" }}
-            >
-              Sign Up
-            </Link>
-          </p>
-        </div>
       </div>
     </>
   );

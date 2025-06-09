@@ -9,7 +9,7 @@ export const SellerDeliveryForm = () => {
       </div> */}
       <DeliveryForm
         heading={`Product Inspection and Shipping Form`}
-        sub_text={`Sincerely acknowledge and confirm the condition of the product before it is shipped to the customer`}
+        sub_value={`Sincerely acknowledge and confirm the condition of the product before it is shipped to the customer`}
         checkList={[
           {
             label:
@@ -38,7 +38,7 @@ export const BuyerDeliveryForm = () => {
       </div> */}
       <DeliveryForm
         heading={`Product Condition and Delivery Confirmation`}
-        sub_text={`Sincerely acknowledge that you are satisfied with the goods
+        sub_value={`Sincerely acknowledge that you are satisfied with the goods
               delivered or service provided`}
         checkList={[
           {

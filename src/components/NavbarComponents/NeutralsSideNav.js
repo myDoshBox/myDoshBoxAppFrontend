@@ -8,7 +8,8 @@ import {
   NotificationIcon,
   SettingsIcon,
 } from "../IconComponent/SideNavIcons";
-import doshlogo from "../../images/doshlogolight.png";
+import doshlogo from "../../images/NewDoshLogo.png";
+import smdoshlogo from "../../images/doshnewlogo.png";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import { Link, Outlet, NavLink, useNavigate } from "react-router-dom";
@@ -34,8 +35,8 @@ const MobileScreenSideNav = ({ name, ...props }) => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const toggleShow = () => setShow((s) => !s);
-  let activeClassName = "active-link";
-  let baseClassName = "text-decoration-none text-white";
+  let activeClassName = "active-linkSm";
+  let baseClassName = "inactive-linkSm";
   let dropdownbaseClassName = "text-decoration-none , text-dark";
   let dropdownactiveClassName = "text-decoration-none , text-success";
   const disappearEl = useRef(null);
@@ -72,14 +73,15 @@ const MobileScreenSideNav = ({ name, ...props }) => {
         show={show}
         onHide={handleClose}
         responsive="lg"
-        className="w-75 d-lg-none text-white"
+        className="d-lg-none text-white"
+        style={{ width: "6rem" }}
         {...props}
         ref={disappearEl}
       >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>
             <Link to={"/"}>
-              <img src={doshlogo} alt="logo" />
+              <img src={smdoshlogo} alt="logo" className="smlogo" />
             </Link>
           </Offcanvas.Title>
         </Offcanvas.Header>
@@ -87,9 +89,6 @@ const MobileScreenSideNav = ({ name, ...props }) => {
           <div className="d-flex justify-content-between flex-column">
             <ul className="ps-2">
               <li className="d-flex mb-5 align-items-center SideNavItem">
-                <div className="me-3">
-                  <DashboardIcon />
-                </div>
                 <NavLink
                   to="../neutraldashboard"
                   end
@@ -98,13 +97,10 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                   }
                   onClick={handleDisappear}
                 >
-                  <span>Dashboard</span>
+                  <DashboardIcon />
                 </NavLink>
               </li>
               <li className="d-flex mb-5 align-items-center SideNavItem">
-                <div className="me-3">
-                  <NavTransactionIcon />
-                </div>
                 <span>
                   {["end"].map((direction) => (
                     <DropdownButton
@@ -112,7 +108,7 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                       id={`dropdown-button-drop-${direction}`}
                       drop={direction}
                       variant="secondary"
-                      title={`Conflicts`}
+                      title={<NavTransactionIcon />}
                       className="SideNavDropdown"
                     >
                       <Dropdown.Item eventKey="1">
@@ -159,9 +155,6 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                 </span>
               </li>
               <li className="d-flex align-items-center SideNavItem mb-5">
-                <div className="me-3">
-                  <NotificationIcon />
-                </div>
                 <NavLink
                   to="notification"
                   className={({ isActive }) =>
@@ -169,13 +162,10 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                   }
                   onClick={handleDisappear}
                 >
-                  <span>Notifications</span>
+                  <NotificationIcon />
                 </NavLink>
               </li>
               <li className="d-flex align-items-center SideNavItem mb-5">
-                <div className="me-3">
-                  <SettingsIcon />
-                </div>
                 <NavLink
                   to="neutralsetting"
                   className={({ isActive }) =>
@@ -183,7 +173,7 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                   }
                   onClick={handleDisappear}
                 >
-                  <span>Settings</span>
+                  <SettingsIcon />
                 </NavLink>
               </li>
             </ul>
@@ -195,7 +185,6 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                 <div className="me-3">
                   <LogoutIcon />
                 </div>
-                <span>Logout</span>
               </li>
             </ul>
           </div>
@@ -207,7 +196,7 @@ const MobileScreenSideNav = ({ name, ...props }) => {
 
 const DesktopScreen = () => {
   let activeClassName = "active-link";
-  let baseClassName = "text-decoration-none text-white";
+  let baseClassName = "inactive-link";
   let dropdownbaseClassName = "text-decoration-none , text-dark";
   let dropdownactiveClassName = "text-decoration-none , text-success";
   const navigate = useNavigate();
@@ -218,7 +207,7 @@ const DesktopScreen = () => {
 
   return (
     <>
-      <div className="d-none d-lg-block big-side-nav">
+      <div className="d-none d-lg-block big-side-nav shadow">
         <Link to="/">
           <img src={doshlogo} alt="logo" className="mb-5" />
         </Link>
@@ -226,9 +215,6 @@ const DesktopScreen = () => {
         <div className="d-flex justify-content-between flex-column">
           <ul className="ps-2">
             <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div className="me-3">
-                <DashboardIcon />
-              </div>
               <NavLink
                 to="../neutraldashboard"
                 end
@@ -236,6 +222,7 @@ const DesktopScreen = () => {
                   isActive ? activeClassName : baseClassName
                 }
               >
+                <DashboardIcon />
                 <span>Dashboard</span>
               </NavLink>
             </li>
@@ -332,7 +319,7 @@ const DesktopScreen = () => {
               <div className="me-3">
                 <LogoutIcon />
               </div>
-              <span>Logout</span>
+              <span className="inactive-link">Logout</span>
             </li>
           </ul>
         </div>

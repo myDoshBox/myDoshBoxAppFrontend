@@ -3,19 +3,19 @@
     {
       "id": 1,
       "title": "Daily Hardwork",
-      "subtitle": "lorem ipsum description",
+      "number": "01",
       "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod eligendi consectetur dolorum modi odio enim accusamus architecto at quibusdam officiis."
     },
     {
       "id": 2,
       "title": "Passion before money",
-      "subtitle": "lorem ipsum description",
+      "number": "02",
       "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod eligendi consectetur dolorum modi odio enim accusamus architecto at quibusdam officiis."
     },
     {
       "id": 3,
       "title": "Teamwork drives result",
-      "subtitle": "lorem ipsum description",
+      "number": "03",
       "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod eligendi consectetur dolorum modi odio enim accusamus architecto at quibusdam officiis."
     }
   ],

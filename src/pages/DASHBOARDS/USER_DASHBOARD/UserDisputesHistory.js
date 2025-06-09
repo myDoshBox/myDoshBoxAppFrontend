@@ -59,7 +59,6 @@ const DisputeData = (props) => {
       </div>
 
       <div className="d-flex align-items-end flex-column">
-        {/* <GeneralBtnStyle1 text={"View Details"} /> */}
         <DisputeDetailsModal
           openModalText="View Details"
           modalBtnStyle="GeneralBtnStyle1 btn all-btn text-white"

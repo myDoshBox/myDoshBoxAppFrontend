@@ -3,16 +3,34 @@ $laptop: 1024px;
 $tablet: 768px;
 $phone: 480px;
 
-
 // Initiate Escrow
 @media screen and (min-width: 992px) {
-  .InitiateEscrow{
-    width:75% !important;
+  .InitiateEscrow {
+    width: 75% !important;
   }
 }
 
 @media screen and (max-width: 767px) {
-  .EscrowChoice{
-    width:50% !important;
+  .EscrowChoice {
+    width: 50% !important;
   }
+}
+
+@media screen and (min-width: 768px) {
+  .border-md-style-1 {
+    border-style: solid !important;
+  }
+
+  .fw-md-normal {
+    font-weight: 400 !important;
+  }
+
+  .lightTextColor-md {
+    color: #757575 !important;
+  }
+
+  .border-md-bottom {
+        border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important;
+  }
+
 }
