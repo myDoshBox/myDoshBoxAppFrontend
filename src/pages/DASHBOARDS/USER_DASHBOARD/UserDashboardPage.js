@@ -36,7 +36,7 @@ const UserDashboard = () => {
     <div className="row">
       <div className="col-lg-12 col-sm-12">
         <div className="row mb-3">
-          <div className="col-sm-12 mb-4 mb-md-2 col-lg-3 mt-4 mt-lg-0">
+          <div className="col-sm-12 col-md-6 mb-4 mb-md-2 col-lg-3 mt-4 mt-lg-0">
             <UserDashboardCard2
               icon={<InitiateTransactionIcon />}
               text={`Initiate Transaction`}

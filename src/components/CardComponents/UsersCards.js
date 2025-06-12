@@ -83,12 +83,12 @@ export const UserDashboardCard2 = (props) => {
   return (
     <Link to={link} className="text-decoration-none text-dark">
       <div
-        className="card shadow mx-auto border-0 rounded-2  px-2 row justify-content-center"
+        className="card border shadow mx-auto rounded-2 row justify-content-center"
         style={{ width: "100%", height: "5.7rem" }}
       >
-        <div className="row justify-content-center align-items-center mx-auto">
-          <div className="col-4">{icon}</div>
-          <div className="col-8">{text}</div>
+        <div className="d-flex align-items-center gap-3 h-100 ">
+          <span>{icon}</span>
+          <span>{text}</span>
         </div>
       </div>
     </Link>
