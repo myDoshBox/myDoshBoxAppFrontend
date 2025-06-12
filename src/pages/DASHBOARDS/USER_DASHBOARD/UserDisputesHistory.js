@@ -42,23 +42,25 @@ const DisputeCard = () => {
     </div>
   );
 };
-
-const DisputeData = (props) => {
-  const { date, transaction_id, status } = props;
+const DisputeData = ({ date, transaction_id, status }) => {
   return (
-    <div className="d-flex justify-content-between align-items-center border-bottom border-dark-subtle py-2">
-      <div className="d-flex flex-column">
-        <div className="">{date}</div>
+    <div className="d-flex justify-content-between align-items-start border border-secondary-subtle rounded-2 p-3 mb-2 bg-white">
+      <div className="d-flex flex-column gap-2">
         <div className="text-secondary-emphasis">
-          TransactionID: <span className="text-dark">{transaction_id}</span>
+          <strong className="text-secondary">Transaction Date:</strong>
+          <span className="text-dark"> {date}</span>
         </div>
         <div className="text-secondary-emphasis">
-          Status:
-          <span className="text-dark">{status}</span>
+          <strong className="text-secondary">TransactionID:</strong>
+          <span className="text-dark"> {transaction_id}</span>
+        </div>
+        <div className="text-secondary-emphasis">
+          <strong className="text-secondary">Status:</strong>
+          <span className="text-dark"> {status}</span>
         </div>
       </div>
 
-      <div className="d-flex align-items-end flex-column">
+      <div className="d-flex flex-column justify-content-start align-items-end align-self-center">
         <DisputeDetailsModal
           openModalText="View Details"
           modalBtnStyle="GeneralBtnStyle1 btn all-btn text-white"

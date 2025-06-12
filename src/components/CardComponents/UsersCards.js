@@ -88,7 +88,7 @@ export const UserDashboardCard2 = (props) => {
       >
         <div className="d-flex align-items-center gap-3 h-100 ">
           <span>{icon}</span>
-          <span>{text}</span>
+          <span className="fs-6">{text}</span>
         </div>
       </div>
     </Link>

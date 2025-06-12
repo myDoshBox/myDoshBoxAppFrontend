@@ -17,6 +17,9 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlices/allUsersAuthSlice";
 import { useLogoutMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
+import { Collapse } from 'react-bootstrap'; // For collapsible section
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+
 
 const UsersSideNav = () => {
   return (
@@ -179,13 +182,6 @@ const MobileScreenSideNav = ({ name, ...props }) => {
                   </NavLink>
                 </div>
               </li>
-
-              {/* <li className="d-flex align-items-center SideNavItem mb-5">
-                <div className="me-3">
-                  <ChatIcon />
-                </div>
-                <span className="my-1">Chats</span>
-              </li> */}
               <li className="d-flex align-items-center SideNavItem mb-5">
                 <div>
                   <NavLink
@@ -256,185 +252,209 @@ const MobileScreenSideNav = ({ name, ...props }) => {
 };
 
 const DesktopScreen = ({ name, ...props }) => {
-  let activeClassName = "active-link";
-  let baseClassName = "inactive-link";
-
+  const activeClassName = "active-link";
+  const baseClassName = "inactive-link";
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // const nav = () => {
-  //   navigate("/");
-  // };
-
-  // const { userInfo } = useSelector((state) => state.usersauth);
-  // const [logout] = useLogoutMutation();
-  // console.log(logout());
+  const [isTransactionOpen, setIsTransactionOpen] = useState(true);
 
   const logoutHandler = async () => {
     try {
-      // await logout().unwrap();
-      console.log("Dispatching logout action");
       dispatch(logout());
-      console.log("Navigating to home");
       navigate("/");
     } catch (error) {
-      console.log(error);
+      // Optional: Add toast notification for error
+      console.error("Logout failed:", error);
     }
   };
 
+  const toggleTransaction = () => {
+    setIsTransactionOpen(!isTransactionOpen);
+  };
+
+  const renderTooltip = (props) => (
+    <Tooltip id="logout-tooltip" {...props}>
+      Sign out of your account
+    </Tooltip>
+  );
+
   return (
-    <>
-      <div className="d-none d-lg-block big-side-nav shadow">
-        <Link to="/">
-          <img src={doshlogo} alt="logo" className="mb-5 w-50" />
+    <div
+      className="d-none d-lg-flex flex-column vh-100 big-side-nav shadow"
+      style={{ width: '17rem', padding: '1.5rem' }}
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      {/* Logo Section */}
+      <div className="d-flex justify-content-center align-items-center mb-4">
+        <Link to="/" aria-label="Home">
+          <img
+            src={doshlogo}
+            alt="Dosh Logo"
+            className="img-fluid"
+            style={{ maxWidth: '8rem', transition: 'transform 0.3s ease' }}
+          />
         </Link>
-
-        <div className="d-flex justify-content-between flex-column">
-          <ul className="ps-2">
-            <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div>
-                <NavLink
-                  to="../../userdashboard"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <DashboardIcon />
-                  <span>Dashboards</span>
-                </NavLink>
-              </div>
-            </li>
-
-            <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div>
-                <NavLink
-                  to="transaction-history"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <NavTransactionIcon />
-                  <span>Transactions</span>
-                </NavLink>
-              </div>
-            </li>
-
-            <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div>
-                <NavLink
-                  to="transaction-history/confirm-escrow-product-transaction/transactions-in-progress-history"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <NavTransactionIcon />
-                  <span>Transactions in Progress</span>
-                </NavLink>
-              </div>
-            </li>
-
-            <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div>
-                <NavLink
-                  to="transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <NavTransactionIcon />
-                  <span>Settled Transactions</span>
-                </NavLink>
-              </div>
-            </li>
-
-            <li className="d-flex mb-5 align-items-center SideNavItem">
-              <div>
-                <NavLink
-                  to="transaction-history/confirm-escrow-product-transaction/shipping-history"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <NavTransactionIcon />
-                  <span>Shipping Details</span>
-                </NavLink>
-              </div>
-            </li>
-
-            {/* <li className="d-flex align-items-center SideNavItem mb-5">
-              <div className="me-3">
-                <ChatIcon />
-              </div>
-              <span className="my-1">Chats</span>
-            </li> */}
-            <li className="d-flex align-items-center SideNavItem mb-5">
-              <div className="me-3">
-                <NavLink
-                  to="notification"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <NotificationIcon />
-                  <span>Notifications</span>
-                </NavLink>
-              </div>
-            </li>
-
-            <li className="d-flex  align-items-center SideNavItem mb-5">
-              <div>
-                <NavLink
-                  to="dispute"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <DisputeIcon />
-                  <span>Disputes</span>
-                </NavLink>
-              </div>
-            </li>
-
-            <li className="d-flex align-items-center SideNavItem mb-5">
-              <div>
-                <NavLink
-                  to="settings"
-                  end
-                  className={({ isActive }) =>
-                    isActive ? activeClassName : baseClassName
-                  }
-                >
-                  <SettingsIcon />
-
-                  <span>Settings</span>
-                </NavLink>
-              </div>
-            </li>
-          </ul>
-          <ul className="ps-3">
-            <li
-              className="d-flex align-items-center SideNavItem mt-5 bottom position-fixed"
-              // onClick={nav}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="me-3">
-                <LogoutIcon />
-              </div>
-              <span className="inactive-link" onClick={logoutHandler}>
-                Logout
-              </span>
-            </li>
-          </ul>
-        </div>
       </div>
-    </>
+
+      {/* Nav Links (Scrollable) */}
+      <div className="flex-grow-1 overflow-auto">
+        <ul className="ps-0 mb-0 list-unstyled">
+          <li className="mb-3 SideNavItem">
+            <NavLink
+              to="/userdashboard"
+              end
+              className={({ isActive }) =>
+                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+              }
+              aria-label="Dashboards"
+            >
+              <DashboardIcon className="me-2" />
+              <span className="fw-medium">Dashboards</span>
+            </NavLink>
+          </li>
+
+           {/* Transaction Section (Collapsible) */}
+          <li className="mb-3 SideNavItem">
+          <button
+              className="d-flex align-items-center p-2 rounded-3 w-100 bg-transparent border-0 text-start"
+              onClick={toggleTransaction}
+              aria-expanded={isTransactionOpen}
+              aria-controls="transaction-collapse"
+              aria-label="Toggle Transactions"
+            >
+             
+              <span className="fw-medium">Transactions</span>
+              <i
+                className={`bi bi-chevron-${isTransactionOpen ? 'up' : 'down'} ms-auto`}
+              ></i>
+            </button>
+            <Collapse in={isTransactionOpen}>
+              <ul id="transaction-collapse" className="list-unstyled mt-2 ps-3">
+                <li className="mb-2">
+                  <NavLink
+                    to="transaction-history"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Transactions"
+                  >
+                    <NavTransactionIcon className="me-2" />
+                    <span>All Transactions</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/transactions-in-progress-history"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Transactions in Progress"
+                  >
+                    <NavTransactionIcon className="me-2" />
+                    <span>In Progress</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Settled Transactions"
+                  >
+                    <NavTransactionIcon className="me-2" />
+                    <span>Settled</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/shipping-history"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Shipping Details"
+                  >
+                    <NavTransactionIcon className="me-2" />
+                    <span>Shipping Details</span>
+                  </NavLink>
+                </li>
+              </ul>
+            </Collapse>
+          </li>
+          {/* other code here */}
+          <li className="mb-3 SideNavItem">
+            <NavLink
+              to="notification"
+              end
+              className={({ isActive }) =>
+                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+              }
+              aria-label="Notifications"
+            >
+              <NotificationIcon className="me-2" />
+              <span>Notifications</span>
+            </NavLink>
+          </li>
+
+          <li className="mb-3 SideNavItem">
+            <NavLink
+              to="dispute"
+              end
+              className={({ isActive }) =>
+                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+              }
+              aria-label="Disputes"
+            >
+              <DisputeIcon className="me-2" />
+              <span>Disputes</span>
+            </NavLink>
+          </li>
+
+          <li className="mb-3 SideNavItem">
+            <NavLink
+              to="settings"
+              end
+              className={({ isActive }) =>
+                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+              }
+              aria-label="Settings"
+            >
+              <SettingsIcon className="me-2" />
+              <span>Settings</span>
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+
+      {/* Logout Section */}
+        <div className="pt-3 border-top mt-auto">
+          <button
+            className="d-flex align-items-center p-2 rounded bg-transparent border-0 w-100 logout-btn"
+            onClick={logoutHandler}
+            aria-label="Logout"
+          >
+            <div className="me-3 d-flex align-items-center">
+              <LogoutIcon />
+            </div>
+            <span className={baseClassName}>Logout</span>
+          </button>
+        </div>
+
+    </div>
+    
   );
 };
 

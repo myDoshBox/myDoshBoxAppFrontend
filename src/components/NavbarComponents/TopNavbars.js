@@ -114,8 +114,6 @@ export const UserDashboardNavbar = () => {
         </Nav.Item>
         <Nav.Item className="d-flex ms-md-5">
           <div>
-            {/* <span className="d-block text-end">John Doe</span>
-            <span className="d-block text-end">Admin</span> */}
 
             {userInfo ? (
               <>
