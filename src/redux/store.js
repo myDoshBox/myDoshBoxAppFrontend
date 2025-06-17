@@ -7,6 +7,8 @@ import escrowProductReducer from "./slices/escrowProductSlices/escrowProductCont
 // import { usersAPISlice } from "./slices/userSlices/usersAPISlice";
 import { usersAPISlice } from "./slices/userSlices/allUsersAPISlice";
 import { escrowProductsAPISlice } from "./slices/escrowProductSlices/escrowProductsAPISlice";
+import { disputeAPISlice } from "./slices/disputeSlices/disputeAPISlice";
+import disputeReducer from "./slices/disputeSlices/disputeContentSlice";
 
 const reducers = combineReducers({
   // users
@@ -16,6 +18,10 @@ const reducers = combineReducers({
   // products
   escrowProductInfo: escrowProductReducer,
   [escrowProductsAPISlice.reducerPath]: escrowProductsAPISlice.reducer,
+
+  // disputes
+  disputeInfo: disputeReducer,
+  [disputeAPISlice.reducerPath]: disputeAPISlice.reducer,
 });
 
 const persistConfig = {
@@ -50,7 +56,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(usersAPISlice.middleware)
-      .concat(escrowProductsAPISlice.middleware),
+      .concat(escrowProductsAPISlice.middleware)
+      .concat(disputeAPISlice.middleware),
 
   devTools: true,
 });

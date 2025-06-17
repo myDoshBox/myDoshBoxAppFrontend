@@ -13,7 +13,7 @@ import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
 import { useSelector } from "react-redux";
 
-const ConfirmEscrowProductDetails = () => {
+const UserSettledTransactions = () => {
   return (
     <div className="contestPage" style={{ "background-color": "#F9F9FB" }}>
       <div className="row">
@@ -69,7 +69,6 @@ export const RecentTransactionTable = () => {
   // user detail for single user
   const { userInfo } = useSelector((state) => state.usersauth);
   const userEmail = userInfo?.user?.email;
-  console.log(userEmail);
 
   // transaction detail for single user
   // const { escrowProductInfo } = useSelector((state) => state.escrowProductInfo);
@@ -86,28 +85,6 @@ export const RecentTransactionTable = () => {
   });
 
   // console.log("transactions", transactions);
-
-  // const {
-  //   data: singleTransaction,
-  //   isLoading: singleLoading,
-  //   error: errMsg,
-  //   // {skip: !selectedTransactionId}
-  // } = useFetchSingleTransactionsQuery(selectedTransactionId, {
-  //   skip: !selectedTransactionId,
-  // });
-
-  // console.log("singleTransaction", singleTransaction);
-  // console.log("errMsg", errMsg);
-
-  // const {
-  //   data: singleTransaction,
-  //   // error,
-  //   // isLoading,
-  // } = fetchSingleTransactions(userEmail);
-
-  // console.log("transactions", transactions);
-  // console.log("transactions_ss", transactions?.transactions);
-  // console.log("error", error);
 
   const dropdownBtnValues = [
     { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
@@ -437,9 +414,6 @@ export const RecentTransactionTable = () => {
 };
 
 export const RecentTransactionTableData = (props) => {
-  const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
-
   const {
     product_name,
     vendor_name,
@@ -496,55 +470,10 @@ export const RecentTransactionTableData = (props) => {
         </td>
 
         <td className="d-none d-md-table-cell py-md-3 text-center">
-          {/* <Button
-            className="border-0 rounded-1 btn all-btn text-white fs-sm"
-            style={{
-              backgroundColor: "#006747EB",
-            }}
-          >
-            Generate Slip
-          </Button> */}
           {transaction_status}
         </td>
-        {/* <td
-          className="py-md-3 text-center"
-          style={{ color: `${status_color}` }}
-        >
-          {window.innerWidth < 768 ? (
-            <span style={{ color: `${status_color}` }}>●</span>
-          ) : (
-            `${transaction_status}`
-          )}
-        </td> */}
 
-        {/* ///// */}
-        {/* <td className="d-none d-md-table-cell py-md-3 text-center">
-          <Button
-            variant="outline-primary"
-            className="rounded-1 fs-sm"
-            onClick={onViewMore}
-          >
-            View More
-          </Button>
-        </td> */}
-        {/* ////// */}
-
-        {/* <td className="d-none d-md-table-cell py-md-3 text-center">
-          <Button
-            variant="outline-primary"
-            className="rounded-1 fs-sm"
-            onClick={onViewMore}
-          >
-            {seller_confirm_status === "false"
-              ? "View More"
-              : "Confirm Transaction"}
-          </Button>
-        </td> */}
-
-        {userEmail === vendor_email &&
-        buyer_email !== vendor_email &&
-        seller_confirm_status === false &&
-        transaction_status === "processing" ? (
+        {vendor_email === buyer_email && seller_confirm_status === false ? (
           <td className="d-none d-md-table-cell py-md-3 text-center">
             <Button
               variant="outline-primary"
@@ -574,4 +503,4 @@ export const RecentTransactionTableData = (props) => {
   );
 };
 
-export default ConfirmEscrowProductDetails;
+export default UserSettledTransactions;

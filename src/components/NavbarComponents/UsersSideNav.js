@@ -7,6 +7,10 @@ import {
   DisputeIcon,
   LogoutIcon,
   NavTransactionIcon,
+  SettledTransactionIcon,
+  TransactionProgressIcon,
+  ShippingDetailsTransactionIcon,
+  AllTransactionIcon,
   NotificationIcon,
   SettingsIcon,
 } from "../IconComponent/SideNavIcons";
@@ -342,7 +346,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     }
                     aria-label="Transactions"
                   >
-                    <NavTransactionIcon className="me-2" />
+                    <AllTransactionIcon className="me-2" />
                     <span>All Transactions</span>
                   </NavLink>
                 </li>
@@ -357,7 +361,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     }
                     aria-label="Transactions in Progress"
                   >
-                    <NavTransactionIcon className="me-2" />
+                    <TransactionProgressIcon className="me-2" />
                     <span>In Progress</span>
                   </NavLink>
                 </li>
@@ -372,7 +376,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     }
                     aria-label="Settled Transactions"
                   >
-                    <NavTransactionIcon className="me-2" />
+                    <SettledTransactionIcon className="me-2" />
                     <span>Settled</span>
                   </NavLink>
                 </li>
@@ -387,7 +391,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     }
                     aria-label="Shipping Details"
                   >
-                    <NavTransactionIcon className="me-2" />
+                    <ShippingDetailsTransactionIcon className="me-2" />
                     <span>Shipping Details</span>
                   </NavLink>
                 </li>
