@@ -9,6 +9,7 @@ import {
   NavTransactionIcon,
   SettledTransactionIcon,
   TransactionProgressIcon,
+  TransactionSideNavIcon,
   ShippingDetailsTransactionIcon,
   AllTransactionIcon,
   NotificationIcon,
@@ -327,8 +328,8 @@ const DesktopScreen = ({ name, ...props }) => {
               aria-controls="transaction-collapse"
               aria-label="Toggle Transactions"
             >
-             
-              <span className="fw-medium">Transactions</span>
+             <TransactionSideNavIcon/>
+              <span className="fw-medium text-secondary ms-2">Transactions</span>
               <i
                 className={`bi bi-chevron-${isTransactionOpen ? 'up' : 'down'} ms-auto`}
               ></i>
