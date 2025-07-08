@@ -78,22 +78,34 @@ export const UserDashboardCard = (props) => {
   );
 };
 
-export const UserDashboardCard2 = (props) => {
-  const { text, icon, link } = props;
+export const UserDashboardCard2 = ({ text, icon, link }) => {
   return (
-    <Link to={link} className="text-decoration-none text-dark">
-      <div
-        className="card border shadow mx-auto rounded-2 row justify-content-center"
-        style={{ width: "100%", height: "5.7rem" }}
-      >
-        <div className="d-flex align-items-center gap-3 h-100 ">
-          <span>{icon}</span>
-          <span className="fs-6">{text}</span>
+    <Link to={link} className="text-decoration-none">
+      <div className="card shadow-sm border-0 rounded-3 h-100 p-3 hover-shadow transition">
+        <div className="d-flex align-items-center gap-3 h-100">
+          <div className="fs-4 text-primary">{icon}</div>
+          <div className="fs-6 text-dark">{text}</div>
         </div>
       </div>
     </Link>
   );
 };
+// export const UserDashboardCard2 = (props) => {
+//   const { text, icon, link } = props;
+//   return (
+//     <Link to={link} className="text-decoration-none text-dark">
+//       <div
+//         className="card border  mx-auto rounded-2 row justify-content-center"
+//         style={{ width: "100%", height: "5.7rem" }}
+//       >
+//         <div className="d-flex align-items-center gap-3 h-100 ">
+//           <span>{icon}</span>
+//           <span className="fs-6">{text}</span>
+//         </div>
+//       </div>
+//     </Link>
+//   );
+// };
 
 export const NewConflitCard = (props) => {
   const { text, icon, link, style, styling, btnNumber, view } = props;

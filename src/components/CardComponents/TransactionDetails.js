@@ -5,6 +5,7 @@ import recentDisputeImage from "../../images/UserDashboardImage/People.png";
 import disputehistorydata from "../../data/dummyData/disputeshistorydata.json";
 import { Styling } from "../NotificationComponent/NotificationComponents";
 import { ViewMoreDisputeBtn } from "../ButtonsComponent/NavigationAndViewButtons";
+import { Button } from "react-bootstrap";
 // import { BackIcon } from "../../components/IconComponent/NavigationAndViewIcon";
 // import { RatingIcon } from "../../components/IconComponent/UserdashboardIcons";
 // import { Notifications } from "../../components/NotificationComponent/NotificationComponents";
@@ -31,23 +32,50 @@ export const DashboardConflictCards = ({ icon, text, value, link }) => {
 // RecentDispute
 export const RecentDispute = () => {
   return (
-    <>
-      <div className="card border-0 shadow mx-auto" style={{ width: "100%" }}>
-        <div className="card-body">
-          <div className="d-flex justify-content-between mt-3 mb-5">
-            <h6 className="mt-2">Recent Disputes</h6>
-            <Link to={"./dispute"}>
-              <ViewMoreDisputeBtn />
-            </Link>
-          </div>
-          {disputehistorydata.recent_dispute.map((miniDis) => {
-            return <MiniRecentDispute {...miniDis} key={miniDis.id} />;
-          })}
+    <div className="card border-0 shadow-sm rounded-3">
+      <div className="card-body">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h6 className="mb-0">Recent Disputes</h6>
+          <Link to="./dispute" className="text-decoration-none">
+            <Button
+              size="sm"
+              className="rounded-1 px-3 py-1"
+              style={{ backgroundColor: "#006747EB", border: "none" }}
+            >
+              View More
+            </Button>
+          </Link>
+        </div>
+
+        <div className="d-flex flex-column gap-3">
+          {disputehistorydata.recent_dispute.map((miniDis) => (
+            <MiniRecentDispute {...miniDis} key={miniDis.id} />
+          ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
+// export const RecentDispute = () => {
+//   return (
+//     <>
+//       <div className="card border-0 shadow mx-auto" style={{ width: "100%" }}>
+//         <div className="card-body">
+//           <div className="d-flex justify-content-between mt-3 mb-5">
+//             <h6 className="mt-2">Recent Disputes</h6>
+//             <Link to={"./dispute"}>
+//               <ViewMoreDisputeBtn />
+//             </Link>
+//           </div>
+//           {disputehistorydata.recent_dispute.map((miniDis) => {
+//             return <MiniRecentDispute {...miniDis} key={miniDis.id} />;
+//           })}
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
 
 export const MiniRecentDispute = ({
   image,
