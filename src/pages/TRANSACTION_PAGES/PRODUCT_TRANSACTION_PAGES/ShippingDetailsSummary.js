@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Button } from "react-bootstrap";
+import { Button,  Card, Row, Col, Container } from "react-bootstrap";
 // import { TransactionDetails } from "../../../components/CardComponents/TransactionDetails";
 // import {
 //   BackIcon,
@@ -31,6 +31,78 @@ const ShippingDetailsSummary = () => {
     </>
   );
 };
+
+
+// const TransactionSummary = () => {
+//   const { shippingInfo } = useSelector((state) => state.escrowProductInfo);
+//   const navigate = useNavigate();
+
+//   const handleSubmit = () => {
+//     navigate(
+//       `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/shipping-details-summary/${shippingInfo?.transaction_id}/agreement`
+//     );
+//   };
+
+//   const handleBack = () => {
+//     navigate(
+//       `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${shippingInfo?.transaction_id}`
+//     );
+//   };
+
+//   return (
+//     <Container fluid className="px-3 px-md-5 py-4">
+//       <Row className="justify-content-center">
+//         <Col xs={12} md={10} lg={8}>
+//           <Card className="shadow border-0 p-3 p-md-4">
+//             <h4 className="text-center text-primary mb-4">
+//               Shipping Details Summary
+//             </h4>
+
+//             <div className="mb-4">
+//               <ShippingDetails
+//                 transaction_id={shippingInfo?.transaction_id}
+//                 shipping_company={shippingInfo?.shipping_company}
+//                 delivery_person_name={shippingInfo?.delivery_person_name}
+//                 delivery_person_number={shippingInfo?.delivery_person_number}
+//                 delivery_person_email={shippingInfo?.delivery_person_email}
+//                 delivery_date={shippingInfo?.delivery_date}
+//                 pick_up_address={shippingInfo?.pick_up_address}
+//               />
+//             </div>
+
+//             <div className="alert alert-info text-center small mb-4">
+//               By clicking <strong>Proceed</strong>, you confirm acceptance of the buyer’s terms and conditions.
+//             </div>
+
+//             <Row className="gx-2">
+//               <Col xs={12} sm={6} className="mb-2 mb-sm-0">
+//                 <Button
+//                   variant="outline-secondary"
+//                   className="w-100"
+//                   onClick={handleBack}
+//                 >
+//                   Back
+//                 </Button>
+//               </Col>
+//               <Col xs={12} sm={6}>
+//                 <Button
+//                   variant="success"
+//                   className="w-100"
+//                   onClick={handleSubmit}
+//                 >
+//                   Proceed
+//                 </Button>
+//               </Col>
+//             </Row>
+//           </Card>
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// };
+
+
+// export default ShippingDetailsSummary;
 
 const TransactionSummary = () => {
   const { shippingInfo } = useSelector((state) => state.escrowProductInfo);

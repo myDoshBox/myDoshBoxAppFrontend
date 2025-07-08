@@ -1,4 +1,4 @@
-import { Nav, Navbar, Container, Form } from "react-bootstrap";
+import { Nav, Navbar, Container, Form, Row, Col, } from "react-bootstrap";
 import logo from "../../images/Homepage Img/logo.png";
 import image from "../../images/Image.jpg";
 import { Link, Outlet } from "react-router-dom";
@@ -8,6 +8,7 @@ import {
   HomePageSignUpBtn,
   SignUpButton,
 } from "../ButtonsComponent/AuthenticationButtons";
+
 
 export const GuestNavbar = () => {
   const disappearEl = useRef(null);
@@ -94,52 +95,106 @@ export const GuestNavbar = () => {
 };
 
 export const UserDashboardNavbar = () => {
-  // console.count("UserDashboardNavbar: ");
-
   const { userInfo } = useSelector((state) => state.usersauth);
-  // console.log(userInfo?.user?.email);
-  // console.log(userInfo?.user?.phone_number);
-  // console.log(userInfo?.status);
+
   return (
-    <Container>
-      <Nav className="justify-content-end userDashboardNav position-sticky top-0 end-0">
-        <Nav.Item className=" mx-md-5 mt-2">
-          <Form className="searchField">
+    <Container fluid className="px-3 px-lg-5 py-3">
+      <Row className="align-items-center g-3">
+        {/* Search Field - full width on mobile */}
+        <Col xs={12} md={8}>
+          <Form>
             <Form.Control
               type="text"
-              placeholder="search"
-              className="search border-1 rounded-4 "
+              placeholder="Search"
+              className="rounded-pill px-4 py-2 border border-light w-100"
             />
           </Form>
-        </Nav.Item>
-        <Nav.Item className="d-flex ms-md-5">
-          <div>
+        </Col>
 
+        {/* User Info and Avatar */}
+        <Col xs={12} md={4} className="d-flex align-items-center justify-content-md-end gap-3 flex-wrap">
+          <div className="text-md-end flex-grow-1 flex-md-grow-0">
             {userInfo ? (
               <>
-                <span
-                  className="d-block text-end"
-                  title={userInfo?.status}
-                  id="email"
-                >
+                <div className="small fw-semibold text-truncate">
                   {userInfo?.user?.email || userInfo?.user?.organization_email}
-                  {/* <Link to={}></Link> */}
-                </span>
-
-                <span className="d-block text-end">
-                  {userInfo?.user?.phone_number ||
-                    userInfo?.user?.contact_number}
-                </span>
+                </div>
+                <div className="small text-muted text-truncate">
+                  {userInfo?.user?.phone_number || userInfo?.user?.contact_number}
+                </div>
               </>
             ) : (
-              <p>None</p>
+              <div className="small text-muted">User not found</div>
             )}
           </div>
-          <div className="mt-1 ms-2">
-            <img src={image} alt="" />
+
+          {/* Avatar Wrapper (fixes squishing + responsive layout) */}
+          <div style={{ width: "40px", height: "40px", flexShrink: 0 }}>
+            <img
+              src={image}
+              alt="User Avatar"
+              className="rounded-circle"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block"
+              }}
+            />
           </div>
-        </Nav.Item>
-      </Nav>
+        </Col>
+      </Row>
     </Container>
   );
 };
+
+// export const UserDashboardNavbar = () => {
+//   // console.count("UserDashboardNavbar: ");
+
+//   const { userInfo } = useSelector((state) => state.usersauth);
+//   // console.log(userInfo?.user?.email);
+//   // console.log(userInfo?.user?.phone_number);
+//   // console.log(userInfo?.status);
+//   return (
+//     <Container>
+//       <Nav className="justify-content-end userDashboardNav position-sticky top-0 end-0">
+//         <Nav.Item className=" mx-md-5 mt-2">
+//           <Form className="searchField">
+//             <Form.Control
+//               type="text"
+//               placeholder="search"
+//               className="search border-1 rounded-4 "
+//             />
+//           </Form>
+//         </Nav.Item>
+//         <Nav.Item className="d-flex ms-md-5">
+//           <div>
+
+//             {userInfo ? (
+//               <>
+//                 <span
+//                   className="d-block text-end"
+//                   title={userInfo?.status}
+//                   id="email"
+//                 >
+//                   {userInfo?.user?.email || userInfo?.user?.organization_email}
+//                   {/* <Link to={}></Link> */}
+//                 </span>
+
+//                 <span className="d-block text-end">
+//                   {userInfo?.user?.phone_number ||
+//                     userInfo?.user?.contact_number}
+//                 </span>
+//               </>
+//             ) : (
+//               <p>None</p>
+//             )}
+//           </div>
+//           <div className="mt-1 ms-2">
+//             <img src={image} alt="" />
+//           </div>
+//         </Nav.Item>
+//       </Nav>
+//     </Container>
+//   );
+// };

@@ -32,6 +32,7 @@ const TransactionHistory = (props) => {
   );
 };
 
+
 export const UserdashboardTransaction = () => {
   const dropdownBtnValues = [
     { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
@@ -39,75 +40,139 @@ export const UserdashboardTransaction = () => {
   ];
 
   return (
-    <div className="card border-0 shadow" style={{ width: "100%" }}>
+    <div className="card border-0 shadow-sm rounded-3">
       <div className="card-body">
-        <div className="d-flex justify-content-between">
-          <div className="">
-            <h6 className="text-nowrap mt-2 ms-3">Recent Transaction</h6>
-          </div>
-          <div className="d-flex">
-            {dropdownBtnValues.map((item) => {
-              return (
-                <Dropdown>
-                  <Dropdown.Toggle
-                    id="dropdown-basic"
-                    className="border-1 border-gray my-1 rounded-1 btn bg-transparent text-black border-black me-3 fs-sm"
-                    style={{
-                      outline: "none",
-                      borderColor: "#E7E7E7",
-                    }}
-                  >
-                    {item.label}
-                  </Dropdown.Toggle>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6 className="mb-0 ms-2">Recent Transactions</h6>
 
-                  <Dropdown.Menu style={{ minWidth: "inherit" }}>
-                    <div key={item.label}>
-                      <Dropdown.Item className="fs-sm">
-                        {item.value_1}
-                      </Dropdown.Item>
-                      <Dropdown.Item className="fs-sm">
-                        {item.value_2}
-                      </Dropdown.Item>
-                    </div>
-                  </Dropdown.Menu>
-                </Dropdown>
-              );
-            })}
+          <div className="d-flex flex-wrap">
+            {dropdownBtnValues.map((item) => (
+              <Dropdown className="me-2 mb-2" key={item.label}>
+                <Dropdown.Toggle
+                  id={`dropdown-${item.label}`}
+                  className="btn btn-light border text-dark rounded-1 py-1 px-3 fs-sm"
+                >
+                  {item.label}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item className="fs-sm">{item.value_1}</Dropdown.Item>
+                  <Dropdown.Item className="fs-sm">{item.value_2}</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            ))}
           </div>
         </div>
-        <table className="table transaction-table">
-          <thead className="text-center">
-            <tr>
-              <th>Name</th>
-              <th className="d-none d-lg-table-cell">Email</th>
-              <th>Paid Date</th>
-              <th>Paid Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {TransactionData.recent_transaction.map((trans) => {
-              return <MiniTransaction {...trans} key={trans.id} />;
-            })}
-          </tbody>
-        </table>
-        <Link
-          to={"./"}
-          className="d-flex justify-content-end text-decoration-none"
-        >
-          <Button
-            className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-5"
-            style={{
-              backgroundColor: "#006747EB",
-            }}
-          >
-            View All
-          </Button>
-        </Link>
+
+        <div className="table-responsive">
+          <table className="table table-hover text-center align-middle mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>Name</th>
+                <th className="d-none d-lg-table-cell">Email</th>
+                <th>Paid Date</th>
+                <th>Paid Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TransactionData.recent_transaction.map((trans) => (
+                <MiniTransaction {...trans} key={trans.id} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="d-flex justify-content-end mt-3">
+          <Link to="./" className="text-decoration-none">
+            <Button
+              className="rounded-1 px-4 fs-sm"
+              style={{ backgroundColor: "#006747EB", border: "none" }}
+            >
+              View All
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
 };
+
+// export const UserdashboardTransaction = () => {
+//   const dropdownBtnValues = [
+//     { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
+//     { label: "2022", value_1: "Newest", value_2: "Oldest" },
+//   ];
+
+//   return (
+//     <div className="card border-0 shadow" style={{ width: "100%" }}>
+//       <div className="card-body">
+//         <div className="d-flex justify-content-between">
+//           <div className="">
+//             <h6 className="text-nowrap mt-2 ms-3">Recent Transaction</h6>
+//           </div>
+//           <div className="d-flex">
+//             {dropdownBtnValues.map((item) => {
+//               return (
+//                 <Dropdown>
+//                   <Dropdown.Toggle
+//                     id="dropdown-basic"
+//                     className="border-1 border-gray my-1 rounded-1 btn bg-transparent text-black border-black me-3 fs-sm"
+//                     style={{
+//                       outline: "none",
+//                       borderColor: "#E7E7E7",
+//                     }}
+//                   >
+//                     {item.label}
+//                   </Dropdown.Toggle>
+
+//                   <Dropdown.Menu style={{ minWidth: "inherit" }}>
+//                     <div key={item.label}>
+//                       <Dropdown.Item className="fs-sm">
+//                         {item.value_1}
+//                       </Dropdown.Item>
+//                       <Dropdown.Item className="fs-sm">
+//                         {item.value_2}
+//                       </Dropdown.Item>
+//                     </div>
+//                   </Dropdown.Menu>
+//                 </Dropdown>
+//               );
+//             })}
+//           </div>
+//         </div>
+//         <table className="table transaction-table">
+//           <thead className="text-center">
+//             <tr>
+//               <th>Name</th>
+//               <th className="d-none d-lg-table-cell">Email</th>
+//               <th>Paid Date</th>
+//               <th>Paid Amount</th>
+//               <th>Status</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {TransactionData.recent_transaction.map((trans) => {
+//               return <MiniTransaction {...trans} key={trans.id} />;
+//             })}
+//           </tbody>
+//         </table>
+//         <Link
+//           to={"./"}
+//           className="d-flex justify-content-end text-decoration-none"
+//         >
+//           <Button
+//             className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-5"
+//             style={{
+//               backgroundColor: "#006747EB",
+//             }}
+//           >
+//             View All
+//           </Button>
+//         </Link>
+//       </div>
+//     </div>
+//   );
+// };
 
 const MiniTransaction = (props) => {
   const { name, email, paidDate, paidAmount, status, status_style } = props;
