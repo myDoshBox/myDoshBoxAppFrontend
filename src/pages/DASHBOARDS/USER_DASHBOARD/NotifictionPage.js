@@ -1,20 +1,26 @@
 import React from "react";
 import { NotificationCard } from "../../../components/TableComponents/TransactionTable";
 import usersData from "../../../data/usersData.json";
+import { FilterButton } from "../../../components/ButtonsComponent/OtherButtons";
 import { PaginationBar } from "../../../components/PaginationComponent";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-import { Bell, CheckCircle, AlertCircle, Info } from "react-feather"; // You can replace with your own icon set
+import { useState } from "react";
+import { SortIcon } from "../../../components/IconComponent/UserdashboardIcons";
+import {
+  ArrowDownIcon,
+  FilterIcon,
+} from "../../../components/IconComponent/NavigationAndViewIcon";
 
 const NotifictionPage = () => {
   return (
-    <div className="container-fluid bg-light min-vh-100 px-0">
-      <div className="row gx-0">
-        <div className="col-lg-3 d-none d-lg-block bg-white border-end"></div>
-        <div className="col-lg-9 col-12">
+    <div className="contestPage">
+      <div className="row">
+        <div className="col-lg-3"></div>
+        <div className="col-lg-9 col-sm-12">
           <UserDashboardNavbar />
-          <main className="p-4">
+          <div className="mt-3">
             <Notification />
-          </main>
+          </div>
         </div>
       </div>
     </div>
@@ -23,73 +29,30 @@ const NotifictionPage = () => {
 
 const Notification = () => {
   return (
-    <section className="bg-white p-4 rounded-4 shadow">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold mb-0">🔔 Notifications Center</h3>
+    <div className="row pe-lg-5">
+      <div className="card mx-auto mt-4 p-4 shadow border-0">
+        <div className="card-body d-flex justify-content-between pb-3 border-bottom pt-0">
+          <h5 className="m-0">Notifications</h5>
+          {/* <CustomButton
+            value="Sort by: Recent"
+            className="btn border text-success text-small viewBtn"
+            lefticon={<SortIcon />}
+            righticon={<ArrowDownIcon />}
+          /> */}
+        </div>
+        <div>
+          {usersData.notificationData.map((notificationData) => {
+            return (
+              <div className="" key={notificationData.id}>
+                <NotificationCard {...notificationData} />
+              </div>
+            );
+          })}
+        </div>
+        <div className="px-lg-5 py-4">{/* <PaginationBar /> */}</div>
       </div>
-
-      <ul className="list-unstyled">
-        {usersData.notificationData.map((notification) => (
-          <li
-            key={notification.id}
-            className={`p-3 mb-3 rounded-4 d-flex align-items-start shadow-sm notification-item ${
-              getTypeClass(notification.type)
-            }`}
-            style={{ transition: "all 0.3s", backgroundColor: getBgColor(notification.type) }}
-          >
-            <div className="me-3">{getIcon(notification.type)}</div>
-            <div className="flex-grow-1">
-              <NotificationCard {...notification} />
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <div className="pt-4 d-flex justify-content-center">
-        <PaginationBar />
-      </div>
-    </section>
+    </div>
   );
-};
-
-// Utility functions for icons and styles
-const getIcon = (type) => {
-  switch (type) {
-    case "success":
-      return <CheckCircle className="text-success" size={24} />;
-    case "error":
-      return <AlertCircle className="text-danger" size={24} />;
-    case "info":
-      return <Info className="text-primary" size={24} />;
-    default:
-      return <Bell className="text-secondary" size={24} />;
-  }
-};
-
-const getTypeClass = (type) => {
-  switch (type) {
-    case "success":
-      return "border-start border-4 border-success";
-    case "error":
-      return "border-start border-4 border-danger";
-    case "info":
-      return "border-start border-4 border-primary";
-    default:
-      return "border-start border-4 border-secondary";
-  }
-};
-
-const getBgColor = (type) => {
-  switch (type) {
-    case "success":
-      return "#f3fef5";
-    case "error":
-      return "#fff5f5";
-    case "info":
-      return "#f0f7ff";
-    default:
-      return "#f9f9f9";
-  }
 };
 
 export default NotifictionPage;
