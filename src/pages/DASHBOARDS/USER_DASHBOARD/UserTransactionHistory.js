@@ -20,7 +20,7 @@ const UserSettledTransactions = () => {
         <div className="col-lg-3 col-sm-12"></div>
 
         <div className="col-lg-9 col-sm-12">
-          <UserDashboardNavbar />
+          <UserDashboardNavbar/>
           <div className="mt-5 center-card">
             <RecentTransactionTable />
           </div>
