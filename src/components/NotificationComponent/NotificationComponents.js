@@ -73,7 +73,7 @@ export const RecentNotification = () => {
                <Form.Control
                 type="text"
                 placeholder="Search..."
-                className="form-control-sm"
+                className="form-control-sm me-1"
                 style={{ maxWidth: "180px"}}
                 value={searchQuery}
                 onChange={(e) => {

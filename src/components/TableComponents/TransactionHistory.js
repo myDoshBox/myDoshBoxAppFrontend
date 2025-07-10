@@ -69,11 +69,11 @@ export const UserdashboardTransaction = () => {
           <h6 className="">Transactions</h6>
 
           <div className="d-flex justify-content-end flex-column flex-sm-row align-items-sm-center gap-2 w-100 w-md-auto">
-            <div className="d-flex g-4">
+            <div className="d-flex">
             <Form.Control
               type="text"
               placeholder="Search..."
-              className="form-control-sm"
+              className="form-control-sm me-1"
               style={{ maxWidth: "180px" }}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
