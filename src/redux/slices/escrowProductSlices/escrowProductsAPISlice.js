@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  // baseUrl: "https://mydoshbox-be.onrender.com/transactions/",
-  baseUrl: "https://mydoshbox-be.vercel.app/transactions/",
+  baseUrl: "https://mydoshbox-be.onrender.com/transactions/",
+  // baseUrl: "https://mydoshbox-be.vercel.app/transactions/",
   // baseUrl: "http://localhost:9000/transactions/",
 });
 
