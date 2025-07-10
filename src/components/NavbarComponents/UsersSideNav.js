@@ -285,8 +285,8 @@ const DesktopScreen = ({ name, ...props }) => {
 
   return (
     <div
-      className="d-none d-lg-flex flex-column vh-100 big-side-nav shadow"
-      style={{ width: '17rem', padding: '1.5rem' }}
+      className="d-none d-lg-flex flex-column vh-100 big-side-nav"
+      // style={{ width: '10rem', padding: '1.5rem' }}
       role="navigation"
       aria-label="Main navigation"
     >

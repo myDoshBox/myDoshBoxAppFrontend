@@ -98,22 +98,23 @@ export const UserDashboardNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
 
   return (
-    <Container fluid className="px-3 px-lg-5 py-3">
-      <Row className="align-items-center g-3">
+    <Container className="">
+      <Row className="">
         {/* Search Field - full width on mobile */}
-        <Col xs={12} md={8}>
+        <Col xs={12} md={7}lg={8} className="align-center">
           <Form>
             <Form.Control
               type="text"
               placeholder="Search"
-              className="rounded-pill px-4 py-2 border border-light w-100"
+              className="border w-100 mb-2"
+              style={{ width: "200%", maxWidth: "700px" }} // Adjust maxWidth as needed
             />
           </Form>
         </Col>
 
         {/* User Info and Avatar */}
-        <Col xs={12} md={4} className="d-flex align-items-center justify-content-md-end gap-3 flex-wrap">
-          <div className="text-md-end flex-grow-1 flex-md-grow-0">
+        <Col xs={12} md={5} lg={4} className="d-flex justify-content-end gap-2 flex-wrap ">
+            <div className="text-end flex-md-grow-0">
             {userInfo ? (
               <>
                 <div className="small fw-semibold text-truncate">
@@ -129,19 +130,20 @@ export const UserDashboardNavbar = () => {
           </div>
 
           {/* Avatar Wrapper (fixes squishing + responsive layout) */}
-          <div style={{ width: "40px", height: "40px", flexShrink: 0 }}>
+          <div style={{ height: "40px", flexShrink: 0 }}>
             <img
               src={image}
               alt="User Avatar"
               className="rounded-circle"
               style={{
-                width: "100%",
+                // width: "100%",
                 height: "100%",
-                objectFit: "cover",
+                // objectFit: "cover",
                 display: "block"
               }}
             />
           </div>
+         
         </Col>
       </Row>
     </Container>

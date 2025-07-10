@@ -29,8 +29,7 @@ export const SignInButton = () => {
   return (
     <Button
       type="submit"
-      className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
-      style={{ width: "210px" }}
+      className="all-btn border-0 mt-3 GeneralBtnStyle1 text-white w-100 w-sm-75 w-md-50 w-lg-50 mx-auto"
     >
       Sign In
     </Button>
