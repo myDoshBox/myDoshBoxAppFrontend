@@ -5,8 +5,14 @@ import {
 } from "../NotificationComponent/NotificationComponents";
 import { ViewBtn } from "../ButtonsComponent/NavigationAndViewButtons";
 import TransactionData from "../../data/dummyData/transactionData.json";
-import { Button, Dropdown } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { searchFilter } from "../../components/utils/searchFilter"; // make sure this utility
+import { useEffect } from "react";
+
+
+
 
 const TransactionHistory = (props) => {
   const { trans_id, buyer_name, seller_name, products, date, status } = props;
@@ -34,35 +40,88 @@ const TransactionHistory = (props) => {
 
 
 export const UserdashboardTransaction = () => {
-  const dropdownBtnValues = [
-    { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
-    { label: "2022", value_1: "Newest", value_2: "Oldest" },
-  ];
+  const [searchQuery, setSearchQuery] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const keysToSearch = ["name", "email", "paid_date", "paid_amount", "status"];
+
+  const filteredData = useMemo(() => {
+    return searchFilter(TransactionData.recent_transaction, searchQuery, keysToSearch);
+  }, [searchQuery]);
+
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    return filteredData.slice(start, start + rowsPerPage);
+  }, [filteredData, currentPage, rowsPerPage]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset page on search or rowsPerPage change
+  }, [searchQuery, rowsPerPage]);
 
   return (
     <div className="card border-0 shadow-sm rounded-3">
       <div className="card-body">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h6 className="mb-0 ms-2">Recent Transactions</h6>
+        {/* Header and Controls */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
+          <h6 className="">Transactions</h6>
 
-          <div className="d-flex flex-wrap">
-            {dropdownBtnValues.map((item) => (
-              <Dropdown className="me-2 mb-2" key={item.label}>
-                <Dropdown.Toggle
-                  id={`dropdown-${item.label}`}
-                  className="btn btn-light border text-dark rounded-1 py-1 px-3 fs-sm"
-                >
-                  {item.label}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item className="fs-sm">{item.value_1}</Dropdown.Item>
-                  <Dropdown.Item className="fs-sm">{item.value_2}</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            ))}
+          <div className="d-flex justify-content-end flex-column flex-sm-row align-items-sm-center gap-2 w-100 w-md-auto">
+            <div className="d-flex">
+            <Form.Control
+              type="text"
+              placeholder="Search..."
+              className="form-control-sm me-1"
+              style={{ maxWidth: "180px" }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
+            <Form.Select
+              className="form-select-sm"
+              style={{ maxWidth: "120px" }}
+              value={rowsPerPage}
+              onChange={(e) => setRowsPerPage(Number(e.target.value))}
+            >
+              <option value={10}>Show 10</option>
+              <option value={25}>Show 25</option>
+              <option value={35}>Show 35</option>
+            </Form.Select>
+
+              </div>
+            {/* View All Button */}
+       
+            <Link to="./transaction-history">
+                            {/* <Button
+                              className="btn btn-sm text-white float-end "
+                              style={{ backgroundColor: "#006747EB" }}
+                            >
+                              View All
+                            </Button> */}
+                          {/* Large button only on small screens (xs) */}
+                              <Button
+                            className="btn btn-primary w-100 py-2 fs-6 d-block d-sm-none"
+                            style={{ backgroundColor: "#006747EB" }}
+                              >
+                                View All
+                              </Button>
+            
+                              {/* Normal-size button for sm and up */}
+                              <Button
+                                className="btn btn-sm btn-primary text-white d-none d-sm-inline-block"
+                                style={{ backgroundColor: "#006747EB" }}
+                          >
+                                View All
+                              </Button>
+            
+                          </Link>
+        
           </div>
         </div>
 
+        {/* Table */}
         <div className="table-responsive">
           <table className="table table-hover text-center align-middle mb-0">
             <thead className="table-light">
@@ -75,27 +134,47 @@ export const UserdashboardTransaction = () => {
               </tr>
             </thead>
             <tbody>
-              {TransactionData.recent_transaction.map((trans) => (
-                <MiniTransaction {...trans} key={trans.id} />
-              ))}
+              {paginatedData.length > 0 ? (
+                paginatedData.map((trans) => (
+                  <MiniTransaction key={trans.id} {...trans} />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-muted py-3">
+                    No results found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        <div className="d-flex justify-content-end mt-3">
-          <Link to="./" className="text-decoration-none">
-            <Button
-              className="rounded-1 px-4 fs-sm"
-              style={{ backgroundColor: "#006747EB", border: "none" }}
-            >
-              View All
-            </Button>
-          </Link>
+        {/* Pagination Footer */}
+        <div className="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+          <small className="text-muted ms-1">
+            Showing {paginatedData.length} of {filteredData.length} results
+          </small>
+
+          <div className="pagination justify-content-end mt-2 mt-md-0 me-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={page === currentPage ? "success" : "outline-secondary"}
+                size="sm"
+                className="mx-1"
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
         </div>
+
+        
       </div>
     </div>
   );
-};
+};  
 
 // export const UserdashboardTransaction = () => {
 //   const dropdownBtnValues = [
