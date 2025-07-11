@@ -1,7 +1,5 @@
 // utils/searchFilter.js
 
-
-
 export const searchFilter = (data, query, keys) => {
   if (!query) return data;
 

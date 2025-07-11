@@ -17,9 +17,9 @@ const SellerShippingHistory = () => {
   return (
     <div className="contestPage" style={{ "background-color": "#F9F9FB" }}>
       <div className="row">
-        <div className="col-lg-3 col-sm-12"></div>
+        <div className="col-lg-3 col-sm-12  "></div>
 
-        <div className="col-lg-9 col-sm-12">
+        <div className="col-lg-9 col-sm-12 mt-5">
           <UserDashboardNavbar />
           <div className="mt-5 center-card">
             <SellerShippingHistoryTable />
