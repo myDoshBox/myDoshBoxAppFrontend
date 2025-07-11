@@ -13,10 +13,10 @@ import {
 
 const NotifictionPage = () => {
   return (
-    <div className="contestPage">
-      <div className="row">
-        <div className="col-lg-3"></div>
-        <div className="col-lg-9 col-sm-12">
+    <div className="container-fluid bg-light min-vh-100 px-0 ">
+      <div className="row gx-0">
+        <div className="col-lg-3 d-none d-lg-block bg-white border-end"></div>
+        <div className="col-lg-9 col-12 mt-5">
           <UserDashboardNavbar />
           <div className="mt-3">
             <Notification />

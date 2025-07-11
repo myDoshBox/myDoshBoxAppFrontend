@@ -94,11 +94,11 @@ export const GuestNavbar = () => {
   );
 };
 
-export const UserDashboardNavbar = () => {
+export const UserDashboardNavbar = (props) => {
   const { userInfo } = useSelector((state) => state.usersauth);
 
   return (
-    <Container className="">
+    <Container className="mt-5">
       <Row className="">
         {/* Search Field - full width on mobile */}
         <Col xs={12} md={7}lg={8} className="align-center">
