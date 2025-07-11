@@ -262,6 +262,7 @@ const DesktopScreen = ({ name, ...props }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isTransactionOpen, setIsTransactionOpen] = useState(true);
+  const [isDisputeOpen, setIsDisputeOpen] = useState(true);
 
   const logoutHandler = async () => {
     try {
@@ -277,6 +278,10 @@ const DesktopScreen = ({ name, ...props }) => {
     setIsTransactionOpen(!isTransactionOpen);
   };
 
+  const toggleDispute = () => {
+    setIsDisputeOpen(!isDisputeOpen);
+  };
+
   const renderTooltip = (props) => (
     <Tooltip id="logout-tooltip" {...props}>
       Sign out of your account
@@ -286,7 +291,7 @@ const DesktopScreen = ({ name, ...props }) => {
   return (
     <div
       className="d-none d-lg-flex flex-column vh-100 big-side-nav"
-      // style={{ width: '10rem', padding: '1.5rem' }}
+      style={{ width: '10rem', padding: '1.5rem' }}
       role="navigation"
       aria-label="Main navigation"
     >
@@ -414,20 +419,117 @@ const DesktopScreen = ({ name, ...props }) => {
             </NavLink>
           </li>
 
+          {/* */}
+           {/* Transaction Section (Collapsible) */}
           <li className="mb-3 SideNavItem">
-            <NavLink
-              to="dispute"
-              end
-              className={({ isActive }) =>
-                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
-              }
-              aria-label="Disputes"
+          <button
+              className="d-flex align-items-center p-2 rounded-3 w-100 bg-transparent border-0 text-start"
+              onClick={toggleDispute}
+              aria-expanded={isDisputeOpen}
+              aria-controls="transaction-collapse"
+              aria-label="Toggle Transactions"
             >
-              <DisputeIcon className="me-2" />
-              <span>Disputes</span>
-            </NavLink>
+             <TransactionSideNavIcon/>
+              <span className="fw-medium text-secondary ms-2">Disputes</span>
+              <i
+                className={`bi bi-chevron-${isDisputeOpen ? 'up' : 'down'} ms-auto`}
+              ></i>
+            </button>
+            <Collapse in={isDisputeOpen}>
+              <ul id="transaction-collapse" className="list-unstyled mt-2 ps-3">
+                 <li className="mb-3 SideNavItem">
+                    <NavLink
+                      to="dispute"
+                      end
+                      className={({ isActive }) =>
+                        `d-flex align-items-center p-2 rounded ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                      }
+                      aria-label="Disputes"
+                    >
+                      <DisputeIcon className="me-2" />
+                      <span>All Disputes</span>
+                </NavLink>
+                </li> 
+                 <li className="mb-2">
+                  
+                      <NavLink
+                        to="./transaction-history/confirm-escrow-product-transaction/shipping-history/:transaction_id/initiate-dispute"
+                        end
+                        className={({ isActive }) =>
+                          `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+                        }
+                        aria-label="Disputes"
+                      >
+                        <DisputeIcon className="me-2" />
+                        <span>Initaite Dispute</span>
+                  </NavLink>
+                </li> 
+                <li className="mb-2">
+                  <NavLink
+                    to="./ticket"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Transactions in Progress"
+                  >
+                    <TransactionProgressIcon className="me-2" />
+                    <span>Tcket</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to="./open-conflicts"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Settled Transactions"
+                  >
+                    <SettledTransactionIcon className="me-2" />
+                    <span>Open Conflicts</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to=""
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Settled Transactions"
+                  >
+                    <SettledTransactionIcon className="me-2" />
+                    <span>Settled</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/shipping-history"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Shipping Details"
+                  >
+                    <ShippingDetailsTransactionIcon className="me-2" />
+                    <span>Shipping Details</span>
+                  </NavLink>
+                </li>
+              </ul>
+            </Collapse>
           </li>
-
+          {/* other code here */}
           <li className="mb-3 SideNavItem">
             <NavLink
               to="settings"

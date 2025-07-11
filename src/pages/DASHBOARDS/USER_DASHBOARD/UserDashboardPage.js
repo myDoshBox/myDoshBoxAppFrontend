@@ -13,29 +13,31 @@ import {
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
 import { RecentNotification } from "../../../components/NotificationComponent/NotificationComponents";
 import { UserdashboardTransaction } from "../../../components/TableComponents/TransactionHistory";
-import { RecentDispute } from "../../../components/CardComponents/TransactionDetails";
+// import { RecentDispute } from "../../../components/CardComponents/TransactionDetails";
+import {RecentTransactionTable} from "./UserTransactionHistory"
+
 
 // Main Dashboard Page Component
 const UserDashboardPage = () => {
     return (
-      <div
-        className="container-fluid"
-        style={{
-          backgroundColor: "rgb(249, 249, 251)",
-          minHeight: "100vh",
-        }}
-      >
-        <div className="row">
-          <div className="col-lg-9 col-12 ms-lg-auto">
-            <UserDashboardNavbar />
-  
-            <div className="dashboard-content">
-              <UserDashboard />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+     <div
+        className="container-fluid "
+          style={{
+           backgroundColor: "rgb(249, 249, 251)",
+            minHeight: "100vh",
+         }}
+      >
+        <div className="row">
+          <div className="col-lg-9 col-12 ms-lg-auto">
+            <UserDashboardNavbar />
+      
+            <div className="dashboard-content">
+                  <UserDashboard />
+             </div>
+        </div>
+      </div>
+    </div>
+  );
   };
   
 
@@ -76,28 +78,19 @@ const UserDashboard = () => {
           <UserDashboardCard2
             icon={<i className="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>}
             text="Initiate Disputes"
-            link="initiate-dispute"
+            link="transaction-history/confirm-escrow-product-transaction/shipping-history/:transaction_id/initiate-dispute"
           />
           </div>
         </div>
       </section>
       {/* --- Section 2: Recent Activity (Disputes & Transactions) --- */}
-      <section className="recent-activity mb-5">
-        <div className="row g-3">
-         <h3>Transaction Historys</h3>
-          {/* Use g-4 for slightly more spacing between these main content blocks */}
-          <div className="col-lg-4 col-12">
-            {/* Adjust column sizes to give RecentDispute more space */}
-            {/* <h3 className="sub-section-title mb-3 fs-4">Recent Disputes</h3> */}
-            <RecentDispute />
-          </div>
-          <div className="col-lg-8 col-12">
-            {" "}
+      <section className="recent-activity mb-5 mt-5">
+         <h3 className="fs-4">Transaction History</h3>
+          <div className=" col-12">
             {/* Give more space to the transaction table */}
             {/* <h3 className="sub-section-title mb-3 fs-4">Transaction History</h3> */}
-            <UserdashboardTransaction />
+            <RecentTransactionTable />
           </div>
-        </div>
       </section>
       {/* --- Section 3: Notifications --- */}
       <section className="notifications-section mb-5">
