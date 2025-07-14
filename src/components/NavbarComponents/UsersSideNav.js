@@ -22,9 +22,8 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlices/allUsersAuthSlice";
 import { useLogoutMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
-import { Collapse } from 'react-bootstrap'; // For collapsible section
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-
+import { Collapse } from "react-bootstrap"; // For collapsible section
+import { Tooltip, OverlayTrigger } from "react-bootstrap";
 
 const UsersSideNav = () => {
   return (
@@ -205,7 +204,7 @@ const MobileScreenSideNav = ({ name, ...props }) => {
               <li className="d-flex  align-items-center SideNavItem mb-5">
                 <div className="me-3">
                   <NavLink
-                    to="dispute"
+                    to="disputes"
                     end
                     className={({ isActive }) =>
                       isActive ? activeClassName : baseClassName
@@ -291,7 +290,7 @@ const DesktopScreen = ({ name, ...props }) => {
   return (
     <div
       className="d-none d-lg-flex flex-column vh-100 big-side-nav"
-      style={{ width: '10rem', padding: '1.5rem' }}
+      style={{ width: "10rem", padding: "1.5rem" }}
       role="navigation"
       aria-label="Main navigation"
     >
@@ -302,7 +301,7 @@ const DesktopScreen = ({ name, ...props }) => {
             src={doshlogo}
             alt="Dosh Logo"
             className="img-fluid"
-            style={{ maxWidth: '8rem', transition: 'transform 0.3s ease' }}
+            style={{ maxWidth: "8rem", transition: "transform 0.3s ease" }}
           />
         </Link>
       </div>
@@ -315,7 +314,9 @@ const DesktopScreen = ({ name, ...props }) => {
               to="/userdashboard"
               end
               className={({ isActive }) =>
-                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+                `d-flex align-items-center p-2 rounded ${
+                  isActive ? activeClassName : baseClassName
+                }`
               }
               aria-label="Dashboards"
             >
@@ -324,19 +325,23 @@ const DesktopScreen = ({ name, ...props }) => {
             </NavLink>
           </li>
 
-           {/* Transaction Section (Collapsible) */}
+          {/* Transaction Section (Collapsible) */}
           <li className="mb-3 SideNavItem">
-          <button
+            <button
               className="d-flex align-items-center p-2 rounded-3 w-100 bg-transparent border-0 text-start"
               onClick={toggleTransaction}
               aria-expanded={isTransactionOpen}
               aria-controls="transaction-collapse"
               aria-label="Toggle Transactions"
             >
-             <TransactionSideNavIcon/>
-              <span className="fw-medium text-secondary ms-2">Transactions</span>
+              <TransactionSideNavIcon />
+              <span className="fw-medium text-secondary ms-2">
+                Transactions
+              </span>
               <i
-                className={`bi bi-chevron-${isTransactionOpen ? 'up' : 'down'} ms-auto`}
+                className={`bi bi-chevron-${
+                  isTransactionOpen ? "up" : "down"
+                } ms-auto`}
               ></i>
             </button>
             <Collapse in={isTransactionOpen}>
@@ -383,7 +388,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     aria-label="Settled Transactions"
                   >
                     <SettledTransactionIcon className="me-2" />
-                    <span>Settled</span>
+                    <span>Settled Transaction</span>
                   </NavLink>
                 </li>
                 <li className="mb-2">
@@ -410,7 +415,9 @@ const DesktopScreen = ({ name, ...props }) => {
               to="notification"
               end
               className={({ isActive }) =>
-                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+                `d-flex align-items-center p-2 rounded ${
+                  isActive ? activeClassName : baseClassName
+                }`
               }
               aria-label="Notifications"
             >
@@ -420,52 +427,73 @@ const DesktopScreen = ({ name, ...props }) => {
           </li>
 
           {/* */}
-           {/* Transaction Section (Collapsible) */}
+          {/* Transaction Section (Collapsible) */}
           <li className="mb-3 SideNavItem">
-          <button
+            <button
               className="d-flex align-items-center p-2 rounded-3 w-100 bg-transparent border-0 text-start"
               onClick={toggleDispute}
               aria-expanded={isDisputeOpen}
               aria-controls="transaction-collapse"
               aria-label="Toggle Transactions"
             >
-             <TransactionSideNavIcon/>
+              <TransactionSideNavIcon />
               <span className="fw-medium text-secondary ms-2">Disputes</span>
               <i
-                className={`bi bi-chevron-${isDisputeOpen ? 'up' : 'down'} ms-auto`}
+                className={`bi bi-chevron-${
+                  isDisputeOpen ? "up" : "down"
+                } ms-auto`}
               ></i>
             </button>
             <Collapse in={isDisputeOpen}>
               <ul id="transaction-collapse" className="list-unstyled mt-2 ps-3">
-                 <li className="mb-3 SideNavItem">
-                    <NavLink
-                      to="dispute"
-                      end
-                      className={({ isActive }) =>
-                        `d-flex align-items-center p-2 rounded ${
+                <li className="mb-3 SideNavItem">
+                  <NavLink
+                    to="disputes"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded ${
                         isActive ? activeClassName : baseClassName
                       }`
-                      }
-                      aria-label="Disputes"
-                    >
-                      <DisputeIcon className="me-2" />
-                      <span>All Disputes</span>
-                </NavLink>
-                </li> 
-                 <li className="mb-2">
-                  
-                      <NavLink
-                        to="./transaction-history/confirm-escrow-product-transaction/shipping-history/:transaction_id/initiate-dispute"
-                        end
-                        className={({ isActive }) =>
-                          `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
-                        }
-                        aria-label="Disputes"
-                      >
-                        <DisputeIcon className="me-2" />
-                        <span>Initaite Dispute</span>
+                    }
+                    aria-label="Disputes"
+                  >
+                    <DisputeIcon className="me-2" />
+                    <span>All Disputes</span>
                   </NavLink>
-                </li> 
+                </li>
+
+                <li className="mb-3 SideNavItem">
+                  <NavLink
+                    to="disputes-in-progress"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Disputes"
+                  >
+                    <DisputeIcon className="me-2" />
+                    <span>Disputes In Progress</span>
+                  </NavLink>
+                </li>
+
+                <li className="mb-3 SideNavItem">
+                  <NavLink
+                    to="completed-disputes"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Disputes"
+                  >
+                    <DisputeIcon className="me-2" />
+                    <span>Resolved Disputes</span>
+                  </NavLink>
+                </li>
+
                 <li className="mb-2">
                   <NavLink
                     to="./ticket"
@@ -478,7 +506,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     aria-label="Transactions in Progress"
                   >
                     <TransactionProgressIcon className="me-2" />
-                    <span>Tcket</span>
+                    <span>Ticket</span>
                   </NavLink>
                 </li>
                 <li className="mb-2">
@@ -511,7 +539,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     <span>Settled</span>
                   </NavLink>
                 </li>
-                <li className="mb-2">
+                {/* <li className="mb-2">
                   <NavLink
                     to="transaction-history/confirm-escrow-product-transaction/shipping-history"
                     end
@@ -523,9 +551,9 @@ const DesktopScreen = ({ name, ...props }) => {
                     aria-label="Shipping Details"
                   >
                     <ShippingDetailsTransactionIcon className="me-2" />
-                    <span>Shipping Details</span>
+                    <span>All Disputes</span>
                   </NavLink>
-                </li>
+                </li> */}
               </ul>
             </Collapse>
           </li>
@@ -535,7 +563,9 @@ const DesktopScreen = ({ name, ...props }) => {
               to="settings"
               end
               className={({ isActive }) =>
-                `d-flex align-items-center p-2 rounded ${isActive ? activeClassName : baseClassName}`
+                `d-flex align-items-center p-2 rounded ${
+                  isActive ? activeClassName : baseClassName
+                }`
               }
               aria-label="Settings"
             >
@@ -547,21 +577,19 @@ const DesktopScreen = ({ name, ...props }) => {
       </div>
 
       {/* Logout Section */}
-        <div className="pt-3 border-top mt-auto">
-          <button
-            className="d-flex align-items-center p-2 rounded bg-transparent border-0 w-100 logout-btn"
-            onClick={logoutHandler}
-            aria-label="Logout"
-          >
-            <div className="me-3 d-flex align-items-center">
-              <LogoutIcon />
-            </div>
-            <span className={baseClassName}>Logout</span>
-          </button>
-        </div>
-
+      <div className="pt-3 border-top mt-auto">
+        <button
+          className="d-flex align-items-center p-2 rounded bg-transparent border-0 w-100 logout-btn"
+          onClick={logoutHandler}
+          aria-label="Logout"
+        >
+          <div className="me-3 d-flex align-items-center">
+            <LogoutIcon />
+          </div>
+          <span className={baseClassName}>Logout</span>
+        </button>
+      </div>
     </div>
-    
   );
 };
 
