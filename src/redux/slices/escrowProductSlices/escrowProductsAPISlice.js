@@ -6,7 +6,6 @@ const baseQuery = fetchBaseQuery({
   baseUrl: "https://mydoshbox-be.vercel.app/transactions/",
   // baseUrl: "http://localhost:9000/transactions/",
  
-
 });
 
 export const escrowProductsAPISlice = createApi({
