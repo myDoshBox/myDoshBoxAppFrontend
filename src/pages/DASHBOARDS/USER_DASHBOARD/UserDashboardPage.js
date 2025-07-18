@@ -11,10 +11,11 @@ import {
 //   InitiateDisputeIcon,
 // } from "../../../components/IconComponent/UserdashboardIcons";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-import { RecentNotification } from "../../../components/NotificationComponent/NotificationComponents";
+// import { RecentNotification } from "../../../components/NotificationComponent/NotificationComponents";
 import { UserdashboardTransaction } from "../../../components/TableComponents/TransactionHistory";
 // import { RecentDispute } from "../../../components/CardComponents/TransactionDetails";
 import {RecentTransactionTable} from "./UserTransactionHistory"
+import {RecentDisputeTable} from  "../../DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ProductsDisputeHistory"
 
 
 // Main Dashboard Page Component
@@ -45,7 +46,7 @@ const UserDashboardPage = () => {
 // Core User Dashboard Content (this component remains unchanged in this particular update)
 const UserDashboard = () => {
   return (
-    <div className="">
+    <div className="mt-3">
       {/* --- Section 1: Overview and Quick Actions --- */}
       <section className="mb-4"> 
         
@@ -94,8 +95,8 @@ const UserDashboard = () => {
       </section>
       {/* --- Section 3: Notifications --- */}
       <section className="notifications-section mb-5">
-        <h2 className="section-title mb-4 fs-4">Notifications</h2>
-        <RecentNotification />
+        <h3 className="fs-4">All Dispute History</h3>
+        <RecentDisputeTable />
       </section>
     </div>
   );

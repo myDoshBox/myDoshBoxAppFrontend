@@ -1,4 +1,4 @@
-import { Nav, Navbar, Container, Form, Row, Col, } from "react-bootstrap";
+import { Nav, Navbar, Container, Form, Row, Col, Dropdown } from "react-bootstrap";
 import logo from "../../images/Homepage Img/logo.png";
 import image from "../../images/Image.jpg";
 import { Link, Outlet } from "react-router-dom";
@@ -8,7 +8,6 @@ import {
   HomePageSignUpBtn,
   SignUpButton,
 } from "../ButtonsComponent/AuthenticationButtons";
-
 
 export const GuestNavbar = () => {
   const disappearEl = useRef(null);
@@ -94,61 +93,83 @@ export const GuestNavbar = () => {
   );
 };
 
-export const UserDashboardNavbar = (props) => {
+
+// Truncate function: Show first 17 characters, then add "..."
+const truncateEmailAfter17 = (email, maxLength = 17) => {
+  if (!email) return "";
+  return email.length > maxLength ? email.slice(0, maxLength) + "..." : email;
+};
+
+export const UserDashboardNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
 
+  const userEmail = userInfo?.user?.email || userInfo?.user?.organization_email || "";
+  const userPhone = userInfo?.user?.phone_number || userInfo?.user?.contact_number || "";
+
+//  const truncateText = (text, maxLength = 25) => {
+//   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+// };
+
   return (
-    <Container className="mt-5">
-      <Row className="">
-        {/* Search Field - full width on mobile */}
-        <Col xs={12} md={7}lg={8} className="align-center">
+    <Container fluid className="mt-5">
+      <Row className="align-items-center">
+        {/* Search Form - Always on the left on md+ */}
+        <Col xs={12} md={8} className="mb-3 mb-md-0">
           <Form>
             <Form.Control
               type="text"
               placeholder="Search"
-              className="border w-100 mb-2"
-              style={{ width: "200%", maxWidth: "700px" }} // Adjust maxWidth as needed
+              className="w-100 border"
+              style={{ minWidth: "100%" }}
             />
           </Form>
         </Col>
 
-        {/* User Info and Avatar */}
-        <Col xs={12} md={5} lg={4} className="d-flex justify-content-end gap-2 flex-wrap ">
-            <div className="text-end flex-md-grow-0">
-            {userInfo ? (
-              <>
-                <div className="small fw-semibold text-truncate">
-                  {userInfo?.user?.email || userInfo?.user?.organization_email}
-                </div>
-                <div className="small text-muted text-truncate">
-                  {userInfo?.user?.phone_number || userInfo?.user?.contact_number}
-                </div>
-              </>
-            ) : (
-              <div className="small text-muted">User not found</div>
-            )}
-          </div>
+        {/* User Info - Right side on md+, top-right on sm */}
+        <Col
+          xs={12}
+          md={4}
+          className="d-flex justify-content-md-end justify-content-end"
+        >
+          <Dropdown align="end">
+            <Dropdown.Toggle
+              variant="light"
+              className="d-flex align-items-center gap-2 border"
+              id="user-dropdown"
+            >
+              <img
+                src={image}
+                alt="User"
+                className="rounded-circle"
+                style={{ width: "35px", height: "35px", objectFit: "cover" }}
+              />
+             <span className="d-none d-sm-inline fw-semibold">
+            {truncateEmailAfter17(userEmail)}
+            </span>
 
-          {/* Avatar Wrapper (fixes squishing + responsive layout) */}
-          <div style={{ height: "40px", flexShrink: 0 }}>
-            <img
-              src={image}
-              alt="User Avatar"
-              className="rounded-circle"
-              style={{
-                // width: "100%",
-                height: "100%",
-                // objectFit: "cover",
-                display: "block"
-              }}
-            />
-          </div>
-         
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+            <Dropdown.ItemText className="fw-semibold">
+             {truncateEmailAfter17(userEmail)}
+            </Dropdown.ItemText>
+
+              <Dropdown.ItemText className="text-muted">{userPhone}</Dropdown.ItemText>
+              <Dropdown.Divider />
+              <Dropdown.Item href="userdashboard/settings">Account Settings</Dropdown.Item>
+              <Dropdown.Item href="/">Logout</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </Col>
       </Row>
     </Container>
   );
 };
+
+
+
+
+
 
 // export const UserDashboardNavbar = () => {
 //   // console.count("UserDashboardNavbar: ");
