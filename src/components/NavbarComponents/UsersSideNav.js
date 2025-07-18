@@ -43,7 +43,8 @@ import {
   FiRepeat,
   FiClock,
   FiCheckCircle,
-  FiPackage
+  FiPackage,
+  FiArrowRightCircle 
 } from "react-icons/fi";
 
 const UsersSideNav = () => {
@@ -671,12 +672,12 @@ const DesktopScreen = () => {
                 </li>
                 <li className="mb-2">
                   <NavLink
-                    to=""
+                    to="initiate-escro"
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
                     }
                   >
-                    <FiClock /> <span>Initiate Dispute</span>
+                    <FiArrowRightCircle /> <span>Initiate Dispute</span>
                   </NavLink>
                 </li>
                 <li className="mb-2">
