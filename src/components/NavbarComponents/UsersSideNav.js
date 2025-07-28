@@ -179,11 +179,11 @@ const MobileScreenSideNav = () => {
                 aria-expanded={showTransaction}
               >
                 <div className="d-flex align-items-center">
-                  <span className="me-3"><FiFolder size={20}/></span>
+                  <span className="me-3">< FiRepeat size={20}/></span>
                   <span className="fs-6">All Transactions</span>
                 </div>
                 <div>
-                  {showTransaction ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  {showTransaction ? <FiArrowUp size={18} /> : <FiArrowDown size={18} />}
                 </div>
               </Button>
 
@@ -193,6 +193,7 @@ const MobileScreenSideNav = () => {
                    <ul className="list-unstyled">
                     <li className="mb-3">
                       <NavLink
+                        end
                         to="transaction-history"
                         className={({ isActive }) =>
                           isActive
@@ -201,7 +202,7 @@ const MobileScreenSideNav = () => {
                         }
                         onClick={handleClose}
                       >
-                        <span className="me-2"><MdOutlineAccountBalanceWallet size={20} fill="#838894" /></span>
+                        <span className="me-2"><FiLayers  size={20} fill="#838894" /></span>
                         <span className="fs-6">Transactions</span>
                       </NavLink>
                     </li>
@@ -663,6 +664,7 @@ const DesktopScreen = () => {
                 <li className="mb-2">
                   <NavLink
                     to="disputes"
+                    end
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
                     }
@@ -672,12 +674,12 @@ const DesktopScreen = () => {
                 </li>
                 <li className="mb-2">
                   <NavLink
-                    to="initiate-escro"
+                     to="disputes/:transaction_id/initiate-dispute"
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
                     }
                   >
-                    <FiArrowRightCircle /> <span>Initiate Dispute</span>
+                     <FiArrowRightCircle /> <span>Initiate Dispute</span>
                   </NavLink>
                 </li>
                 <li className="mb-2">
@@ -687,7 +689,7 @@ const DesktopScreen = () => {
                       `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
                     }
                   >
-                    <FiClock /> <span>Disputes In Progress</span>
+                    <FiClock /> <span>In Progress</span>
                   </NavLink>
                 </li>
                 <li className="mb-2">

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const InitiateDisputesForm = () => {
   return (
     <>
-      <div className="contestPage">
+      <div className="contestPage" style={{backgroundColor: "rgba(230, 240, 237, 0.32)"}}>
         <div className="row">
           <div className="col-lg-3 col-sm-12"></div>
 
@@ -34,10 +34,13 @@ const ComplaintForm = () => {
   const [disputeDetails, setDisputeDetails] = useState([]);
 
   const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setDispute({ ...dispute, [name]: value });
+    const { name, value, files } = e.target;
+    setDispute({
+      ...dispute,
+      [name]: name === "file" ? files[0]?.name : value,
+    });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (
@@ -53,112 +56,254 @@ const ComplaintForm = () => {
   };
 
   return (
-    <>
-      <div className="mx-auto">
-        <div className="text-center">
-          <h5 className="fw-bold">COMPLAINT FORM</h5>
-        </div>
-
-        {/* Form Section Starts */}
-
-        <form className="form mt-5" onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <input
-              value={dispute.phoneNumber}
-              onChange={handleChange}
-              placeholder="Phone Number"
-              type="tel"
-              className="form-control"
-              id="phoneNumber"
-              name="phoneNumber"
-            />
-
-            <span
-              id="nameHelp"
-              className="form-text text-danger fst-italic fw-lighter"
-            >
-              *This field is required
-            </span>
-          </div>
-          <div className="mb-4">
-            <input
-              value={dispute.transactionId}
-              onChange={handleChange}
-              placeholder="Transaction ID"
-              type="text"
-              className="form-control"
-              id="transactionId"
-              name="transactionId"
-            />
-
-            <span
-              id="nameHelp"
-              className="form-text text-danger fst-italic fw-lighter"
-            >
-              *This field is required
-            </span>
+    <div className="container my-5">
+      <div className="mx-auto" style={{ maxWidth: "960px" }}>
+        <div className="card rounded-2 p-4 border-0 ">
+          <div className="text-center mb-4">
+            <h4 className="fw-bold text-success">Complaint Form</h4>
+            <p className="text-muted">Submit details about your transaction issue</p>
           </div>
 
-          <div>
-            <select
-              value={dispute.complaintType}
-              onChange={handleChange}
-              className="form-select mb-4"
-              aria-label="Default select example"
-              id="complaintType"
-              name="complaintType"
-            >
-              <option selected>Failed Transactions</option>
-              <option value="1">Wrong Items</option>
-              <option value="2">Incomplete Items</option>
-              <option value="3">Incomplete Payment</option>
-              <option value="4">Other</option>
-            </select>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="phoneNumber" className="form-label fw-semibold">
+                Phone Number <span className="text-danger">*</span>
+              </label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                id="phoneNumber"
+                value={dispute.phoneNumber}
+                onChange={handleChange}
+                className="form-control"
+                placeholder="Enter your phone number"
+              />
+            </div>
 
-            <span
-              id="nameHelp"
-              className="form-text text-danger fst-italic fw-lighter"
-            >
-              *This field is required
-            </span>
-          </div>
+            <div className="mb-3">
+              <label htmlFor="transactionId" className="form-label fw-semibold">
+                Transaction ID <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                name="transactionId"
+                id="transactionId"
+                value={dispute.transactionId}
+                onChange={handleChange}
+                className="form-control"
+                placeholder="Enter transaction reference"
+              />
+            </div>
 
-          <div className="input-group mb-3">
-            <input
-              value={dispute.file}
-              onChange={handleChange}
-              type="file"
-              className="form-control"
-              id="file"
-              name="file"
-              placeholder="Attach Image(s)"
-            />
-          </div>
+            <div className="mb-3">
+              <label htmlFor="complaintType" className="form-label fw-semibold">
+                Complaint Type <span className="text-danger">*</span>
+              </label>
+              <select
+                name="complaintType"
+                id="complaintType"
+                className="form-select"
+                value={dispute.complaintType}
+                onChange={handleChange}
+              >
+                <option value="">Select complaint type</option>
+                <option value="Failed Transactions">Failed Transactions</option>
+                <option value="Wrong Items">Wrong Items</option>
+                <option value="Incomplete Items">Incomplete Items</option>
+                <option value="Incomplete Payment">Incomplete Payment</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-          <div className="mb-3 mt-4">
-            <textarea
-              value={dispute.provideDetails}
-              onChange={handleChange}
-              placeholder="Reasons for contesting this complaint"
-              className="form-control "
-              id="provideDetails"
-              name="provideDetails"
-              rows="3"
-            ></textarea>
-          </div>
+            <div className="mb-3">
+              <label htmlFor="file" className="form-label fw-semibold">
+                Attach Supporting Image(s) <span className="text-danger">*</span>
+              </label>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                className="form-control"
+                onChange={handleChange}
+              />
+              {dispute.file && (
+                <small className="text-muted fst-italic mt-1 d-block">Selected: {dispute.file}</small>
+              )}
+            </div>
 
-          <div className="d-grid gap-2 w-25 mx-auto mt-4">
-            <Link to={"../ticket"}>
-              <button className="btn btn-success w-100" type="submit">
-                Submit
+            <div className="mb-3">
+              <label htmlFor="provideDetails" className="form-label fw-semibold">
+                Details of Complaint <span className="text-danger">*</span>
+              </label>
+              <textarea
+                name="provideDetails"
+                id="provideDetails"
+                rows="4"
+                className="form-control"
+                placeholder="Explain the reason for this complaint"
+                value={dispute.provideDetails}
+                onChange={handleChange}
+              ></textarea>
+            </div>
+
+            <div className="d-grid mt-4">
+              <button type="submit" className="btn btn-success rounded-pill">
+                Submit Complaint
               </button>
-            </Link>
-          </div>
-        </form>
+            </div>
+
+            <div className="text-center mt-3">
+              <Link to="../ticket" className="text-decoration-none text-success">
+                View Submitted Complaints
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
+
+
+
+// const ComplaintForm = () => {
+//   const initialValues = {
+//     phoneNumber: "",
+//     transactionId: "",
+//     complaintType: "",
+//     file: "",
+//     provideDetails: "",
+//   };
+
+//   const [dispute, setDispute] = useState(initialValues);
+//   const [disputeDetails, setDisputeDetails] = useState([]);
+
+//   const handleChange = (e) => {
+//     const name = e.target.name;
+//     const value = e.target.value;
+//     setDispute({ ...dispute, [name]: value });
+//   };
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (
+//       dispute.phoneNumber &&
+//       dispute.transactionId &&
+//       dispute.complaintType &&
+//       dispute.file &&
+//       dispute.provideDetails
+//     ) {
+//       setDisputeDetails([...disputeDetails, dispute]);
+//       setDispute(initialValues);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <div className="mx-auto">
+//         <div className="text-center">
+//           <h5 className="fw-bold">COMPLAINT FORM</h5>
+//         </div>
+
+//         {/* Form Section Starts */}
+
+//         <form className="form mt-5" onSubmit={handleSubmit}>
+//           <div className="mb-4">
+//             <input
+//               value={dispute.phoneNumber}
+//               onChange={handleChange}
+//               placeholder="Phone Number"
+//               type="tel"
+//               className="form-control"
+//               id="phoneNumber"
+//               name="phoneNumber"
+//             />
+
+//             <span
+//               id="nameHelp"
+//               className="form-text text-danger fst-italic fw-lighter"
+//             >
+//               *This field is required
+//             </span>
+//           </div>
+//           <div className="mb-4">
+//             <input
+//               value={dispute.transactionId}
+//               onChange={handleChange}
+//               placeholder="Transaction ID"
+//               type="text"
+//               className="form-control"
+//               id="transactionId"
+//               name="transactionId"
+//             />
+
+//             <span
+//               id="nameHelp"
+//               className="form-text text-danger fst-italic fw-lighter"
+//             >
+//               *This field is required
+//             </span>
+//           </div>
+
+//           <div>
+//             <select
+//               value={dispute.complaintType}
+//               onChange={handleChange}
+//               className="form-select mb-4"
+//               aria-label="Default select example"
+//               id="complaintType"
+//               name="complaintType"
+//             >
+//               <option selected>Failed Transactions</option>
+//               <option value="1">Wrong Items</option>
+//               <option value="2">Incomplete Items</option>
+//               <option value="3">Incomplete Payment</option>
+//               <option value="4">Other</option>
+//             </select>
+
+//             <span
+//               id="nameHelp"
+//               className="form-text text-danger fst-italic fw-lighter"
+//             >
+//               *This field is required
+//             </span>
+//           </div>
+
+//           <div className="input-group mb-3">
+//             <input
+//               value={dispute.file}
+//               onChange={handleChange}
+//               type="file"
+//               className="form-control"
+//               id="file"
+//               name="file"
+//               placeholder="Attach Image(s)"
+//             />
+//           </div>
+
+//           <div className="mb-3 mt-4">
+//             <textarea
+//               value={dispute.provideDetails}
+//               onChange={handleChange}
+//               placeholder="Reasons for contesting this complaint"
+//               className="form-control "
+//               id="provideDetails"
+//               name="provideDetails"
+//               rows="3"
+//             ></textarea>
+//           </div>
+
+//           <div className="d-grid gap-2 w-25 mx-auto mt-4">
+//             <Link to={"../ticket"}>
+//               <button className="btn btn-success w-100" type="submit">
+//                 Submit
+//               </button>
+//             </Link>
+//           </div>
+//         </form>
+//       </div>
+//     </>
+//   );
+// };
 
 export default InitiateDisputesForm;
 

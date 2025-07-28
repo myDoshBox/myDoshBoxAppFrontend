@@ -79,7 +79,7 @@ const UserDashboard = () => {
           <UserDashboardCard2
             icon={<i className="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>}
             text="Initiate Disputes"
-            link="transaction-history/confirm-escrow-product-transaction/shipping-history/:transaction_id/initiate-dispute"
+            link="disputes/:transaction_id/initiate-dispute"
           />
           </div>
         </div>

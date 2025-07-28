@@ -156,7 +156,7 @@ export const UserDashboardNavbar = () => {
 
               <Dropdown.ItemText className="text-muted">{userPhone}</Dropdown.ItemText>
               <Dropdown.Divider />
-              <Dropdown.Item href="userdashboard/settings">Account Settings</Dropdown.Item>
+              <Dropdown.Item href="settings">Account Settings</Dropdown.Item>
               <Dropdown.Item href="/">Logout</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>

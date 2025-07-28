@@ -26,6 +26,8 @@ import TransactionData from "../../data/dummyData/transactionData.json";
 import disputeshistorydata from "../../data/dummyData/disputeshistorydata.json";
 import { EditProfileButton } from "../ButtonsComponent/EditButtons";
 import { ViewMoreDisputeBtn } from "../ButtonsComponent/NavigationAndViewButtons";
+import { BsStarFill, BsStar, BsBriefcaseFill, BsPencilSquare, BsTelephone, BsEnvelope } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
 // UserTransactionsCard, TotalUsersCard, AnalyticsNewUsersCard
 export const AnalyticsCard = memo(
@@ -55,28 +57,31 @@ export const AnalyticsCard = memo(
 );
 
 //LogoutCard /ContactCustomerCareCard /IntiateDisputeCard /ClosedConflictsCard /OngoingConflictCard,   OpenConflictsCard /Logout /Contact Us /Report App Defect /Change Bank Details /Update Profile /FAQs
-export const UserDashboardCard = (props) => {
-  const { text, icon, link, relative } = props;
+export const UserDashboardCard = ({ text, icon, link, relative }) => {
   return (
     <Link
       to={link}
       relative={relative}
-      className="text-decoration-none text-dark"
+      className="text-decoration-none mb-5"
     >
       <div
-        className="card shadow mx-auto border-0 rounded-2 p-3 p-lg-none row justify-content-center"
-        style={{ width: "100%", height: "80%" }}
+        className="card border-0 shadow-sm rounded-4 text-center d-flex justify-content-center align-items-center"
+        style={{ minHeight: "160px" }}
       >
-        <div className="row justify-content-center align-items-center mx-auto">
-          <div className="col-2">{icon}</div>
-          <div className="col-10" style={{ transform: "translateX(10px)" }}>
-            {text}
+        <div className="d-flex flex-column align-items-center gap-3">
+          <div
+            className="bg-light rounded-circle d-flex justify-content-center align-items-center"
+            style={{ width: "60px", height: "60px" }}
+          >
+            {icon}
           </div>
+          <h6 className="mb-0 fw-semibold text-dark">{text}</h6>
         </div>
       </div>
     </Link>
   );
 };
+
 
 export const UserDashboardCard2 = ({ text, icon, link }) => {
   return (
@@ -206,56 +211,146 @@ export const MiniProfileCard = () => {
     </>
   );
 };
-// MiniProfileCardSettind
-export const MiniProfileCardSettings = () => {
-  return (
-    <>
-      <div
-        className="card shadow border-0 rounded-2 p-3 mx-auto"
-        style={{ width: "90%" }}
-      >
-        <div className="d-flex flex-column ">
-          <div className="d-flex justify-content-center">
-            <img src={Avatar} className="img-fluid mx-auto" alt="User" />
-            <span className="d-flex align-items-end">
-              {/* <CameraIcon /> */}
-            </span>
-          </div>
-          <span className="text-center">
-            <h5 className="mt-2 fw-lighter">Olasunkanmi Idris</h5>
-            <p>+234 801 234 5678</p>
-            <p>sunkanmidris@gmail.com</p>
-          </span>
-        </div>
-        <hr></hr>
-        <div className="d-flex px-3">
-          <div>{/* <CompletedDealsIcon width="30" /> */}</div>
-          <p className="ms-lg-1">100 deals completed</p>
-        </div>
-        <div className="d-flex px-3 ">
-          <span role="button" data-testid="rating-icons-container">
-            <RatingIcon id={1} />
-            <RatingIcon id={2} />
-            <RatingIcon id={3} />
-            <RatingIcon id={4} />
-            <RatingIcon id={5} />
-          </span>
 
-          <p className="mx-2"> 0.0 rating </p>
-        </div>
-        <hr></hr>
-        <div className="text-end pe-2 py-3">
-          <Link to={"../updateprofile"}>
-            {/* <GeneralBtn
-              text="Edit Profile"
-              styles="GeneralBtnStyle1 btn all-btn text-white"
-            /> */}
-          </Link>
-        </div>
-      </div>
-    </>
+// Reusable rating icon component
+const StaticRatingIcon = ({ filled }) => {
+  return filled ? (
+    <BsStarFill className="text-warning fs-5 me-1" />
+  ) : (
+    <BsStar className="text-muted fs-5 me-1" />
   );
 };
+
+export const MiniProfileCardSettings = () => {
+  const { userInfo } = useSelector((state) => state.usersauth);
+
+  const name =
+    userInfo?.user?.name ||
+    userInfo?.user?.username ||
+    userInfo?.user?.organization_name ||
+    "No Name";
+
+  const email =
+    userInfo?.user?.email ||
+    userInfo?.user?.organization_email ||
+    "No Email";
+
+  const phone =
+    userInfo?.user?.phone_number ||
+    userInfo?.user?.contact_number ||
+    "No Phone";
+
+  const dealsCompleted = userInfo?.user?.dealsCompleted || 0;
+  const rating = userInfo?.user?.rating || 0;
+  const avatar = userInfo?.user?.avatar || "/default-avatar.png";
+
+  return (
+    <div
+      className="card border-0 shadow-sm rounded-5 p-4 mx-auto mb-4"
+      style={{ maxWidth: "430px", background: "#ffffff" }}
+    >
+      <div className="d-flex flex-column align-items-center">
+        <div className="position-relative">
+          <img
+            src={avatar}
+            alt="User Avatar"
+            className="rounded-circle border border-3 border-light shadow"
+            style={{ width: "110px", height: "110px", objectFit: "cover" }}
+          />
+        </div>
+
+        <div className="text-center mt-3">
+          <h5 className="fw-bold text-dark mb-1">{name}</h5>
+          <p className="text-muted small mb-1 d-flex align-items-center justify-content-center">
+            <BsTelephone className="me-2" /> {phone}
+          </p>
+          <p className="text-muted small d-flex align-items-center justify-content-center">
+            <BsEnvelope className="me-2" /> {email}
+          </p>
+        </div>
+      </div>
+
+      <hr className="my-4" />
+
+      <div className="d-flex align-items-center mb-3 px-2">
+        <BsBriefcaseFill className="text-success me-3 fs-5" />
+        <span className="text-muted fw-medium">
+          {dealsCompleted} deals completed
+        </span>
+      </div>
+
+      <div className="d-flex align-items-center justify-content-between px-2">
+        <div className="d-flex">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <RatingIcon key={star} filled={star <= rating} />
+          ))}
+        </div>
+        <span className="text-muted small">{rating.toFixed(1)} rating</span>
+      </div>
+
+      <hr className="my-4" />
+
+      <div className="text-end">
+        <Link
+          to="../updateprofile"
+          className="btn btn-outline-success rounded-pill px-4 d-inline-flex align-items-center gap-2"
+        >
+          <BsPencilSquare /> Edit Profile
+        </Link>
+      </div>
+    </div>
+  );
+};
+// MiniProfileCardSettind
+// export const MiniProfileCardSettings = () => {
+//   return (
+//     <>
+//       <div
+//         className="card shadow border-0 rounded-2 p-3 mx-auto"
+//         style={{ width: "90%" }}
+//       >
+//         <div className="d-flex flex-column ">
+//           <div className="d-flex justify-content-center">
+//             <img src={Avatar} className="img-fluid mx-auto" alt="User" />
+//             <span className="d-flex align-items-end">
+//               {/* <CameraIcon /> */}
+//             </span>
+//           </div>
+//           <span className="text-center">
+//             <h5 className="mt-2 fw-lighter">Olasunkanmi Idris</h5>
+//             <p>+234 801 234 5678</p>
+//             <p>sunkanmidris@gmail.com</p>
+//           </span>
+//         </div>
+//         <hr></hr>
+//         <div className="d-flex px-3">
+//           <div>{/* <CompletedDealsIcon width="30" /> */}</div>
+//           <p className="ms-lg-1">100 deals completed</p>
+//         </div>
+//         <div className="d-flex px-3 ">
+//           <span role="button" data-testid="rating-icons-container">
+//             <RatingIcon id={1} />
+//             <RatingIcon id={2} />
+//             <RatingIcon id={3} />
+//             <RatingIcon id={4} />
+//             <RatingIcon id={5} />
+//           </span>
+
+//           <p className="mx-2"> 0.0 rating </p>
+//         </div>
+//         <hr></hr>
+//         <div className="text-end pe-2 py-3">
+//           <Link to={"../updateprofile"}>
+//             {/* <GeneralBtn
+//               text="Edit Profile"
+//               styles="GeneralBtnStyle1 btn all-btn text-white"
+//             /> */}
+//           </Link>
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
 
 // MiniUsersCard
 export const MiniUsersCard = memo(({ style }) => {
