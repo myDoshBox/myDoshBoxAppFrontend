@@ -1344,11 +1344,18 @@ export const RecentTransactionTableData = (props) => {
               className="rounded-1 fs-sm"
               onClick={() =>
                 navigate(
-                  `/userdashboard/disputes/${transaction_id}/initiate-dispute` // Adjust the route as needed
+                  `/userdashboard/disputes/initiate-dispute/${transaction_id}` // Adjust the route as needed
                 )
               }
             >
               Raise Dispute
+            </Button>
+            <Button
+              variant="outline-primary"
+              className="rounded-1 fs-sm"
+              onClick={onViewMore}
+            >
+              View More
             </Button>
           </td>
         ) : transaction_status === "inDispute" ? (
@@ -1373,6 +1380,13 @@ export const RecentTransactionTableData = (props) => {
               onClick={onViewMore}
             >
               View More
+            </Button>
+            <Button
+              variant="outline-primary"
+              className="rounded-1 fs-sm"
+              onClick={onViewMore}
+            >
+              Cancel
             </Button>
           </td>
         )}

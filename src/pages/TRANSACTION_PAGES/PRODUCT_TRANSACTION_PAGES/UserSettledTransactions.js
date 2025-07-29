@@ -59,7 +59,7 @@ export const RecentTransactionTable = () => {
             toast.success(res?.message);
           })
           .catch((error) => {
-            // console.log(error);
+            // toast.error(error?.data?.message || "An error occurred" );
           });
       };
       verifyEscrowProductTransaction();

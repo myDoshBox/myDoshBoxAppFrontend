@@ -393,6 +393,21 @@ const DesktopScreen = ({ name, ...props }) => {
                 </li>
                 <li className="mb-2">
                   <NavLink
+                    to="transaction-history/cancelled-transactions"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Cancelled Transactions"
+                  >
+                    <SettledTransactionIcon className="me-2" />
+                    <span>Cancelled Transaction</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
                     to="transaction-history/confirm-escrow-product-transaction/shipping-history"
                     end
                     className={({ isActive }) =>
@@ -464,7 +479,7 @@ const DesktopScreen = ({ name, ...props }) => {
 
                 <li className="mb-3 SideNavItem">
                   <NavLink
-                    to="disputes-in-progress"
+                    to="disputes/disputes-in-progress"
                     end
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded ${
@@ -480,7 +495,7 @@ const DesktopScreen = ({ name, ...props }) => {
 
                 <li className="mb-3 SideNavItem">
                   <NavLink
-                    to="completed-disputes"
+                    to="disputes/completed-disputes"
                     end
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded ${
@@ -494,7 +509,7 @@ const DesktopScreen = ({ name, ...props }) => {
                   </NavLink>
                 </li>
 
-                <li className="mb-2">
+                {/* <li className="mb-2">
                   <NavLink
                     to="./ticket"
                     end
@@ -508,8 +523,8 @@ const DesktopScreen = ({ name, ...props }) => {
                     <TransactionProgressIcon className="me-2" />
                     <span>Ticket</span>
                   </NavLink>
-                </li>
-                <li className="mb-2">
+                </li> */}
+                {/* <li className="mb-2">
                   <NavLink
                     to="./open-conflicts"
                     end
@@ -523,8 +538,8 @@ const DesktopScreen = ({ name, ...props }) => {
                     <SettledTransactionIcon className="me-2" />
                     <span>Open Conflicts</span>
                   </NavLink>
-                </li>
-                <li className="mb-2">
+                </li> */}
+                {/* <li className="mb-2">
                   <NavLink
                     to=""
                     end
@@ -538,7 +553,7 @@ const DesktopScreen = ({ name, ...props }) => {
                     <SettledTransactionIcon className="me-2" />
                     <span>Settled</span>
                   </NavLink>
-                </li>
+                </li> */}
                 {/* <li className="mb-2">
                   <NavLink
                     to="transaction-history/confirm-escrow-product-transaction/shipping-history"

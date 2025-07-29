@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Notifications } from "../NotificationComponent/NotificationComponents";
 import TransactionData from "../../data/dummyData/transactionData.json";
-import { RecentTransactionTableData } from "../../pages/DASHBOARDS/USER_DASHBOARD/UserTransactionHistory";
+import { RecentTransactionTableData } from "../../pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserTransactionHistory";
 import { Link } from "react-router-dom";
 import { ViewMoreButton } from "../ButtonsComponent/NavigationAndViewButtons";
 

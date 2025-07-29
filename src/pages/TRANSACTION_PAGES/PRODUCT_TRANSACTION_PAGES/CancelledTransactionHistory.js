@@ -13,7 +13,7 @@ import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
 import { useSelector } from "react-redux";
 
-const UserTransactionsInProgress = () => {
+const CancelledTransactionHistory = () => {
   return (
     <div className="contestPage" style={{ "background-color": "#F9F9FB" }}>
       <div className="row">
@@ -22,7 +22,7 @@ const UserTransactionsInProgress = () => {
         <div className="col-lg-9 col-sm-12">
           <UserDashboardNavbar />
           <div className="mt-5 center-card">
-            <RecentTransactionTable />
+            <RecentCancelledTransactionTable />
           </div>
         </div>
       </div>
@@ -30,51 +30,10 @@ const UserTransactionsInProgress = () => {
   );
 };
 
-export const RecentTransactionTable = () => {
-  // Get the current URL's query parameters
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // Extract the 'reference' parameter from the URL
-  const reference = urlParams.get("reference");
-
-  // Log or use the 'reference'
-  console.log(reference); // This will output: db917a34-7d04-4400-85fc-4c8d1918cbda
-
-  // console.log(escrowProductInfo);
-  // console.log(userInfo);
-
-  const [
-    verifyEscrowProductTransactionPayment,
-    { isLoading: verifyingEscrow },
-  ] = useVerifyEscrowProductTransactionPaymentMutation();
-
-  useEffect(() => {
-    if (reference) {
-      const verifyEscrowProductTransaction = async () => {
-        await verifyEscrowProductTransactionPayment(reference)
-          .unwrap()
-          .then((res) => {
-            // console.log(res);
-
-            toast.success(res?.message);
-          })
-          .catch((error) => {
-            // console.log(error);
-          });
-      };
-      verifyEscrowProductTransaction();
-    }
-  }, [reference, verifyEscrowProductTransactionPayment]);
-
+export const RecentCancelledTransactionTable = () => {
   // user detail for single user
   const { userInfo } = useSelector((state) => state.usersauth);
   const userEmail = userInfo?.user?.email;
-
-  // transaction detail for single user
-  // const { escrowProductInfo } = useSelector((state) => state.escrowProductInfo);
-  // const transactionId = escrowProductInfo;
-
-  // console.log("transactionId", transactionId);
 
   const {
     data: transactions,
@@ -111,14 +70,8 @@ export const RecentTransactionTable = () => {
   };
 
   const handleShowMore = (transactionId) => {
-    // const selectedTransaction = fetchedTransactions?.find(
-    //   (transaction) => transaction.id === transactionId
-    // );
     setSelectedTransaction(transactionId);
     setShow(true);
-
-    // console.log("selectedTransaction", selectedTransaction);
-    // console.log("transactionid", transactionId);
   };
 
   const handleCloseModal = () => {
@@ -133,24 +86,35 @@ export const RecentTransactionTable = () => {
     if (!fetchedTransactions || fetchedTransactions?.length === 0) {
       return []; // Return an empty array if there is no data
     }
+    console.log("ft", fetchedTransactions);
+
+    const completedTransactions = fetchedTransactions?.filter(
+      (transaction) =>
+        // transaction?.transaction_status === "completed" &&
+        // userEmail === transaction?.vendor_email &&
+        // transaction?.buyer_email !== transaction?.vendor_email &&
+        // transaction?.seller_confirm_status === false
+        transaction?.transaction_status === "cancelled"
+    );
+
+    console.log("ct", completedTransactions);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
-    return fetchedTransactions?.slice(startIndex, endIndex);
+    return completedTransactions?.slice(startIndex, endIndex);
   };
 
   // console.log("getSlicedData", getSlicedData());
 
   // if (isLoading) return <p>Loading...</p>;
   // if (error) return <p>Error loading transactions: {error?.data?.message}</p>;
-  if (verifyingEscrow) return <h1>Loading...</h1>;
   return (
     <div className="bg-white rounded-1 p-3" style={{ width: "100%" }}>
       <div>
         <div className="d-md-flex justify-content-between align-items-center mb-3">
           <h3 className="fs-6 m-0 mb-3 mb-md-0" style={{}}>
-            All Transactions
+            Settled Transactions
           </h3>
           <div className="d-flex">
             {dropdownBtnValues.map((item) => {
@@ -239,7 +203,7 @@ export const RecentTransactionTable = () => {
             {/* Use the getSlicedData function to map over only the data for the current page */}
             {getSlicedData()?.map((history) => {
               return (
-                <RecentTransactionTableData
+                <RecentCancelledTransactionTableData
                   {...history}
                   key={history.id}
                   onViewMore={() => handleShowMore(history)}
@@ -274,6 +238,11 @@ export const RecentTransactionTable = () => {
 
         <Modal.Body>
           <Modal.Body>
+            {/* {selectedTransaction &&
+            userEmail === selectedTransaction?.vendor_email &&
+            selectedTransaction?.buyer_email !==
+              selectedTransaction?.vendor_email &&
+            selectedTransaction?.seller_confirm_status === false ? ( */}
             {selectedTransaction ? (
               <>
                 {selectedTransaction.transaction_type === "buy" ? (
@@ -413,7 +382,10 @@ export const RecentTransactionTable = () => {
   );
 };
 
-export const RecentTransactionTableData = (props) => {
+export const RecentCancelledTransactionTableData = (props) => {
+  const { userInfo } = useSelector((state) => state.usersauth);
+  const userEmail = userInfo?.user?.email;
+
   const {
     product_name,
     vendor_name,
@@ -470,10 +442,55 @@ export const RecentTransactionTableData = (props) => {
         </td>
 
         <td className="d-none d-md-table-cell py-md-3 text-center">
+          {/* <Button
+            className="border-0 rounded-1 btn all-btn text-white fs-sm"
+            style={{
+              backgroundColor: "#006747EB",
+            }}
+          >
+            Generate Slip
+          </Button> */}
           {transaction_status}
         </td>
+        {/* <td
+          className="py-md-3 text-center"
+          style={{ color: `${status_color}` }}
+        >
+          {window.innerWidth < 768 ? (
+            <span style={{ color: `${status_color}` }}>●</span>
+          ) : (
+            `${transaction_status}`
+          )}
+        </td> */}
 
-        {vendor_email === buyer_email && seller_confirm_status === false ? (
+        {/* ///// */}
+        {/* <td className="d-none d-md-table-cell py-md-3 text-center">
+          <Button
+            variant="outline-primary"
+            className="rounded-1 fs-sm"
+            onClick={onViewMore}
+          >
+            View More
+          </Button>
+        </td> */}
+        {/* ////// */}
+
+        {/* <td className="d-none d-md-table-cell py-md-3 text-center">
+          <Button
+            variant="outline-primary"
+            className="rounded-1 fs-sm"
+            onClick={onViewMore}
+          >
+            {seller_confirm_status === "false"
+              ? "View More"
+              : "Confirm Transaction"}
+          </Button>
+        </td> */}
+
+        {/* {userEmail === vendor_email &&
+        buyer_email !== vendor_email &&
+        seller_confirm_status === false &&
+        transaction_status === "processing" ? (
           <td className="d-none d-md-table-cell py-md-3 text-center">
             <Button
               variant="outline-primary"
@@ -497,10 +514,39 @@ export const RecentTransactionTableData = (props) => {
               View More
             </Button>
           </td>
-        )}
+        )} */}
+
+        {/* {userEmail === vendor_email &&
+        buyer_email !== vendor_email &&
+        seller_confirm_status === false &&
+        transaction_status === "processing" ? (
+          <td className="d-none d-md-table-cell py-md-3 text-center">
+            <Button
+              variant="outline-primary"
+              className="rounded-1 fs-sm"
+              onClick={() =>
+                navigate(
+                  `confirm-escrow-product-transaction/shipping-details-form/${transaction_id}`
+                )
+              }
+            >
+              Confirm Transaction
+            </Button>
+          </td>
+        ) : ( */}
+        <td className="d-none d-md-table-cell py-md-3 text-center">
+          <Button
+            variant="outline-primary"
+            className="rounded-1 fs-sm"
+            onClick={onViewMore}
+          >
+            View More
+          </Button>
+        </td>
+        {/* )} */}
       </tr>
     </>
   );
 };
 
-export default UserTransactionsInProgress;
+export default CancelledTransactionHistory;

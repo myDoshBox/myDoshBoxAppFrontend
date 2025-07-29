@@ -532,6 +532,14 @@ export const RecentTransactionTableData = (props) => {
             >
               Confirm Transaction
             </Button>
+
+            <Button
+              variant="outline-primary"
+              className="rounded-1 fs-sm"
+              onClick={onViewMore}
+            >
+              View More
+            </Button>
           </td>
         ) : (
           <td className="d-none d-md-table-cell py-md-3 text-center">
@@ -541,6 +549,13 @@ export const RecentTransactionTableData = (props) => {
               onClick={onViewMore}
             >
               View More
+            </Button>
+            <Button
+              variant="outline-primary"
+              className="rounded-1 fs-sm"
+              onClick={onViewMore}
+            >
+              Cancel
             </Button>
           </td>
         )}

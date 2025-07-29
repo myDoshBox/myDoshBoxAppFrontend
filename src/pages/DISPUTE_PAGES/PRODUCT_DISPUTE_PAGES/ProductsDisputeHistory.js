@@ -377,12 +377,15 @@ export const RecentDisputeTable = () => {
 
 export const RecentDisputeTableData = (props) => {
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const user_email = userInfo?.user?.email;
+  const dispute_raised_by_email = userInfo?.user?.email;
 
   const {
     product_name,
     dispute_resolution_method,
     dispute_status,
+    // user_email,
+    // dispute_raised_by_email,
     // dispute_date,
     // pick_up_address,
     // transaction_status,
@@ -442,8 +445,7 @@ export const RecentDisputeTableData = (props) => {
           {createdAt?.slice(0, 10)}
         </td>
 
-        {userEmail === buyer_email &&
-        buyer_email !== vendor_email &&
+        {user_email === dispute_raised_by_email &&
         dispute_status === "resolving" ? (
           <td className="d-none d-md-table-cell py-md-3 text-center">
             <Button
