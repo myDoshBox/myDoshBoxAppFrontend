@@ -105,16 +105,12 @@ export const RecentCancelledTransactionTable = () => {
     return completedTransactions?.slice(startIndex, endIndex);
   };
 
-  // console.log("getSlicedData", getSlicedData());
-
-  // if (isLoading) return <p>Loading...</p>;
-  // if (error) return <p>Error loading transactions: {error?.data?.message}</p>;
   return (
     <div className="bg-white rounded-1 p-3" style={{ width: "100%" }}>
       <div>
         <div className="d-md-flex justify-content-between align-items-center mb-3">
           <h3 className="fs-6 m-0 mb-3 mb-md-0" style={{}}>
-            Settled Transactions
+            Cancelled Transactions
           </h3>
           <div className="d-flex">
             {dropdownBtnValues.map((item) => {

@@ -154,7 +154,7 @@ export const RecentDisputeTable = () => {
       <div>
         <div className="d-md-flex justify-content-between align-items-center mb-3">
           <h3 className="fs-6 m-0 mb-3 mb-md-0" style={{}}>
-            All Dispute History Details
+            All Dispute History 
           </h3>
           <div className="d-flex">
             {dropdownBtnValues.map((item) => {

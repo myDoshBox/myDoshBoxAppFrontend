@@ -13,7 +13,7 @@ export const disputeAPISlice = createApi({
   endpoints: (builder) => ({
     initiateDispute: builder.mutation({
       query: (data) => ({
-        url: `initiate-dispute`,
+        url: `raise-dispute/${data.transaction_id}`,
         method: "POST",
         body: data,
       }),
