@@ -1,4 +1,4 @@
-
+import React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import TransactionData from "../../../data/dummyData/transactionData.json";
@@ -31,33 +31,21 @@ const UserTransactionHistory = () => {
   );
 };
 
-
-// / ✅ Updated RecentTransactionTable and RecentTransactionTableData
-
 export const RecentTransactionTable = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
   const userEmail = userInfo?.user?.email;
-  const navigate = useNavigate();
 
-  const {
-    data: transactions,
-    error,
-    isLoading,
-  } = useFetchAllTransactionsQuery(userEmail, {
+  const { data: transactions, isLoading, error } = useFetchAllTransactionsQuery(userEmail, {
     refetchOnMountOrArgChange: true,
   });
-
-  const [cancelTransaction, { isLoading: isCancelling }] =
-    useCancelTransactionMutation();
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [show, setShow] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
 
-  const fetchedTransactions = transactions?.transactions;
+  const navigate = useNavigate();
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) setCurrentPage(page);
@@ -68,137 +56,202 @@ export const RecentTransactionTable = () => {
     setShow(true);
   };
 
-  const handleClose = () => {
+  const handleCloseModal = () => {
     setShow(false);
     setSelectedTransaction(null);
   };
 
- const handleCancelConfirmed = async () => {
-  if (!selectedTransaction) return;
-  try {
-    await cancelTransaction({
-      transaction_id: selectedTransaction.transaction_id
-    }).unwrap();
-    toast.success("Transaction cancelled successfully");
-    setShowConfirm(false);
-    setShow(false);
-    navigate("/userdashboard/transaction-history/cancelled-transactions");
-  } catch (err) {
-    toast.error(err?.data?.message || "Cancel transaction failed");
-  }
-};
-
-
-  const getSlicedData = () => {
-    if (!fetchedTransactions || fetchedTransactions.length === 0) return [];
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return fetchedTransactions.slice(startIndex, endIndex);
+  // ✅ Navigate to initiate dispute page (pass transaction via state)
+  const handleRaiseDispute = (transaction) => {
+    navigate(`/userdashboard/disputes/initiate-dispute/${transaction.transaction_id}`, {
+      state: { transaction },
+    });
   };
 
-  return (
-    <div className="bg-white rounded-1 p-3" style={{ width: "100%" }}>
-      <div>
-        <div className="d-md-flex justify-content-between align-items-center mb-3">
-          <h3 className="fs-6 m-0 mb-3 mb-md-0">All Transactions</h3>
-        </div>
+  // 🔹 Navigate to resolve conflict page (different flow)
+  const handleResolveConflict = (transaction) => {
+    navigate(`/userdashboard/disputes/resolve-dispute/${transaction.transaction_id}`);
+  };
 
+  const getSlicedData = () => {
+    if (!transactions?.transactions?.length) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return transactions.transactions.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading transactions.</p>;
+
+  return (
+    <div className="bg-white rounded-1 p-3 w-100">
+      {/* Header */}
+      <div className="d-md-flex justify-content-between align-items-center mb-3">
+        <h3 className="fs-6 m-0 mb-3 mb-md-0">All Transactions</h3>
+        <div className="d-flex">
+          <Link to="../initiate-escrow" className="text-decoration-none me-2">
+            <Button className="border-0 my-1 rounded-1 all-btn text-white fs-sm" style={{ backgroundColor: "#006747EB" }}>
+              Create Transaction
+            </Button>
+          </Link>
+          <Link to="../initiate-escrow" className="text-decoration-none">
+            <Button className="border-0 my-1 rounded-1 all-btn text-white fs-sm" style={{ backgroundColor: "#006747EB" }}>
+              Download Transaction Slip
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Transaction Table */}
+      <div className="table-responsive">
         <table className="table fs-sm">
           <thead>
-            <tr className="lightTextColor">
-              <th className="px-0 d-none d-md-table-cell">Product Name</th>
-              <th className="text-center d-none d-md-table-cell">Vendor</th>
-              <th className="text-center d-none d-md-table-cell">Purchase Date</th>
-              <th className="text-center d-none d-md-table-cell">Product Price</th>
-              <th className="text-center d-none d-md-table-cell">Transaction Type</th>
-              <th className="text-center d-none d-md-table-cell">Transaction Status</th>
-              <th className="text-center d-none d-md-table-cell">Actions</th>
+            <tr className="d-md-none lightTextColor">
+              <th>Product Name</th>
+              <th className="text-center">Vendor</th>
+              <th className="text-center">Purchase Date</th>
+              <th className="text-center">Transaction Status</th>
+              <th className="text-center">Action</th>
+            </tr>
+            <tr className="d-none d-md-table-row lightTextColor">
+              <th>Product Name</th>
+              <th className="text-center">Vendor</th>
+              <th className="text-center">Purchase Date</th>
+              <th className="text-center">Product Price</th>
+              <th className="text-center">Transaction Type</th>
+              <th className="text-center">Transaction Status</th>
+              <th className="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
-            {getSlicedData().map((history) => (
-              <RecentTransactionTableData
-                {...history}
-                key={history.id}
-                onViewMore={() => handleShowMore(history)}
-              />
+            {getSlicedData()?.map((history) => (
+              <React.Fragment key={history.id}>
+                {/* Small screen row */}
+                <tr className="d-md-none">
+                  <td>{history.product_name}</td>
+                  <td className="text-center">{history.vendor_name}</td>
+                  <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
+                  <td className="text-center">{history.transaction_status}</td>
+                  <td className="text-center">
+                    {history.transaction_status === "inDispute" ? (
+                      <Button variant="danger" size="sm" onClick={() => handleResolveConflict(history)}>
+                        Resolve Conflict
+                      </Button>
+                    ) : (
+                      <Button variant="primary" size="sm" onClick={() => handleShowMore(history)}>
+                        View Details
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+
+                {/* Desktop row */}
+                <tr className="d-none d-md-table-row">
+                  <td>{history.product_name}</td>
+                  <td className="text-center">{history.vendor_name}</td>
+                  <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
+                  <td className="text-center">
+                    {history.transaction_type === "buy" ? history.transaction_total : history.product_price}
+                  </td>
+                  <td className="text-center">{history.transaction_type}</td>
+                  <td className="text-center">{history.transaction_status}</td>
+                  <td className="text-center">
+                    {history.transaction_status === "inDispute" ? (
+                      <Button variant="outline-danger" size="sm" onClick={() => handleResolveConflict(history)}>
+                        Resolve Conflict
+                      </Button>
+                    ) : (
+                      <Button variant="outline-success" size="sm" onClick={() => handleShowMore(history)}>
+                        View More
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
-
-        <PaginationBar
-          data={fetchedTransactions || []}
-          currentPage={currentPage}
-          handlePageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalPages={totalPages}
-          setTotalPages={setTotalPages}
-        />
       </div>
 
-      {/* Details Modal */}
-      <Modal show={show} onHide={handleClose}>
+      {/* Pagination */}
+      <PaginationBar
+        data={transactions?.transactions || []}
+        currentPage={currentPage}
+        handlePageChange={handlePageChange}
+        itemsPerPage={itemsPerPage}
+        totalPages={totalPages}
+        setTotalPages={setTotalPages}
+      />
+
+      {/* Transaction Details Modal */}
+      <Modal show={show} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Transaction Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedTransaction ? (
-            <div>
-              <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
-              <p><strong>Product Image:</strong><br/>
-                <img src={selectedTransaction.product_image} alt="Product" style={{ width: '100%', maxWidth: '300px' }} />
-              </p>
+            <>
               <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
-              <p><strong>Transaction Total:</strong> ₦{selectedTransaction.transaction_total}</p>
-              <p><strong>Product Quantity:</strong> {selectedTransaction.product_quantity}</p>
-              <p><strong>Transaction ID:</strong> {selectedTransaction.transaction_id}</p>
-              <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
-              <p><strong>Transaction Type:</strong> {selectedTransaction.transaction_type}</p>
-              <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
+              <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
+              {selectedTransaction.product_image && (
+                <p>
+                  <strong>Product Image:</strong><br />
+                  <img src={selectedTransaction.product_image} alt="Product" style={{ maxWidth: "150px" }} />
+                </p>
+              )}
+              <p>
+                <strong>Transaction Total:</strong> ₦
+                {selectedTransaction.transaction_type === "buy"
+                  ? selectedTransaction.transaction_total
+                  : selectedTransaction.product_price}
+              </p>
               <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
+              <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
+              <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
               <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
               <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
-              <p><strong>Vendor Phone Number:</strong> {selectedTransaction.vendor_phone_number}</p>
-              <p><strong>Delivery Address:</strong> {selectedTransaction.delivery_address}</p>
-            </div>
+              <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
+              <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+
+              {selectedTransaction.transaction_status === "processing" && (
+                <div className="mt-3 d-flex gap-2 flex-wrap">
+                  {userEmail === selectedTransaction.buyer_email && (
+                    <Button
+                      variant="outline-danger"
+                      onClick={() => console.log("Cancel transaction", selectedTransaction.transaction_id)}
+                    >
+                      Cancel Transaction
+                    </Button>
+                  )}
+                  {userEmail === selectedTransaction.vendor_email && (
+                    <>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() =>
+                          navigate(
+                            `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`
+                          )
+                        }
+                      >
+                        Confirm Transaction
+                      </Button>
+                      <Button
+                        variant="outline-warning"
+                        onClick={() => handleRaiseDispute(selectedTransaction)}
+                      >
+                        Raise Dispute
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
           ) : (
             <p>No transaction details available.</p>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>Close</Button>
-
-          {/* Cancel Button - Only show if not cancelled */}
-          {selectedTransaction?.transaction_status !== "cancelled" && (
-            <Button
-              variant="danger"
-              onClick={() => setShowConfirm(true)}
-              disabled={isCancelling}
-            >
-              {isCancelling ? "Cancelling..." : "Cancel Transaction"}
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-
-      {/* Confirm Cancel Modal */}
-      <Modal show={showConfirm} onHide={() => setShowConfirm(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Cancellation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to cancel this transaction? This action cannot be undone.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowConfirm(false)}>
-            No
-          </Button>
-          <Button
-            variant="danger"
-            onClick={handleCancelConfirmed}
-            disabled={isCancelling}
-          >
-            {isCancelling ? "Cancelling..." : "Yes, Cancel"}
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>
@@ -206,45 +259,29 @@ export const RecentTransactionTable = () => {
   );
 };
 
-export const RecentTransactionTableData = (props) => {
-  const {
-    product_name,
-    vendor_name,
-    createdAt,
-    product_price,
-    transaction_total,
-    transaction_type,
-    transaction_status,
-    onViewMore,
-  } = props;
 
+
+/* Table Row Component */
+export const RecentTransactionTableData = ({
+  product_name,
+  vendor_name,
+  createdAt,
+  transaction_status,
+  onViewMore,
+}) => {
   return (
     <tr className="border-bottom">
-      <td className="border-0 border-md-bottom d-none d-md-table-cell py-md-3 px-0">
-        {product_name}
-      </td>
-      <td className="d-none d-md-table-cell py-md-3 text-center">
-        {vendor_name}
-      </td>
-      <td className="py-md-3 text-center lightTextColor">
-        {createdAt?.slice(0, 10)}
-      </td>
-      <td className="d-none d-md-table-cell py-md-3 text-center">
-        ₦{transaction_type === "buy" ? transaction_total : product_price}
-      </td>
-      <td className="d-none d-md-table-cell py-md-3 text-center">
-        {transaction_type}
-      </td>
-      <td className="d-none d-md-table-cell py-md-3 text-center">
-        {transaction_status}
-      </td>
-      <td className="d-none d-md-table-cell py-md-3 text-center">
+      <td className="py-md-3">{product_name}</td>
+      <td className="text-center">{vendor_name}</td>
+      <td className="text-center">{createdAt?.slice(0, 10)}</td>
+      <td className="text-center">{transaction_status}</td>
+      <td className="text-center">
         <Button
           variant="outline-primary"
           className="rounded-1 fs-sm"
           onClick={onViewMore}
         >
-          View More
+          View Details
         </Button>
       </td>
     </tr>
