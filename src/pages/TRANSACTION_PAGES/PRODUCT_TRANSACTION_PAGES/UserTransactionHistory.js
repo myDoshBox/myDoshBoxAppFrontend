@@ -35,15 +35,19 @@ export const RecentTransactionTable = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
   const userEmail = userInfo?.user?.email;
 
-  const { data: transactions, isLoading, error } = useFetchAllTransactionsQuery(userEmail, {
-    refetchOnMountOrArgChange: true,
-  });
+  const { data: transactions, isLoading, error, refetch } =
+    useFetchAllTransactionsQuery(userEmail, {
+      refetchOnMountOrArgChange: true,
+    });
+
+  const [cancelTransaction] = useCancelTransactionMutation();
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [show, setShow] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
   const navigate = useNavigate();
 
@@ -61,16 +65,34 @@ export const RecentTransactionTable = () => {
     setSelectedTransaction(null);
   };
 
-  // ✅ Navigate to initiate dispute page (pass transaction via state)
   const handleRaiseDispute = (transaction) => {
     navigate(`/userdashboard/disputes/initiate-dispute/${transaction.transaction_id}`, {
       state: { transaction },
     });
   };
 
-  // 🔹 Navigate to resolve conflict page (different flow)
   const handleResolveConflict = (transaction) => {
     navigate(`/userdashboard/disputes/resolve-dispute/${transaction.transaction_id}`);
+  };
+
+  const handleCancelTransaction = async () => {
+    if (!selectedTransaction) return;
+
+    try {
+      toast.info("Cancelling transaction...", { autoClose: 2000 });
+      await cancelTransaction({
+        transaction_id: selectedTransaction.transaction_id,
+      }).unwrap();
+
+      toast.success("Transaction cancelled successfully!");
+      setConfirmCancel(false);
+      setShow(false);
+
+      refetch(); // refresh list
+      navigate("/userdashboard/transaction-history/cancelled-transactions");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to cancel transaction");
+    }
   };
 
   const getSlicedData = () => {
@@ -89,12 +111,18 @@ export const RecentTransactionTable = () => {
         <h3 className="fs-6 m-0 mb-3 mb-md-0">All Transactions</h3>
         <div className="d-flex">
           <Link to="../initiate-escrow" className="text-decoration-none me-2">
-            <Button className="border-0 my-1 rounded-1 all-btn text-white fs-sm" style={{ backgroundColor: "#006747EB" }}>
+            <Button
+              className="border-0 my-1 rounded-1 all-btn text-white fs-sm"
+              style={{ backgroundColor: "#006747EB" }}
+            >
               Create Transaction
             </Button>
           </Link>
           <Link to="../initiate-escrow" className="text-decoration-none">
-            <Button className="border-0 my-1 rounded-1 all-btn text-white fs-sm" style={{ backgroundColor: "#006747EB" }}>
+            <Button
+              className="border-0 my-1 rounded-1 all-btn text-white fs-sm"
+              style={{ backgroundColor: "#006747EB" }}
+            >
               Download Transaction Slip
             </Button>
           </Link>
@@ -133,11 +161,19 @@ export const RecentTransactionTable = () => {
                   <td className="text-center">{history.transaction_status}</td>
                   <td className="text-center">
                     {history.transaction_status === "inDispute" ? (
-                      <Button variant="danger" size="sm" onClick={() => handleResolveConflict(history)}>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleResolveConflict(history)}
+                      >
                         Resolve Conflict
                       </Button>
                     ) : (
-                      <Button variant="primary" size="sm" onClick={() => handleShowMore(history)}>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleShowMore(history)}
+                      >
                         View Details
                       </Button>
                     )}
@@ -150,17 +186,27 @@ export const RecentTransactionTable = () => {
                   <td className="text-center">{history.vendor_name}</td>
                   <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
                   <td className="text-center">
-                    {history.transaction_type === "buy" ? history.transaction_total : history.product_price}
+                    {history.transaction_type === "buy"
+                      ? history.transaction_total
+                      : history.product_price}
                   </td>
                   <td className="text-center">{history.transaction_type}</td>
                   <td className="text-center">{history.transaction_status}</td>
                   <td className="text-center">
                     {history.transaction_status === "inDispute" ? (
-                      <Button variant="outline-danger" size="sm" onClick={() => handleResolveConflict(history)}>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleResolveConflict(history)}
+                      >
                         Resolve Conflict
                       </Button>
                     ) : (
-                      <Button variant="outline-success" size="sm" onClick={() => handleShowMore(history)}>
+                      <Button
+                        variant="outline-success"
+                        size="sm"
+                        onClick={() => handleShowMore(history)}
+                      >
                         View More
                       </Button>
                     )}
@@ -190,12 +236,22 @@ export const RecentTransactionTable = () => {
         <Modal.Body>
           {selectedTransaction ? (
             <>
-              <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
-              <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
+              <p>
+                <strong>Product Name:</strong> {selectedTransaction.product_name}
+              </p>
+              <p>
+                <strong>Product Description:</strong>{" "}
+                {selectedTransaction.product_description}
+              </p>
               {selectedTransaction.product_image && (
                 <p>
-                  <strong>Product Image:</strong><br />
-                  <img src={selectedTransaction.product_image} alt="Product" style={{ maxWidth: "150px" }} />
+                  <strong>Product Image:</strong>
+                  <br />
+                  <img
+                    src={selectedTransaction.product_image}
+                    alt="Product"
+                    style={{ maxWidth: "150px" }}
+                  />
                 </p>
               )}
               <p>
@@ -204,20 +260,41 @@ export const RecentTransactionTable = () => {
                   ? selectedTransaction.transaction_total
                   : selectedTransaction.product_price}
               </p>
-              <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
-              <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
-              <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
-              <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
-              <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
-              <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
-              <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+              <p>
+                <strong>Purchase Time:</strong>{" "}
+                {selectedTransaction.createdAt?.slice(11, 19)}
+              </p>
+              <p>
+                <strong>Transaction Status:</strong>{" "}
+                {selectedTransaction.transaction_status}
+              </p>
+              <p>
+                <strong>Purchase Date:</strong>{" "}
+                {selectedTransaction.createdAt?.slice(0, 10)}
+              </p>
+              <p>
+                <strong>Vendor Email:</strong>{" "}
+                {selectedTransaction.vendor_email}
+              </p>
+              <p>
+                <strong>Vendor Name:</strong>{" "}
+                {selectedTransaction.vendor_name}
+              </p>
+              <p>
+                <strong>Vendor Tel:</strong>{" "}
+                {selectedTransaction.vendor_phone_number}
+              </p>
+              <p>
+                <strong>Buyer Email:</strong>{" "}
+                {selectedTransaction.buyer_email}
+              </p>
 
               {selectedTransaction.transaction_status === "processing" && (
                 <div className="mt-3 d-flex gap-2 flex-wrap">
                   {userEmail === selectedTransaction.buyer_email && (
                     <Button
                       variant="outline-danger"
-                      onClick={() => console.log("Cancel transaction", selectedTransaction.transaction_id)}
+                      onClick={() => setConfirmCancel(true)}
                     >
                       Cancel Transaction
                     </Button>
@@ -255,10 +332,27 @@ export const RecentTransactionTable = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Confirm Cancel Modal */}
+      <Modal show={confirmCancel} onHide={() => setConfirmCancel(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Cancel Transaction</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to cancel this transaction?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setConfirmCancel(false)}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleCancelTransaction}>
+            Yes, Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
-
 
 
 /* Table Row Component */
