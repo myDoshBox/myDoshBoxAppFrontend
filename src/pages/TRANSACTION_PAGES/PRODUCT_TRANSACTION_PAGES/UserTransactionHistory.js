@@ -318,15 +318,17 @@ export const RecentTransactionTable = () => {
                   {userEmail === selectedTransaction.vendor_email && (
                     <>
                       <Button
-                        variant="outline-primary"
-                        onClick={() =>
-                          navigate(
-                            `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`
-                          )
-                        }
-                      >
-                        Confirm Transaction
-                      </Button>
+                          variant="outline-primary"
+                          onClick={() =>
+                            navigate(
+                              `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`,
+                              { state: { transaction: selectedTransaction } } // ✅ pass full transaction
+                            )
+                          }
+                        >
+                          Confirm Transaction
+                        </Button>
+
                       <Button
                         variant="outline-warning"
                         onClick={() => handleRaiseDispute(selectedTransaction)}
