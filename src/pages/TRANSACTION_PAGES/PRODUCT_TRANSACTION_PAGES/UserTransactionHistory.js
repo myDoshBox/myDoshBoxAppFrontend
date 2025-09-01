@@ -71,9 +71,13 @@ export const RecentTransactionTable = () => {
     });
   };
 
-  const handleResolveConflict = (transaction) => {
-    navigate(`/userdashboard/disputes/resolve-dispute/${transaction.transaction_id}`);
-  };
+ const handleResolveConflict = (transaction) => {
+  navigate(
+    `/userdashboard/disputes/resolve-dispute/${transaction.transaction_id}`,
+    { state: { transaction } } // ✅ pass transaction
+  );
+};
+
 
   const handleCancelTransaction = async () => {
     if (!selectedTransaction) return;
