@@ -55,8 +55,8 @@ export const escrowProductsAPISlice = createApi({
 
        cancelTransaction: builder.mutation({
         query: (transaction_id) => ({
-          url: `/cancel-transaction/${transaction_id}`,
-          method: "POST",
+          url: `cancel-transaction/${transaction_id}`,
+          method: "PUT",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
