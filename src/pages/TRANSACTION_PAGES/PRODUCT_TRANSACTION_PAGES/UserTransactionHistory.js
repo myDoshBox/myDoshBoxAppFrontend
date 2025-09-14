@@ -75,25 +75,25 @@ export const RecentTransactionTable = () => {
     navigate(`/userdashboard/disputes/resolve-dispute/${transaction?.transaction_id}`);
   };
 
-  const handleCancelTransaction = async () => {
-    if (!selectedTransaction) return;
+ const handleCancelTransaction = async () => {
+  if (!selectedTransaction) return;
 
-    try {
-      toast.info("Cancelling transaction...", { autoClose: 2000 });
-      await cancelTransaction({
-        transaction_id: selectedTransaction?.transaction_id,
-      }).unwrap();
+  try {
+    toast.info("Cancelling transaction...", { autoClose: 2000 });
+    
+    // FIX: Pass only the transaction_id string, not an object
+    await cancelTransaction(selectedTransaction.transaction_id).unwrap();
 
-      toast.success("Transaction cancelled successfully!");
-      setConfirmCancel(false);
-      setShow(false);
+    toast.success("Transaction cancelled successfully!");
+    setConfirmCancel(false);
+    setShow(false);
 
-      refetch(); // refresh list
-      navigate("/userdashboard/transaction-history/cancelled-transactions");
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to cancel transaction");
-    }
-  };
+    refetch(); // refresh list
+    navigate("/userdashboard/transaction-history/cancelled-transactions");
+  } catch (err) {
+    toast.error(err?.data?.message || "Failed to cancel transaction");
+  }
+};
 
   const getSlicedData = () => {
     if (!transactions?.transactions?.length) return [];

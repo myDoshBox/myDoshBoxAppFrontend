@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "https://mydoshbox-be.vercel.app/disputes/",
+  // baseUrl: "https://mydoshbox-be.onrender.com/disputes/",
   // baseUrl: "http://localhost:54020/transactions/",
   // baseUrl: "http://localhost:9000/disputes/",
 });
