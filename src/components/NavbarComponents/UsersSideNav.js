@@ -732,7 +732,7 @@ const DesktopScreen = () => {
                   >
                      <FiArrowRightCircle /> <span>Initiate Dispute</span>
                   </NavLink>
-                </li> */}
+                </li> 
                 {/* <li className="mb-2">
                   <NavLink
                     to="disputes-in-progress"
