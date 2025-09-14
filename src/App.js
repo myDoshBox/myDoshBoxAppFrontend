@@ -25,7 +25,7 @@ import UserSettingsPage, {
   UpdateBankDetailsPage,
   UpdateProfilePage,
 } from "./pages/DASHBOARDS/USER_DASHBOARD/UserSettingsPage";
-import UserTransactionHistory from "./pages/DASHBOARDS/USER_DASHBOARD/UserTransactionHistory";
+import UserTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserTransactionHistory";
 import NeutralsSideNav from "./components/NavbarComponents/NeutralsSideNav";
 // import AdminSideNav from "./components/NavbarComponents/AdminSideNav";
 import CustomerCareSideNav from "./components/NavbarComponents/CustomerCareSideNav";
@@ -44,10 +44,8 @@ import SignUpPage from "./pages/AUTHENTICATION_PAGES/SignUp";
 import VerifyEmailForm from "./pages/AUTHENTICATION_PAGES/VerifyEmailForm";
 import EmailVerificationMsg from "./pages/AUTHENTICATION_PAGES/EmailVerificationMsg";
 import ResetPassword from "./pages/AUTHENTICATION_PAGES/resetPassword";
-import InitiateEscrow from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/InitiateProductEscrowForm";
-import TransactionSummaryPage from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ProductTransactionSummaryPage";
 import EscrowAgreement from "./pages/TRANSACTION_PAGES/EscrowAgreement";
-import InitiateDisputesForm from "./pages/DISPUTE_PAGES/InitiateDisputesForm";
+import InitiateDisputesForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/InitiateProductDisputesForm";
 import { GeneratedTicket } from "./pages/DISPUTE_PAGES/GeneratedTicket";
 
 // Customer Care Pages
@@ -61,29 +59,28 @@ import AdminAnalytics from "./pages/DASHBOARDS/ADMIN_DASHBOARD/AdminAnalytics";
 import AdminDashboard from "./pages/DASHBOARDS/ADMIN_DASHBOARD/AdminDashboard";
 import AdminSideNav from "./components/NavbarComponents/AdminSideNav";
 import UserProfile from "./pages/DASHBOARDS/USER_DASHBOARD/UserProfile";
-import { RecentDispute } from "./components/CardComponents/TransactionDetails";
-// import { ToastContainer } from "react-bootstrap";
-// react_toastify starts
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyEmail from "./pages/AUTHENTICATION_PAGES/EmailVerification";
 // react_toastify ends
 import PrivateRoute from "./components/PrivateRoute";
-import ShippingDetails from "./pages/TRANSACTION_PAGES/unused_pages/ConfirmEscrowProductDetails";
 import InitiateProductEscrowForm from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/InitiateProductEscrowForm";
 import ProductTransactionSummaryPage from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ProductTransactionSummaryPage";
 import ConfirmEscrowProductDetails from "./pages/TRANSACTION_PAGES/unused_pages/ConfirmEscrowProductDetails";
 import SellerProductTransactionSummary from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SellerProductTransactionSummary";
 import ShippingDetailsForm from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsForm";
 import ShippingDetailsSummary from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsSummary";
-import SellerShippingHistory from "./pages/DASHBOARDS/USER_DASHBOARD/SellerShippingHistory";
-import UserSettledTransaction from "./pages/DASHBOARDS/USER_DASHBOARD/UserSettledTransactions";
-import UserSettledTransactions from "./pages/DASHBOARDS/USER_DASHBOARD/UserSettledTransactions";
-import UserTransactionsInProgress from "./pages/DASHBOARDS/USER_DASHBOARD/UserTransactionsInProgress";
+import UserSettledTransactions from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserSettledTransactions";
 import SellerConfirmationEscrowAgreement from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SellerConfirmationEscrowAgreement";
 import ShippingDetailsHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsHistory";
 import SettledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SettledTransactionHistory";
 import TransactionInProgressHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/TransactionInProgressHistory";
+import ProductsDisputeHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ProductsDisputeHistory";
+import DisputesInProgressHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/DisputesInProgressHistory";
+import ResolvedDisputesHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ResolvedDisputesHistory";
+import BuyerResolveTransactionDisputeForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/BuyerResolveTransactionDisputeForm";
+import InitiateProductDisputesForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/InitiateProductDisputesForm";
+import CancelledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/CancelledTransactionHistory";
 
 function App() {
   return (
@@ -106,14 +103,19 @@ function App() {
               path="transaction-history"
               element={<UserTransactionHistory />}
             />
-            <Route
-              path="transaction-history/transactions-in-progress"
-              element={<UserTransactionsInProgress />}
-            />
+
             <Route
               path="transaction-history/settled-transactions"
               element={<UserSettledTransactions />}
             />
+            <Route
+              path="transaction-history/cancelled-transactions"
+              element={<CancelledTransactionHistory />}
+            />
+            {/* <Route
+              path="transaction-history/cancelled-transactions"
+              element={<CancelledTransactionHistory />}
+            /> */}
             <Route
               path="transaction-history/confirm-escrow-product-transaction/:transaction_id"
               element={<SellerProductTransactionSummary />}
@@ -154,12 +156,24 @@ function App() {
               />
             </Route> */}
 
+            <Route path="disputes" element={<ProductsDisputeHistory />} />
             <Route
-              path="transaction-history/confirm-escrow-product-transaction/shipping-history/:transaction_id/initiate-dispute"
-              element={<InitiateDisputesForm />}
+              path="disputes/completed-disputes"
+              element={<ResolvedDisputesHistory />}
+            />
+            <Route
+              path="disputes/disputes-in-progress"
+              element={<DisputesInProgressHistory />}
+            />
+            <Route
+              path="disputes/initiate-dispute/:transaction_id"
+              element={<InitiateProductDisputesForm />}
+            />
+            <Route
+              path="disputes/resolve-dispute/:transaction_id"
+              element={<BuyerResolveTransactionDisputeForm />}
             />
 
-            <Route path="dispute" element={<UserDisputeHistory />} />
             <Route path="notification" element={<NotifictionPage />} />
             <Route path="updateprofile" element={<UpdateProfilePage />} />
             <Route path="updatebank" element={<UpdateBankDetailsPage />} />

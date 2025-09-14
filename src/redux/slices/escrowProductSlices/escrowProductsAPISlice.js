@@ -6,7 +6,6 @@ const baseQuery = fetchBaseQuery({
   baseUrl: "https://mydoshbox-be.vercel.app/transactions/",
   // baseUrl: "http://localhost:9000/transactions/",
  
-
 });
 
 export const escrowProductsAPISlice = createApi({
@@ -53,6 +52,25 @@ export const escrowProductsAPISlice = createApi({
         body: data,
       }),
     }),
+
+       cancelTransaction: builder.mutation({
+        query: (transaction_id) => ({
+          url: `cancel-transaction/${transaction_id}`,
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }),
+      }),
+
+
+
+
+
+
+
+
+
 
     // sellerConfirmEscrowProduct: builder.mutation({
     //   // query: ({ token }) => ({
@@ -101,4 +119,5 @@ export const {
   // useSellerConfirmEscrowProductMutation,
   useSellerFillOutShippingDetailsMutation,
   useFetchAllShippingDetailsQuery,
+  useCancelTransactionMutation,
 } = escrowProductsAPISlice;

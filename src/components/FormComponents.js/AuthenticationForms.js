@@ -11,6 +11,7 @@ import OAuth from "../GoogleAuth/OAuth";
 import OAuthRedirect from "../GoogleAuth/OAuthRedirect";
 import OAuthLogin from "../GoogleAuth/OAuthLogin";
 import Loader from "../Loader";
+import { Button } from "react-bootstrap";
 
 // Sign Up For Individual
 export const SignUpIndividual = () => {
@@ -137,7 +138,7 @@ export const SignUpIndividual = () => {
 
   return (
     <>
-      <form className="container form">
+      <form className="w-100" style={{ maxWidth: "600px" }}>
         <div className="form-outline mb-2">
           <input
             type="email"
@@ -215,7 +216,7 @@ export const SignUpIndividual = () => {
             {errors.confirmPassword}
           </div>
         )}
-        <div className="form-check my-1">
+        <div className="form-check mt-2">
           <input
             className="form-check-input"
             type="checkbox"
@@ -225,7 +226,7 @@ export const SignUpIndividual = () => {
             onChange={handleChange}
             checked={person.checked}
           />
-          <label className="text-secondary fw-bold" htmlFor="checked">
+          <label className="text-secondary" htmlFor="checked">
             By ticking this box you are indicating you have read and accept our
             terms and privacy policy.
           </label>
@@ -235,16 +236,24 @@ export const SignUpIndividual = () => {
             {errors.checked}
           </div>
         )}
-        <div className="d-flex flex-column mt-4">
-          <div className="mx-auto mb-2">
-            <button
-              className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
-              style={{ width: "210px" }}
+        <div className="">
+          <div className=" mb-2">
+            {/* <button
+              className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white w-100 w-sm-75 w-md-50 w-lg-50 mx-auto"
+              // style={{ width: "300%" }}
               type="submit"
               onClick={handleSubmit}
             >
               Sign Up
-            </button>
+            </button> */}
+            <Button
+              type="submit"
+              className="all-btn border-0 mt-3 GeneralBtnStyle1 text-white w-100 w-sm-75 w-md-50 w-lg-50 mx-auto"
+              type="submit"
+              onClick={handleSubmit}
+            >
+              Sign Up
+            </Button>
           </div>
         </div>
 

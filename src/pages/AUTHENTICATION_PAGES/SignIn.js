@@ -152,7 +152,11 @@ export const SignInForm = () => {
               Remember me
             </label>
           </div>
-          <Link to="../VerifyEmailForm" className="text-success fw-semibold">
+          {/* Correct Route */}
+          {/* <Link to="../VerifyEmailForm" className="text-success fw-semibold">
+            Forgot Password?
+          </Link> */}
+          <Link to="#" className="text-success fw-semibold">
             Forgot Password?
           </Link>
         </div>
@@ -162,7 +166,7 @@ export const SignInForm = () => {
         </div>
 
         <p className="text-center">
-          Don't have an account?{" "}
+          Don't have an account?
           <Link to="../signup" className="text-success fw-semibold">
             Sign Up
           </Link>
