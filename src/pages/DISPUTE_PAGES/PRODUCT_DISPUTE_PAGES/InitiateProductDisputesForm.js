@@ -1,8 +1,17 @@
-import { useState } from "react";
-import { UserDashboardNavbar } from "../../components/NavbarComponents/TopNavbars";
-import { Link } from "react-router-dom";
+// start here
 
-const InitiateDisputesForm = () => {
+import { useState, useEffect } from "react";
+import { Button, Form, Modal } from "react-bootstrap";
+import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+// import { setShippingInfo } from "../../../redux/slices/escrowProductSlices/escrowProductContentSlice";
+import { setShippingInfo } from "../../../redux/slices/escrowProductSlices/escrowProductContentSlice";
+import { useAppContext } from "../../../context/appContext";
+import { toast } from "react-toastify";
+import { useInitiateDisputeMutation } from "../../../redux/slices/disputeSlices/disputeAPISlice";
+
+const InitiateProductDisputesForm = () => {
   return (
     <>
       <div className="contestPage">
@@ -12,7 +21,7 @@ const InitiateDisputesForm = () => {
           <div className="col-lg-9 col-sm-12">
             <UserDashboardNavbar />
             <div className="mt-5">
-              <ComplaintForm />
+              <InitiateDisputesFormLogic />
             </div>
           </div>
         </div>
@@ -21,182 +30,157 @@ const InitiateDisputesForm = () => {
   );
 };
 
-const ComplaintForm = () => {
-  const initialValues = {
-    phoneNumber: "",
-    transactionId: "",
-    complaintType: "",
-    file: "",
-    provideDetails: "",
-  };
+const InitiateDisputesFormLogic = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const transaction = location.state?.transaction;
 
-  const [dispute, setDispute] = useState(initialValues);
-  const [disputeDetails, setDisputeDetails] = useState([]);
+  const [formData, setFormData] = useState({
+    reason_for_dispute: "",
+    dispute_description: "",
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const [initiateDispute] = useInitiateDisputeMutation();
 
   const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setDispute({ ...dispute, [name]: value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  const handleSubmit = (e) => {
+
+  const handleProceed = (e) => {
     e.preventDefault();
-    if (
-      dispute.phoneNumber &&
-      dispute.transactionId &&
-      dispute.complaintType &&
-      dispute.file &&
-      dispute.provideDetails
-    ) {
-      setDisputeDetails([...disputeDetails, dispute]);
-      setDispute(initialValues);
+    setShowModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    const payload = {
+      transaction_id: transaction.transaction_id,
+      product_name: transaction.product_name,
+      product_image: transaction.product_image,
+      reason_for_dispute: formData.reason_for_dispute,
+      dispute_description: formData.dispute_description,
+      buyer_email: transaction.buyer_email,
+      vendor_name: transaction.vendor_name,
+      vendor_email: transaction.vendor_email,
+      vendor_phone_number: transaction.vendor_phone_number,
+      user_email: transaction.buyer_email,
+      dispute_raised_by: transaction.buyer_email,
+    };
+
+    try {
+      await initiateDispute(payload).unwrap();
+      toast.success("Dispute submitted successfully!");
+      setShowModal(false);
+      navigate("/userdashboard/disputes", { replace: true });
+    } catch (error) {
+      console.error(error);
+      toast.error("Error submitting dispute. Please try again.");
     }
   };
 
+  if (!transaction) {
+    return (
+      <div className="container text-center mt-5">
+        <h4>No transaction selected for dispute.</h4>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className="mx-auto">
-        <div className="text-center">
-          <h5 className="fw-bold">COMPLAINT FORM</h5>
+    <div className="container mt-4 mb-5">
+      <h3 className="mb-4">Raise a Dispute</h3>
+      <form onSubmit={handleProceed}>
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Transaction ID</label>
+          <input
+            type="text"
+            className="form-control"
+            value={transaction.transaction_id}
+            readOnly
+          />
         </div>
 
-        {/* Form Section Starts */}
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Product Name</label>
+          <input
+            type="text"
+            className="form-control"
+            value={transaction.product_name}
+            readOnly
+          />
+        </div>
 
-        <form className="form mt-5" onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <input
-              value={dispute.phoneNumber}
-              onChange={handleChange}
-              placeholder="Phone Number"
-              type="tel"
-              className="form-control"
-              id="phoneNumber"
-              name="phoneNumber"
-            />
-
-            <span
-              id="nameHelp"
-              className="form-text text-danger fst-italic fw-lighter"
-            >
-              *This field is required
-            </span>
-          </div>
-          <div className="mb-4">
-            <input
-              value={dispute.transactionId}
-              onChange={handleChange}
-              placeholder="Transaction ID"
-              type="text"
-              className="form-control"
-              id="transactionId"
-              name="transactionId"
-            />
-
-            <span
-              id="nameHelp"
-              className="form-text text-danger fst-italic fw-lighter"
-            >
-              *This field is required
-            </span>
-          </div>
-
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Product Image</label>
           <div>
-            <select
-              value={dispute.complaintType}
-              onChange={handleChange}
-              className="form-select mb-4"
-              aria-label="Default select example"
-              id="complaintType"
-              name="complaintType"
-            >
-              <option selected>Failed Transactions</option>
-              <option value="1">Wrong Items</option>
-              <option value="2">Incomplete Items</option>
-              <option value="3">Incomplete Payment</option>
-              <option value="4">Other</option>
-            </select>
-
-            <span
-              id="nameHelp"
-              className="form-text text-danger fst-italic fw-lighter"
-            >
-              *This field is required
-            </span>
-          </div>
-
-          <div className="input-group mb-3">
-            <input
-              value={dispute.file}
-              onChange={handleChange}
-              type="file"
-              className="form-control"
-              id="file"
-              name="file"
-              placeholder="Attach Image(s)"
+            <img
+              src={transaction.product_image}
+              alt="Product"
+              className="img-fluid rounded"
+              style={{ maxHeight: "200px" }}
             />
           </div>
+        </div>
 
-          <div className="mb-3 mt-4">
-            <textarea
-              value={dispute.provideDetails}
-              onChange={handleChange}
-              placeholder="Reasons for contesting this complaint"
-              className="form-control "
-              id="provideDetails"
-              name="provideDetails"
-              rows="3"
-            ></textarea>
-          </div>
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Reason for Dispute</label>
+          <textarea
+            className="form-control"
+            name="reason_for_dispute"
+            rows="2"
+            placeholder="Enter the main reason for this dispute"
+            value={formData.reason_for_dispute}
+            onChange={handleChange}
+            required
+          ></textarea>
+        </div>
 
-          <div className="d-grid gap-2 w-25 mx-auto mt-4">
-            <Link to={"../ticket"}>
-              <button className="btn btn-success w-100" type="submit">
-                Submit
-              </button>
-            </Link>
-          </div>
-        </form>
-      </div>
-    </>
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Dispute Description</label>
+          <textarea
+            className="form-control"
+            name="dispute_description"
+            rows="4"
+            placeholder="Provide more details about the dispute"
+            value={formData.dispute_description}
+            onChange={handleChange}
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" className="btn btn-success mt-3 w-100">
+          Proceed
+        </button>
+      </form>
+
+      {/* Summary Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Dispute Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p><strong>Transaction ID:</strong> {transaction.transaction_id}</p>
+          <p><strong>Product Name:</strong> {transaction.product_name}</p>
+          <p><strong>Reason:</strong> {formData.reason_for_dispute}</p>
+          <p><strong>Description:</strong> {formData.dispute_description}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleConfirmSubmit}>
+            Submit Dispute
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 };
 
-export default InitiateDisputesForm;
+export default InitiateProductDisputesForm;
 
-// start here
-
-// import { useState, useEffect } from "react";
-// import { Button, Form } from "react-bootstrap";
-// import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-// import { Link, useNavigate } from "react-router-dom";
-// import { CancelButton } from "../../../components/ButtonsComponent/OtherButtons";
-// import { ProceedButton } from "../../../components/ButtonsComponent/TransactionButtons";
-
-// import { useDispatch, useSelector } from "react-redux";
-// // import { setEscrowProduct } from "../../../redux/slices/escrowProductSlices/escrowProductContentSlice";
-// import { setShippingInfo } from "../../../redux/slices/escrowProductSlices/escrowProductContentSlice";
-// import { useAppContext } from "../../../context/appContext";
-// import { toast } from "react-toastify";
-
-// const ShippingDetailsForm = () => {
-//   return (
-//     <>
-//       <div className="contestPage">
-//         <div className="row">
-//           <div className="col-lg-3 col-sm-12"></div>
-
-//           <div className="col-lg-9 col-sm-12">
-//             <UserDashboardNavbar />
-//             <div className="mt-5">
-//               <ShippingDetailsFormLogic />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// const ShippingDetailsFormLogic = () => {
+// const InitiateDisputesFormLogic = () => {
 //   // const { userInfo } = useSelector((state) => state.usersauth);
 //   const loggedInUser = localStorage.getItem("userInfo");
 
@@ -325,10 +309,13 @@ export default InitiateDisputesForm;
 
 //   return (
 //     <div className="px-lg-5">
+      
 //       <Form
+        
 //         onSubmit={handleSubmit}
 //         className="w-100 mt-5 shadow InitiateEscrow p-3 p-lg-5 rounded"
 //       >
+//         <h3>Initiate Disputes Form</h3>
 //         <Form.Group className="mb-3">
 //           <Form.Label className="m-0">Transaction ID</Form.Label>
 //           <Form.Control
@@ -529,4 +516,4 @@ export default InitiateDisputesForm;
 //   );
 // };
 
-// export default ShippingDetailsForm;
+// export default InitiateProductDisputesForm;

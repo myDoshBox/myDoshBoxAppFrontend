@@ -622,6 +622,21 @@ const DesktopScreen = () => {
                 </li>
                 <li className="mb-2">
                   <NavLink
+                    to="transaction-history/cancelled-transactions"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Cancelled Transactions"
+                  >
+                    <SettledTransactionIcon className="me-2" />
+                    <span>Cancelled</span>
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
                     to="transaction-history/confirm-escrow-product-transaction/shipping-history"
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
@@ -666,12 +681,48 @@ const DesktopScreen = () => {
                     to="disputes"
                     end
                     className={({ isActive }) =>
-                      `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
+                      `d-flex align-items-center p-2 rounded ${
+                        isActive ? activeClassName : baseClassName
+                      }`
                     }
+                    aria-label="Disputes"
                   >
-                    <FiAlertCircle /> <span>All Disputes</span>
+                    <DisputeIcon className="me-2" />
+                    <span>All Disputes</span>
                   </NavLink>
                 </li>
+
+                <li className="mb-3 SideNavItem">
+                  <NavLink
+                    to="disputes-in-progress"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                  >
+                    <DisputeIcon className="me-2" />
+                    <span>Disputes In Progress</span>
+                  </NavLink>
+                </li>
+
+                <li className="mb-3 SideNavItem">
+                  <NavLink
+                    to="completed-disputes"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Disputes"
+                  >
+                    <DisputeIcon className="me-2" />
+                    <span>Resolved Disputes</span>
+                  </NavLink>
+                </li>
+
                 <li className="mb-2">
                   <NavLink
                      to="disputes/:transaction_id/initiate-dispute"
@@ -681,8 +732,8 @@ const DesktopScreen = () => {
                   >
                      <FiArrowRightCircle /> <span>Initiate Dispute</span>
                   </NavLink>
-                </li>
-                <li className="mb-2">
+                </li> */}
+                {/* <li className="mb-2">
                   <NavLink
                     to="disputes-in-progress"
                     className={({ isActive }) =>
@@ -691,8 +742,8 @@ const DesktopScreen = () => {
                   >
                     <FiClock /> <span>In Progress</span>
                   </NavLink>
-                </li>
-                <li className="mb-2">
+                </li> */}
+                {/* <li className="mb-2">
                   <NavLink
                     to="completed-disputes"
                     className={({ isActive }) =>
@@ -702,6 +753,21 @@ const DesktopScreen = () => {
                     <FiCheckCircle /> <span>Resolved Disputes</span>
                   </NavLink>
                 </li>
+                {/* <li className="mb-2">
+                  <NavLink
+                    to="transaction-history/confirm-escrow-product-transaction/shipping-history"
+                    end
+                    className={({ isActive }) =>
+                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
+                        isActive ? activeClassName : baseClassName
+                      }`
+                    }
+                    aria-label="Shipping Details"
+                  >
+                    <ShippingDetailsTransactionIcon className="me-2" />
+                    <span>All Disputes</span>
+                  </NavLink>
+                </li> */}
               </ul>
             </Collapse>
           </li>
