@@ -78,6 +78,7 @@ import TransactionInProgressHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRAN
 import ProductsDisputeHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ProductsDisputeHistory";
 import DisputesInProgressHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/DisputesInProgressHistory";
 import ResolvedDisputesHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ResolvedDisputesHistory";
+import BuyerResolveTransactionDisputeForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/BuyerResolveTransactionDisputeForm";
 import InitiateProductDisputesForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/InitiateProductDisputesForm";
 import CancelledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/CancelledTransactionHistory";
 
@@ -167,6 +168,10 @@ function App() {
             <Route
               path="disputes/initiate-dispute/:transaction_id"
               element={<InitiateProductDisputesForm />}
+            />
+            <Route
+              path="disputes/resolve-dispute/:transaction_id"
+              element={<BuyerResolveTransactionDisputeForm />}
             />
 
             <Route path="notification" element={<NotifictionPage />} />

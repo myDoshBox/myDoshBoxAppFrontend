@@ -1,17 +1,18 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo  } from "react";
 import { toast } from "react-toastify";
 import TransactionData from "../../../data/dummyData/transactionData.json";
 import { PaginationBar } from "../../../components/PaginationComponent";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Accordion } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import buyerImage from "../../../images/transact_person.png";
 import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
 import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useCancelTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
+import {  useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
 import { useSelector } from "react-redux";
 
 const UserTransactionHistory = () => {
@@ -50,6 +51,25 @@ export const RecentTransactionTable = () => {
   const [confirmCancel, setConfirmCancel] = useState(false);
 
   const navigate = useNavigate();
+
+ // Fetch dispute details when selectedTransaction is in dispute
+const { 
+  data: allDisputes, 
+  isLoading: disputeLoading, 
+  error: disputeError 
+} = useFetchDisputeDetailsQuery(userEmail, {
+  skip: !userEmail,
+});
+
+// ✅ ADD THIS: Find the dispute that belongs to the selected transaction
+const currentDispute = allDisputes?.fetchDisputeDetails?.find(
+  (d) => d.transaction_id === selectedTransaction?.transaction_id
+);
+
+// 🔍 DEBUG: Add this temporarily to see what's happening
+console.log('selectedTransaction:', selectedTransaction);
+console.log('allDisputes:', allDisputes);
+console.log('currentDispute:', currentDispute);
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) setCurrentPage(page);
@@ -160,23 +180,17 @@ export const RecentTransactionTable = () => {
                   <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
                   <td className="text-center">{history.transaction_status}</td>
                   <td className="text-center">
-                    {history.transaction_status === "inDispute" ? (
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleResolveConflict(history)}
-                      >
-                        Resolve Conflict
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handleShowMore(history)}
-                      >
-                        View Details
-                      </Button>
-                    )}
+                    <Button
+                      variant={
+                        history.transaction_status === "inDispute" ? "danger" : "primary"
+                      }
+                      size="sm"
+                      onClick={() => handleShowMore(history)}
+                    >
+                      {history.transaction_status === "inDispute"
+                        ? "View More"
+                        : "View Details"}
+                    </Button>
                   </td>
                 </tr>
 
@@ -193,23 +207,17 @@ export const RecentTransactionTable = () => {
                   <td className="text-center">{history.transaction_type}</td>
                   <td className="text-center">{history.transaction_status}</td>
                   <td className="text-center">
-                    {history.transaction_status === "inDispute" ? (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleResolveConflict(history)}
-                      >
-                        Resolve Conflict
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline-success"
-                        size="sm"
-                        onClick={() => handleShowMore(history)}
-                      >
-                        View More
-                      </Button>
-                    )}
+                    <Button
+                      variant={
+                        history.transaction_status === "inDispute"
+                          ? "outline-danger"
+                          : "outline-success"
+                      }
+                      size="sm"
+                      onClick={() => handleShowMore(history)}
+                    >
+                      View More
+                    </Button>
                   </td>
                 </tr>
               </React.Fragment>
@@ -231,66 +239,105 @@ export const RecentTransactionTable = () => {
       {/* Transaction Details Modal */}
       <Modal show={show} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Transaction Details</Modal.Title>
+          <Modal.Title>
+            {selectedTransaction?.transaction_status === "inDispute"
+              ? "Transaction & Dispute Details"
+              : "Transaction Details"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedTransaction ? (
             <>
-              <p>
-                <strong>Product Name:</strong> {selectedTransaction.product_name}
-              </p>
-              <p>
-                <strong>Product Description:</strong>{" "}
-                {selectedTransaction.product_description}
-              </p>
-              {selectedTransaction.product_image && (
-                <p>
-                  <strong>Product Image:</strong>
-                  <br />
-                  <img
-                    src={selectedTransaction.product_image}
-                    alt="Product"
-                    style={{ maxWidth: "150px" }}
-                  />
-                </p>
-              )}
-              <p>
-                <strong>Transaction Total:</strong> ₦
-                {selectedTransaction.transaction_type === "buy"
-                  ? selectedTransaction.transaction_total
-                  : selectedTransaction.product_price}
-              </p>
-              <p>
-                <strong>Purchase Time:</strong>{" "}
-                {selectedTransaction.createdAt?.slice(11, 19)}
-              </p>
-              <p>
-                <strong>Transaction Status:</strong>{" "}
-                {selectedTransaction.transaction_status}
-              </p>
-              <p>
-                <strong>Purchase Date:</strong>{" "}
-                {selectedTransaction.createdAt?.slice(0, 10)}
-              </p>
-              <p>
-                <strong>Vendor Email:</strong>{" "}
-                {selectedTransaction.vendor_email}
-              </p>
-              <p>
-                <strong>Vendor Name:</strong>{" "}
-                {selectedTransaction.vendor_name}
-              </p>
-              <p>
-                <strong>Vendor Tel:</strong>{" "}
-                {selectedTransaction.vendor_phone_number}
-              </p>
-              <p>
-                <strong>Buyer Email:</strong>{" "}
-                {selectedTransaction.buyer_email}
-              </p>
+              {/* ---- If inDispute: show toggles ---- */}
+              {/* ✅ Get current dispute for this transaction */}
+              {selectedTransaction.transaction_status === "inDispute" ? (
+                <Accordion defaultActiveKey="0">
+                  {/* Transaction Details */}
+                  <Accordion.Item eventKey="0">
+                    <Accordion.Header>Transaction Details</Accordion.Header>
+                    <Accordion.Body>
+                      <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
+                      <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
+                      {selectedTransaction.product_image && (
+                        <p>
+                          <strong>Product Image:</strong><br />
+                          <img
+                            src={selectedTransaction.product_image}
+                            alt="Product"
+                            style={{ maxWidth: "150px" }}
+                          />
+                        </p>
+                      )}
+                      <p><strong>Transaction Total:</strong> ₦
+                        {selectedTransaction.transaction_type === "buy"
+                          ? selectedTransaction.transaction_total
+                          : selectedTransaction.product_price}
+                      </p>
+                      <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
+                      <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
+                      <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
+                      <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
+                      <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
+                      <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
+                      <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+                    </Accordion.Body>
+                  </Accordion.Item>
 
+                  {/* Dispute Details */}
+                  <Accordion.Item eventKey="1">
+                    <Accordion.Header>Dispute Details</Accordion.Header>
+                      <Accordion.Body>
+                      {disputeLoading ? (
+                        <p>Loading dispute details...</p>
+                      ) : disputeError ? (
+                        <p style={{ color: "red" }}>
+                          Error loading disputes: {disputeError?.data?.message || disputeError?.message}
+                        </p>
+                      ) : currentDispute ? (
+                        <>
+                          <p><strong>Reason for Dispute:</strong> {currentDispute.reason_for_dispute || "N/A"}</p>
+                          <p><strong>Dispute Description:</strong> {currentDispute.dispute_description || "N/A"}</p>
+                        </>
+                      ) : (
+                        <p>No dispute details available for this transaction.</p>
+                      )}
+                    </Accordion.Body>
+                  </Accordion.Item>
+                </Accordion>
+              ) : (
+                <>
+                  {/* ---- Normal Transaction Details ---- */}
+                  <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
+                  <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
+                  {selectedTransaction.product_image && (
+                    <p>
+                      <strong>Product Image:</strong><br />
+                      <img
+                        src={selectedTransaction.product_image}
+                        alt="Product"
+                        style={{ maxWidth: "150px" }}
+                      />
+                    </p>
+                  )}
+                  <p><strong>Transaction Total:</strong> ₦
+                    {selectedTransaction.transaction_type === "buy"
+                      ? selectedTransaction.transaction_total
+                      : selectedTransaction.product_price}
+                  </p>
+                  <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
+                  <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
+                  <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
+                  <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
+                  <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
+                  <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
+                  <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+                </>
+              )}
+
+              {/* ---- Action Buttons ---- */}
               {selectedTransaction.transaction_status === "processing" && (
                 <div className="mt-3 d-flex gap-2 flex-wrap">
+                  {/* Buyer Actions */}
                   {userEmail === selectedTransaction.buyer_email && (
                     <Button
                       variant="outline-danger"
@@ -299,18 +346,22 @@ export const RecentTransactionTable = () => {
                       Cancel Transaction
                     </Button>
                   )}
+
+                  {/* Seller Actions */}
                   {userEmail === selectedTransaction.vendor_email && (
                     <>
                       <Button
-                        variant="outline-primary"
-                        onClick={() =>
-                          navigate(
-                            `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`
-                          )
-                        }
-                      >
-                        Confirm Transaction
-                      </Button>
+                          variant="outline-primary"
+                          onClick={() =>
+                            navigate(
+                              `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`,
+                              { state: { transaction: selectedTransaction } } // ✅ pass full transaction
+                            )
+                          }
+                        >
+                          Confirm Transaction
+                        </Button>
+
                       <Button
                         variant="outline-warning"
                         onClick={() => handleRaiseDispute(selectedTransaction)}
@@ -318,6 +369,38 @@ export const RecentTransactionTable = () => {
                         Raise Dispute
                       </Button>
                     </>
+                  )}
+                </div>
+              )}
+
+              {selectedTransaction.transaction_status === "inDispute" && (
+                <div className="mt-3 d-flex gap-2 flex-wrap">
+                  {/* Buyer sees Cancel + Resolve */}
+                  {userEmail === selectedTransaction.buyer_email && (
+                    <>
+                      <Button
+                        variant="outline-danger"
+                        onClick={() => setConfirmCancel(true)}
+                      >
+                        Cancel Transaction
+                      </Button>
+                      <Button
+                        variant="outline-success"
+                        onClick={() => handleResolveConflict(selectedTransaction)}
+                      >
+                        Resolve Dispute
+                      </Button>
+                    </>
+                  )}
+
+                  {/* Seller sees Involve Mediator */}
+                  {userEmail === selectedTransaction.vendor_email && (
+                    <Button
+                      variant="outline-warning"
+                      onClick={() => toast.info("Mediator has been involved!")}
+                    >
+                      Involve Mediator
+                    </Button>
                   )}
                 </div>
               )}
@@ -353,7 +436,6 @@ export const RecentTransactionTable = () => {
     </div>
   );
 };
-
 
 /* Table Row Component */
 export const RecentTransactionTableData = ({

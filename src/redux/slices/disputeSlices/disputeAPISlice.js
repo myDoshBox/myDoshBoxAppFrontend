@@ -26,6 +26,16 @@ export const disputeAPISlice = createApi({
         method: "GET",
       }),
     }),
+     
+     // Fetch a single dispute by transaction ID
+    fetchDisputeByTransactionId: builder.query({
+    query: (transactionId) => ({
+      url: `fetch-dispute/${transactionId}`, 
+      method: "GET",
+    }),
+  }),
+
+    
 
     // : builder.query({
     //   query: (userEmail) => {
@@ -56,6 +66,7 @@ export const {
   // useVerifyEscrowProductTransactionPaymentMutation,
   // useBuyerConfirmsProductMutation,
   useFetchDisputeDetailsQuery,
+  useFetchDisputeByTransactionIdQuery,
   // useFetchSingleTransactionsQuery,
   // useSellerConfirmEscrowProductMutation,
   // useSellerFillOutShippingDetailsMutation,
