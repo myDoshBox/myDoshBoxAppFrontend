@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo  } from "react";
 import { toast } from "react-toastify";
 import TransactionData from "../../../data/dummyData/transactionData.json";
 import { PaginationBar } from "../../../components/PaginationComponent";
@@ -12,6 +12,7 @@ import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowPro
 import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useCancelTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
+import {  useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
 import { useSelector } from "react-redux";
 
 const UserTransactionHistory = () => {
@@ -50,6 +51,25 @@ export const RecentTransactionTable = () => {
   const [confirmCancel, setConfirmCancel] = useState(false);
 
   const navigate = useNavigate();
+
+ // Fetch dispute details when selectedTransaction is in dispute
+const { 
+  data: allDisputes, 
+  isLoading: disputeLoading, 
+  error: disputeError 
+} = useFetchDisputeDetailsQuery(userEmail, {
+  skip: !userEmail,
+});
+
+// ✅ ADD THIS: Find the dispute that belongs to the selected transaction
+const currentDispute = allDisputes?.fetchDisputeDetails?.find(
+  (d) => d.transaction_id === selectedTransaction?.transaction_id
+);
+
+// 🔍 DEBUG: Add this temporarily to see what's happening
+console.log('selectedTransaction:', selectedTransaction);
+console.log('allDisputes:', allDisputes);
+console.log('currentDispute:', currentDispute);
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) setCurrentPage(page);
@@ -229,6 +249,7 @@ export const RecentTransactionTable = () => {
           {selectedTransaction ? (
             <>
               {/* ---- If inDispute: show toggles ---- */}
+              {/* ✅ Get current dispute for this transaction */}
               {selectedTransaction.transaction_status === "inDispute" ? (
                 <Accordion defaultActiveKey="0">
                   {/* Transaction Details */}
@@ -265,9 +286,21 @@ export const RecentTransactionTable = () => {
                   {/* Dispute Details */}
                   <Accordion.Item eventKey="1">
                     <Accordion.Header>Dispute Details</Accordion.Header>
-                    <Accordion.Body>
-                      <p><strong>Reason for Dispute:</strong> {selectedTransaction.reason_for_dispute}</p>
-                      <p><strong>Dispute Description:</strong> {selectedTransaction.dispute_description}</p>
+                      <Accordion.Body>
+                      {disputeLoading ? (
+                        <p>Loading dispute details...</p>
+                      ) : disputeError ? (
+                        <p style={{ color: "red" }}>
+                          Error loading disputes: {disputeError?.data?.message || disputeError?.message}
+                        </p>
+                      ) : currentDispute ? (
+                        <>
+                          <p><strong>Reason for Dispute:</strong> {currentDispute.reason_for_dispute || "N/A"}</p>
+                          <p><strong>Dispute Description:</strong> {currentDispute.dispute_description || "N/A"}</p>
+                        </>
+                      ) : (
+                        <p>No dispute details available for this transaction.</p>
+                      )}
                     </Accordion.Body>
                   </Accordion.Item>
                 </Accordion>
@@ -403,7 +436,6 @@ export const RecentTransactionTable = () => {
     </div>
   );
 };
-
 
 /* Table Row Component */
 export const RecentTransactionTableData = ({
