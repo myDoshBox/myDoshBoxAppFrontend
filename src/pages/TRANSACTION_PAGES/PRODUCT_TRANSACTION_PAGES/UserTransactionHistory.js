@@ -108,21 +108,15 @@ console.log('currentDispute:', currentDispute);
       setConfirmCancel(false);
       setShow(false);
 
-<<<<<<<<< Temporary merge branch 1
-      refetch(); // refresh list
-      navigate("/userdashboard/transactions/cancelled");
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to cancel transaction");
-    }
-  };
-=========
+
+    
     refetch(); // refresh list
     navigate("/userdashboard/transaction-history/cancelled-transactions");
   } catch (err) {
     toast.error(err?.data?.message || "Failed to cancel transaction");
   }
 };
->>>>>>>>> Temporary merge branch 2
+
 
   const getSlicedData = () => {
     if (!transactions?.transactions?.length) return [];
