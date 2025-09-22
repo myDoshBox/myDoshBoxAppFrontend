@@ -20,7 +20,7 @@ import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNav
 
 const UserSettingsPage = () => {
   return (
-    <>
+    <div style={{backgroundColor:"rgb(249, 249, 251)"}}>
       <div className="contestPage">
         <div className="row">
           <div className="col-lg-3 col-sm-12"></div>
@@ -32,7 +32,7 @@ const UserSettingsPage = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -44,7 +44,7 @@ const SettingsPage = () => {
   };
   return (
     <>
-      <div className="row mt-5">
+      <div className="row mt-5 mb-5">
         <div className="col-lg-5 col-sm-12">
           <MiniProfileCardSettings />
         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo  } from "react";
 import { toast } from "react-toastify";
 import TransactionData from "../../../data/dummyData/transactionData.json";
 import { PaginationBar } from "../../../components/PaginationComponent";
@@ -12,6 +12,7 @@ import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowPro
 import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useCancelTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
+import {  useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
 import { useSelector } from "react-redux";
 
 const UserTransactionHistory = () => {
@@ -51,6 +52,25 @@ export const RecentTransactionTable = () => {
 
   const navigate = useNavigate();
 
+ // Fetch dispute details when selectedTransaction is in dispute
+const { 
+  data: allDisputes, 
+  isLoading: disputeLoading, 
+  error: disputeError 
+} = useFetchDisputeDetailsQuery(userEmail, {
+  skip: !userEmail,
+});
+
+// ✅ ADD THIS: Find the dispute that belongs to the selected transaction
+const currentDispute = allDisputes?.fetchDisputeDetails?.find(
+  (d) => d.transaction_id === selectedTransaction?.transaction_id
+);
+
+// 🔍 DEBUG: Add this temporarily to see what's happening
+console.log('selectedTransaction:', selectedTransaction);
+console.log('allDisputes:', allDisputes);
+console.log('currentDispute:', currentDispute);
+
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) setCurrentPage(page);
   };
@@ -78,27 +98,36 @@ export const RecentTransactionTable = () => {
   const handleCancelTransaction = async () => {
     if (!selectedTransaction) return;
 
-    try {
-      toast.info("Cancelling transaction...", { autoClose: 2000 });
-      await cancelTransaction({
-        transaction_id: selectedTransaction?.transaction_id,
-      }).unwrap();
+  try {
+    toast.info("Cancelling transaction...", { autoClose: 2000 });
+    
+    // FIX: Pass only the transaction_id string, not an object
+    await cancelTransaction(selectedTransaction.transaction_id).unwrap();
 
       toast.success("Transaction cancelled successfully!");
       setConfirmCancel(false);
       setShow(false);
 
+<<<<<<<<< Temporary merge branch 1
       refetch(); // refresh list
-      navigate("/userdashboard/transaction-history/cancelled-transactions");
+      navigate("/userdashboard/transactions/cancelled");
     } catch (err) {
       toast.error(err?.data?.message || "Failed to cancel transaction");
     }
   };
+=========
+    refetch(); // refresh list
+    navigate("/userdashboard/transaction-history/cancelled-transactions");
+  } catch (err) {
+    toast.error(err?.data?.message || "Failed to cancel transaction");
+  }
+};
+>>>>>>>>> Temporary merge branch 2
 
   const getSlicedData = () => {
     if (!transactions?.transactions?.length) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return transactions.transactions.slice(startIndex, startIndex + itemsPerPage);
+    return transactions?.transactions?.slice(startIndex, startIndex + itemsPerPage);
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -134,11 +163,11 @@ export const RecentTransactionTable = () => {
         <table className="table fs-sm">
           <thead>
             <tr className="d-md-none lightTextColor">
-              <th>Product Name</th>
-              <th className="text-center">Vendor</th>
-              <th className="text-center">Purchase Date</th>
-              <th className="text-center">Transaction Status</th>
-              <th className="text-center">Action</th>
+              <th className="fs-6">Product</th>
+              {/* <th className="text-center">Vendor</th> */}
+              <th className="fs-6 text-center">Date</th>
+              <th className="fs-6 text-center">Status</th>
+              <th className="fs-6 text-center">Action</th>
             </tr>
             <tr className="d-none d-md-table-row lightTextColor">
               <th>Product Name</th>
@@ -155,61 +184,49 @@ export const RecentTransactionTable = () => {
               <React.Fragment key={history.id}>
                 {/* Small screen row */}
                 <tr className="d-md-none">
-                  <td>{history.product_name}</td>
-                  <td className="text-center">{history.vendor_name}</td>
-                  <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
-                  <td className="text-center">{history.transaction_status}</td>
+                  <td>{history?.product_name}</td>
+                  {/* <td className="text-center">{history?.vendor_name}</td> */}
+                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
+                  <td className="text-center">{history?.transaction_status}</td>
                   <td className="text-center">
-                    {history.transaction_status === "inDispute" ? (
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleResolveConflict(history)}
-                      >
-                        Resolve Conflict
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handleShowMore(history)}
-                      >
-                        View Details
-                      </Button>
-                    )}
+                    <Button
+                      variant={
+                        history.transaction_status === "inDispute" ? "danger" : "primary"
+                      }
+                      size="sm"
+                      onClick={() => handleShowMore(history)}
+                    >
+                      {history.transaction_status === "inDispute"
+                        ? "View More"
+                        : "View Details"}
+                    </Button>
                   </td>
                 </tr>
 
                 {/* Desktop row */}
                 <tr className="d-none d-md-table-row">
-                  <td>{history.product_name}</td>
-                  <td className="text-center">{history.vendor_name}</td>
-                  <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
+                  <td>{history?.product_name}</td>
+                  <td className="text-center">{history?.vendor_name}</td>
+                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
                   <td className="text-center">
-                    {history.transaction_type === "buy"
-                      ? history.transaction_total
-                      : history.product_price}
+                    {history?.transaction_type === "buy"
+                      ? history?.transaction_total
+                      : history?.product_price}
                   </td>
-                  <td className="text-center">{history.transaction_type}</td>
-                  <td className="text-center">{history.transaction_status}</td>
+                  <td className="text-center">{history?.transaction_type}</td>
+                  <td className="text-center">{history?.transaction_status}</td>
                   <td className="text-center">
-                    {history.transaction_status === "inDispute" ? (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleResolveConflict(history)}
-                      >
-                        Resolve Conflict
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline-success"
-                        size="sm"
-                        onClick={() => handleShowMore(history)}
-                      >
-                        View More
-                      </Button>
-                    )}
+                    <Button
+                      variant={
+                        history.transaction_status === "inDispute"
+                          ? "outline-danger"
+                          : "outline-success"
+                      }
+                      size="sm"
+                      onClick={() => handleShowMore(history)}
+                    >
+                      View More
+                    </Button>
                   </td>
                 </tr>
               </React.Fragment>
@@ -236,61 +253,83 @@ export const RecentTransactionTable = () => {
         <Modal.Body>
           {selectedTransaction ? (
             <>
-              <p>
-                <strong>Product Name:</strong> {selectedTransaction.product_name}
-              </p>
-              <p>
-                <strong>Product Description:</strong>{" "}
-                {selectedTransaction.product_description}
-              </p>
-              {selectedTransaction.product_image && (
-                <p>
-                  <strong>Product Image:</strong>
-                  <br />
-                  <img
-                    src={selectedTransaction.product_image}
-                    alt="Product"
-                    style={{ maxWidth: "150px" }}
-                  />
-                </p>
-              )}
-              <p>
-                <strong>Transaction Total:</strong> ₦
-                {selectedTransaction.transaction_type === "buy"
-                  ? selectedTransaction.transaction_total
-                  : selectedTransaction.product_price}
-              </p>
-              <p>
-                <strong>Purchase Time:</strong>{" "}
-                {selectedTransaction.createdAt?.slice(11, 19)}
-              </p>
-              <p>
-                <strong>Transaction Status:</strong>{" "}
-                {selectedTransaction.transaction_status}
-              </p>
-              <p>
-                <strong>Purchase Date:</strong>{" "}
-                {selectedTransaction.createdAt?.slice(0, 10)}
-              </p>
-              <p>
-                <strong>Vendor Email:</strong>{" "}
-                {selectedTransaction.vendor_email}
-              </p>
-              <p>
-                <strong>Vendor Name:</strong>{" "}
-                {selectedTransaction.vendor_name}
-              </p>
-              <p>
-                <strong>Vendor Tel:</strong>{" "}
-                {selectedTransaction.vendor_phone_number}
-              </p>
-              <p>
-                <strong>Buyer Email:</strong>{" "}
-                {selectedTransaction.buyer_email}
-              </p>
+              {/* ---- If inDispute: show toggles ---- */}
+              {selectedTransaction.transaction_status === "inDispute" ? (
+                <Accordion defaultActiveKey="0">
+                  {/* Transaction Details */}
+                  <Accordion.Item eventKey="0">
+                    <Accordion.Header>Transaction Details</Accordion.Header>
+                    <Accordion.Body>
+                      <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
+                      <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
+                      {selectedTransaction.product_image && (
+                        <p>
+                          <strong>Product Image:</strong><br />
+                          <img
+                            src={selectedTransaction.product_image}
+                            alt="Product"
+                            style={{ maxWidth: "150px" }}
+                          />
+                        </p>
+                      )}
+                      <p><strong>Transaction Total:</strong> ₦
+                        {selectedTransaction.transaction_type === "buy"
+                          ? selectedTransaction.transaction_total
+                          : selectedTransaction.product_price}
+                      </p>
+                      <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
+                      <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
+                      <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
+                      <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
+                      <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
+                      <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
+                      <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+                    </Accordion.Body>
+                  </Accordion.Item>
 
+                  {/* Dispute Details */}
+                  <Accordion.Item eventKey="1">
+                    <Accordion.Header>Dispute Details</Accordion.Header>
+                    <Accordion.Body>
+                      <p><strong>Reason for Dispute:</strong> {selectedTransaction.reason_for_dispute}</p>
+                      <p><strong>Dispute Description:</strong> {selectedTransaction.dispute_description}</p>
+                    </Accordion.Body>
+                  </Accordion.Item>
+                </Accordion>
+              ) : (
+                <>
+                  {/* ---- Normal Transaction Details ---- */}
+                  <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
+                  <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
+                  {selectedTransaction.product_image && (
+                    <p>
+                      <strong>Product Image:</strong><br />
+                      <img
+                        src={selectedTransaction.product_image}
+                        alt="Product"
+                        style={{ maxWidth: "150px" }}
+                      />
+                    </p>
+                  )}
+                  <p><strong>Transaction Total:</strong> ₦
+                    {selectedTransaction.transaction_type === "buy"
+                      ? selectedTransaction.transaction_total
+                      : selectedTransaction.product_price}
+                  </p>
+                  <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
+                  <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
+                  <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
+                  <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
+                  <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
+                  <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
+                  <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+                </>
+              )}
+
+              {/* ---- Action Buttons ---- */}
               {selectedTransaction.transaction_status === "processing" && (
                 <div className="mt-3 d-flex gap-2 flex-wrap">
+                  {/* Buyer Actions */}
                   {userEmail === selectedTransaction.buyer_email && (
                     <Button
                       variant="outline-danger"
@@ -299,6 +338,8 @@ export const RecentTransactionTable = () => {
                       Cancel Transaction
                     </Button>
                   )}
+
+                  {/* Seller Actions */}
                   {userEmail === selectedTransaction.vendor_email && (
                     <>
                       <Button
@@ -318,6 +359,38 @@ export const RecentTransactionTable = () => {
                         Raise Dispute
                       </Button>
                     </>
+                  )}
+                </div>
+              )}
+
+              {selectedTransaction.transaction_status === "inDispute" && (
+                <div className="mt-3 d-flex gap-2 flex-wrap">
+                  {/* Buyer sees Cancel + Resolve */}
+                  {userEmail === selectedTransaction.buyer_email && (
+                    <>
+                      <Button
+                        variant="outline-danger"
+                        onClick={() => setConfirmCancel(true)}
+                      >
+                        Cancel Transaction
+                      </Button>
+                      <Button
+                        variant="outline-success"
+                        onClick={() => handleResolveConflict(selectedTransaction)}
+                      >
+                        Resolve Dispute
+                      </Button>
+                    </>
+                  )}
+
+                  {/* Seller sees Involve Mediator */}
+                  {userEmail === selectedTransaction.vendor_email && (
+                    <Button
+                      variant="outline-warning"
+                      onClick={() => toast.info("Mediator has been involved!")}
+                    >
+                      Involve Mediator
+                    </Button>
                   )}
                 </div>
               )}
@@ -353,7 +426,6 @@ export const RecentTransactionTable = () => {
     </div>
   );
 };
-
 
 /* Table Row Component */
 export const RecentTransactionTableData = ({

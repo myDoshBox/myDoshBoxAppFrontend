@@ -66,7 +66,7 @@ export const {
   // useVerifyEscrowProductTransactionPaymentMutation,
   // useBuyerConfirmsProductMutation,
   useFetchDisputeDetailsQuery,
-   useFetchDisputeByTransactionIdQuery,
+  useFetchDisputeByTransactionIdQuery,
   // useFetchSingleTransactionsQuery,
   // useSellerConfirmEscrowProductMutation,
   // useSellerFillOutShippingDetailsMutation,
