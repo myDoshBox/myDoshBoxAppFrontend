@@ -699,7 +699,7 @@ const DesktopScreen = () => {
 
                 <li className="mb-3 SideNavItem">
                   <NavLink
-                    to="disputes-in-progress"
+                    to="disputes/disputes-in-progress"
                     end
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded ${
@@ -714,7 +714,7 @@ const DesktopScreen = () => {
 
                 <li className="mb-3 SideNavItem">
                   <NavLink
-                    to="completed-disputes"
+                    to="disputes/completed-disputes"
                     end
                     className={({ isActive }) =>
                       `d-flex align-items-center p-2 rounded ${
