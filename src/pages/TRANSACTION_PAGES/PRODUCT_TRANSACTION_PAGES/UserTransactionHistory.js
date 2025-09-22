@@ -86,13 +86,13 @@ console.log('currentDispute:', currentDispute);
   };
 
   const handleRaiseDispute = (transaction) => {
-    navigate(`/userdashboard/disputes/initiate-dispute/${transaction.transaction_id}`, {
+    navigate(`/userdashboard/disputes/initiate-dispute/${transaction?.transaction_id}`, {
       state: { transaction },
     });
   };
 
   const handleResolveConflict = (transaction) => {
-    navigate(`/userdashboard/disputes/resolve-dispute/${transaction.transaction_id}`);
+    navigate(`/userdashboard/disputes/resolve-dispute/${transaction?.transaction_id}`);
   };
 
  const handleCancelTransaction = async () => {
@@ -102,7 +102,7 @@ console.log('currentDispute:', currentDispute);
     toast.info("Cancelling transaction...", { autoClose: 2000 });
     
     // FIX: Pass only the transaction_id string, not an object
-    await cancelTransaction(selectedTransaction.transaction_id).unwrap();
+    await cancelTransaction(selectedTransaction?.transaction_id).unwrap();
 
     toast.success("Transaction cancelled successfully!");
     setConfirmCancel(false);
@@ -118,7 +118,7 @@ console.log('currentDispute:', currentDispute);
   const getSlicedData = () => {
     if (!transactions?.transactions?.length) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return transactions.transactions.slice(startIndex, startIndex + itemsPerPage);
+    return transactions?.transactions?.slice(startIndex, startIndex + itemsPerPage);
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -175,19 +175,19 @@ console.log('currentDispute:', currentDispute);
               <React.Fragment key={history.id}>
                 {/* Small screen row */}
                 <tr className="d-md-none">
-                  <td>{history.product_name}</td>
-                  <td className="text-center">{history.vendor_name}</td>
-                  <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
-                  <td className="text-center">{history.transaction_status}</td>
+                  <td>{history?.product_name}</td>
+                  <td className="text-center">{history?.vendor_name}</td>
+                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
+                  <td className="text-center">{history?.transaction_status}</td>
                   <td className="text-center">
                     <Button
                       variant={
-                        history.transaction_status === "inDispute" ? "danger" : "primary"
+                        history?.transaction_status === "inDispute" ? "danger" : "primary"
                       }
                       size="sm"
                       onClick={() => handleShowMore(history)}
                     >
-                      {history.transaction_status === "inDispute"
+                      {history?.transaction_status === "inDispute"
                         ? "View More"
                         : "View Details"}
                     </Button>
@@ -196,20 +196,20 @@ console.log('currentDispute:', currentDispute);
 
                 {/* Desktop row */}
                 <tr className="d-none d-md-table-row">
-                  <td>{history.product_name}</td>
-                  <td className="text-center">{history.vendor_name}</td>
-                  <td className="text-center">{history.createdAt?.slice(0, 10)}</td>
+                  <td>{history?.product_name}</td>
+                  <td className="text-center">{history?.vendor_name}</td>
+                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
                   <td className="text-center">
-                    {history.transaction_type === "buy"
-                      ? history.transaction_total
-                      : history.product_price}
+                    {history?.transaction_type === "buy"
+                      ? history?.transaction_total
+                      : history?.product_price}
                   </td>
-                  <td className="text-center">{history.transaction_type}</td>
-                  <td className="text-center">{history.transaction_status}</td>
+                  <td className="text-center">{history?.transaction_type}</td>
+                  <td className="text-center">{history?.transaction_status}</td>
                   <td className="text-center">
                     <Button
                       variant={
-                        history.transaction_status === "inDispute"
+                        history?.transaction_status === "inDispute"
                           ? "outline-danger"
                           : "outline-success"
                       }
@@ -250,36 +250,36 @@ console.log('currentDispute:', currentDispute);
             <>
               {/* ---- If inDispute: show toggles ---- */}
               {/* ✅ Get current dispute for this transaction */}
-              {selectedTransaction.transaction_status === "inDispute" ? (
+              {selectedTransaction?.transaction_status === "inDispute" ? (
                 <Accordion defaultActiveKey="0">
                   {/* Transaction Details */}
                   <Accordion.Item eventKey="0">
                     <Accordion.Header>Transaction Details</Accordion.Header>
                     <Accordion.Body>
-                      <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
-                      <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
-                      {selectedTransaction.product_image && (
+                      <p><strong>Product Name:</strong> {selectedTransaction?.product_name}</p>
+                      <p><strong>Product Description:</strong> {selectedTransaction?.product_description}</p>
+                      {selectedTransaction?.product_image && (
                         <p>
                           <strong>Product Image:</strong><br />
                           <img
-                            src={selectedTransaction.product_image}
+                            src={selectedTransaction?.product_image}
                             alt="Product"
                             style={{ maxWidth: "150px" }}
                           />
                         </p>
                       )}
                       <p><strong>Transaction Total:</strong> ₦
-                        {selectedTransaction.transaction_type === "buy"
-                          ? selectedTransaction.transaction_total
-                          : selectedTransaction.product_price}
+                        {selectedTransaction?.transaction_type === "buy"
+                          ? selectedTransaction?.transaction_total
+                          : selectedTransaction?.product_price}
                       </p>
-                      <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
-                      <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
-                      <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
-                      <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
-                      <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
-                      <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
-                      <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+                      <p><strong>Purchase Time:</strong> {selectedTransaction?.createdAt?.slice(11, 19)}</p>
+                      <p><strong>Transaction Status:</strong> {selectedTransaction?.transaction_status}</p>
+                      <p><strong>Purchase Date:</strong> {selectedTransaction?.createdAt?.slice(0, 10)}</p>
+                      <p><strong>Vendor Email:</strong> {selectedTransaction?.vendor_email}</p>
+                      <p><strong>Vendor Name:</strong> {selectedTransaction?.vendor_name}</p>
+                      <p><strong>Vendor Tel:</strong> {selectedTransaction?.vendor_phone_number}</p>
+                      <p><strong>Buyer Email:</strong> {selectedTransaction?.buyer_email}</p>
                     </Accordion.Body>
                   </Accordion.Item>
 
@@ -295,8 +295,8 @@ console.log('currentDispute:', currentDispute);
                         </p>
                       ) : currentDispute ? (
                         <>
-                          <p><strong>Reason for Dispute:</strong> {currentDispute.reason_for_dispute || "N/A"}</p>
-                          <p><strong>Dispute Description:</strong> {currentDispute.dispute_description || "N/A"}</p>
+                          <p><strong>Reason for Dispute:</strong> {currentDispute?.reason_for_dispute || "N/A"}</p>
+                          <p><strong>Dispute Description:</strong> {currentDispute?.dispute_description || "N/A"}</p>
                         </>
                       ) : (
                         <p>No dispute details available for this transaction.</p>
@@ -307,38 +307,38 @@ console.log('currentDispute:', currentDispute);
               ) : (
                 <>
                   {/* ---- Normal Transaction Details ---- */}
-                  <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
-                  <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
-                  {selectedTransaction.product_image && (
+                  <p><strong>Product Name:</strong> {selectedTransaction?.product_name}</p>
+                  <p><strong>Product Description:</strong> {selectedTransaction?.product_description}</p>
+                  {selectedTransaction?.product_image && (
                     <p>
                       <strong>Product Image:</strong><br />
                       <img
-                        src={selectedTransaction.product_image}
+                        src={selectedTransaction?.product_image}
                         alt="Product"
                         style={{ maxWidth: "150px" }}
                       />
                     </p>
                   )}
                   <p><strong>Transaction Total:</strong> ₦
-                    {selectedTransaction.transaction_type === "buy"
-                      ? selectedTransaction.transaction_total
-                      : selectedTransaction.product_price}
+                    {selectedTransaction?.transaction_type === "buy"
+                      ? selectedTransaction?.transaction_total
+                      : selectedTransaction?.product_price}
                   </p>
-                  <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
-                  <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
-                  <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
-                  <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
-                  <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
-                  <p><strong>Vendor Tel:</strong> {selectedTransaction.vendor_phone_number}</p>
-                  <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
+                  <p><strong>Purchase Time:</strong> {selectedTransaction?.createdAt?.slice(11, 19)}</p>
+                  <p><strong>Transaction Status:</strong> {selectedTransaction?.transaction_status}</p>
+                  <p><strong>Purchase Date:</strong> {selectedTransaction?.createdAt?.slice(0, 10)}</p>
+                  <p><strong>Vendor Email:</strong> {selectedTransaction?.vendor_email}</p>
+                  <p><strong>Vendor Name:</strong> {selectedTransaction?.vendor_name}</p>
+                  <p><strong>Vendor Tel:</strong> {selectedTransaction?.vendor_phone_number}</p>
+                  <p><strong>Buyer Email:</strong> {selectedTransaction?.buyer_email}</p>
                 </>
               )}
 
               {/* ---- Action Buttons ---- */}
-              {selectedTransaction.transaction_status === "processing" && (
+              {selectedTransaction?.transaction_status === "processing" && (
                 <div className="mt-3 d-flex gap-2 flex-wrap">
                   {/* Buyer Actions */}
-                  {userEmail === selectedTransaction.buyer_email && (
+                  {userEmail === selectedTransaction?.buyer_email && (
                     <Button
                       variant="outline-danger"
                       onClick={() => setConfirmCancel(true)}
@@ -348,7 +348,7 @@ console.log('currentDispute:', currentDispute);
                   )}
 
                   {/* Seller Actions */}
-                  {userEmail === selectedTransaction.vendor_email && (
+                  {userEmail === selectedTransaction?.vendor_email && (
                     <>
                       <Button
                           variant="outline-primary"
@@ -373,10 +373,10 @@ console.log('currentDispute:', currentDispute);
                 </div>
               )}
 
-              {selectedTransaction.transaction_status === "inDispute" && (
+              {selectedTransaction?.transaction_status === "inDispute" && (
                 <div className="mt-3 d-flex gap-2 flex-wrap">
                   {/* Buyer sees Cancel + Resolve */}
-                  {userEmail === selectedTransaction.buyer_email && (
+                  {userEmail === selectedTransaction?.buyer_email && (
                     <>
                       <Button
                         variant="outline-danger"
@@ -394,7 +394,7 @@ console.log('currentDispute:', currentDispute);
                   )}
 
                   {/* Seller sees Involve Mediator */}
-                  {userEmail === selectedTransaction.vendor_email && (
+                  {userEmail === selectedTransaction?.vendor_email && (
                     <Button
                       variant="outline-warning"
                       onClick={() => toast.info("Mediator has been involved!")}

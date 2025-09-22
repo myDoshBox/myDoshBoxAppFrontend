@@ -46,6 +46,10 @@ import {
   FiPackage,
   FiArrowRightCircle 
 } from "react-icons/fi";
+import { FcCancel } from "react-icons/fc";
+import { PiSealWarningDuotone } from "react-icons/pi";
+import { GrInProgress } from "react-icons/gr";
+import { LiaHandshake } from "react-icons/lia";
 
 const UsersSideNav = () => {
   return (
@@ -631,7 +635,8 @@ const DesktopScreen = () => {
                     }
                     aria-label="Cancelled Transactions"
                   >
-                    <SettledTransactionIcon className="me-2" />
+
+                    <FcCancel className="me-2" />
                     <span>Cancelled</span>
                   </NavLink>
                 </li>
@@ -667,7 +672,7 @@ const DesktopScreen = () => {
                 onClick={toggleDispute}
                 className="d-flex align-items-center text-decoration-none w-100 text-secondary gap-2"
               >
-                <FiAlertCircle />
+                <FiAlertCircle  />
                 <span>Disputes</span>
                 <span className={`ms-auto transition-transform`}>
                   {isDisputeOpen ? <FiArrowUp /> : <FiArrowDown />}
@@ -687,7 +692,7 @@ const DesktopScreen = () => {
                     }
                     aria-label="Disputes"
                   >
-                    <DisputeIcon className="me-2" />
+                    <PiSealWarningDuotone className="me-2" />
                     <span>All Disputes</span>
                   </NavLink>
                 </li>
@@ -702,8 +707,8 @@ const DesktopScreen = () => {
                       }`
                     }
                   >
-                    <DisputeIcon className="me-2" />
-                    <span>Disputes In Progress</span>
+                    <GrInProgress className="me-2" />
+                    <span>In Progress</span>
                   </NavLink>
                 </li>
 
@@ -718,8 +723,8 @@ const DesktopScreen = () => {
                     }
                     aria-label="Disputes"
                   >
-                    <DisputeIcon className="me-2" />
-                    <span>Resolved Disputes</span>
+                    <LiaHandshake className="me-2" />
+                    <span>Resolved</span>
                   </NavLink>
                 </li>
 

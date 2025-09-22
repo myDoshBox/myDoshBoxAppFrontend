@@ -11,11 +11,10 @@ import {
 //   InitiateDisputeIcon,
 // } from "../../../components/IconComponent/UserdashboardIcons";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-// import { RecentNotification } from "../../../components/NotificationComponent/NotificationComponents";
+import { RecentNotification } from "../../../components/NotificationComponent/NotificationComponents";
 import { UserdashboardTransaction } from "../../../components/TableComponents/TransactionHistory";
 // import { RecentDispute } from "../../../components/CardComponents/TransactionDetails";
-import {RecentTransactionTable} from "./UserTransactionHistory"
-
+import { RecentTransactionTable } from "../../TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserTransactionHistory";
 
 // Main Dashboard Page Component
 const UserDashboardPage = () => {
@@ -43,7 +42,7 @@ const UserDashboardPage = () => {
 // Core User Dashboard Content (this component remains unchanged in this particular update)
 const UserDashboard = () => {
   return (
-    <div className="mt-3">
+    <div className="">
       {/* --- Section 1: Overview and Quick Actions --- */}
       <section className="mb-4">
         {/* Row for Primary Action Cards */}
@@ -76,11 +75,13 @@ const UserDashboard = () => {
             />
           </div>
           <div className="col-sm-6 col-md-3">
-          <UserDashboardCard2
-            icon={<i className="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>}
-            text="Initiate Disputes"
-            link="transaction-history/confirm-escrow-product-transaction/shipping-history/:transaction_id/initiate-dispute"
-          />
+            <UserDashboardCard2
+              icon={
+                <i className="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+              }
+              text="Initiate Disputes"
+              link="disputes/initiate-dispute/:transaction_id"
+            />
           </div>
         </div>
       </section>
@@ -95,8 +96,8 @@ const UserDashboard = () => {
       </section>
       {/* --- Section 3: Notifications --- */}
       <section className="notifications-section mb-5">
-        <h3 className="fs-4">All Dispute History</h3>
-        <RecentDisputeTable />
+        <h2 className="section-title mb-4 fs-4">Notifications</h2>
+        <RecentNotification />
       </section>
     </div>
   );
