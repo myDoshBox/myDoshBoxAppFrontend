@@ -72,18 +72,19 @@ const options = [
 const MobileScreenSideNav = () => {
   const [show, setShow] = useState(false);
   const [showTransaction, setShowTransaction] = useState(false); // For collapse
+  const [isDisputeOpen, setIsDisputeOpen] = useState(false); // For disputes collapse
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleClose = () => setShow(false);
   const toggleShow = () => setShow(!show);
+  const toggleDispute = () => setIsDisputeOpen(!isDisputeOpen); // Toggle disputes
 
   const logoutHandler = () => {
     dispatch(logout());
     navigate("/");
   };
    const offcanvasWidth = window.innerWidth <= 768 ? "80vw" : "300px";
-
 
     const offcanvasStyle = {
       width: offcanvasWidth,
@@ -103,7 +104,6 @@ const MobileScreenSideNav = () => {
       cursor: "pointer",
     };
 
-
   const navLinkStyle = (isActive) => ({
     textDecoration: "none",
     fontSize: "1rem",
@@ -112,6 +112,15 @@ const MobileScreenSideNav = () => {
     color: isActive ? "#198754" : "#212529",
     fontWeight: isActive ? "600" : "400",
   });
+
+  // Define styles for dispute navigation items
+  const activeClassName = "text-success fw-semibold";
+  const baseClassName = "text-dark";
+
+  // Tooltip render function (you might need to import this or define it)
+  const renderTooltip = (text) => (
+    <Tooltip id="tooltip">{text}</Tooltip>
+  );
 
   return (
     <>
@@ -148,7 +157,7 @@ const MobileScreenSideNav = () => {
       >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>
-            <img src={doshlogo} alt="Logo" style={{ maxHeight: "40px" }} />
+            <img src={doshlogo} alt="Logo" style={{ maxHeight: "40px", width:"70%" }} />
           </Offcanvas.Title>
         </Offcanvas.Header>
 
@@ -161,6 +170,7 @@ const MobileScreenSideNav = () => {
                 to="/userdashboard"
                 style={({ isActive }) => navLinkStyle(isActive)}
                 onClick={handleClose}
+                end
               >
                 <span className="me-3"><DashboardIcon /></span>
                 <span>Dashboard</span>
@@ -190,8 +200,6 @@ const MobileScreenSideNav = () => {
                   {showTransaction ? <FiArrowUp size={18} /> : <FiArrowDown size={18} />}
                 </div>
               </Button>
-
-
                 <Collapse in={showTransaction}>
                   <div id="transaction-collapse" className="ps-4 mt-2">
                    <ul className="list-unstyled">
@@ -252,6 +260,22 @@ const MobileScreenSideNav = () => {
                         <span className="fs-6">Shipping</span>
                       </NavLink>
                     </li>
+                    {/* cancel transaction */}
+                    <li className="mb-3">
+                      <NavLink
+                        to="transaction-history/cancelled-transactions"
+                        className={({ isActive }) =>
+                          isActive
+                            ? "d-flex align-items-center text-success fw-semibold text-decoration-none"
+                            : "d-flex align-items-center text-dark text-decoration-none"
+                        }
+                        onClick={handleClose}
+                      >
+                        <span className="me-2"><FcCancel  size={20} fill="#838894" /></span>
+                        <span className="fs-6">Cancelled</span>
+                      </NavLink>
+                    </li> 
+                    {/* cancel transaction end here */}
                   </ul>
 
                   </div>
@@ -259,30 +283,104 @@ const MobileScreenSideNav = () => {
 
               </li>
 
-
             {/* Notifications */}
-            <li className="mb-4">
+            <li className="mb-3">
               <NavLink
                 to="notification"
                 style={({ isActive }) => navLinkStyle(isActive)}
                 onClick={handleClose}
               >
-                <span className="me-3"><NotificationIcon /></span>
+                <span className="me-3"><FiBell size={20}  /></span>
                 <span>Notifications</span>
               </NavLink>
             </li>
 
-            {/* Disputes */}
-            <li className="mb-4">
-              <NavLink
-                to="disputes"
-                style={({ isActive }) => navLinkStyle(isActive)}
-                onClick={handleClose}
-              >
-                <span className="me-3"><DisputeIcon /></span>
-                <span>Disputes</span>
-              </NavLink>
+            {/* Disputes - Updated with expandable list */}
+            <li className="mb-3"> 
+              <OverlayTrigger placement="right" overlay={renderTooltip("Toggle Disputes")}>
+                <Button
+                  variant="link"
+                  onClick={toggleDispute}
+                  className="d-flex align-items-center text-decoration-none w-100 text-secondary gap-2 ps-0"
+                  style={{
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                  }}
+                >
+                  <span className="me-2"><FiAlertCircle size={20} /></span>  
+                  <span className="fs-6">Disputes</span>
+                  <span className={`ms-auto transition-transform`}>
+                    {isDisputeOpen ? <FiArrowUp /> : <FiArrowDown />}
+                  </span>
+                </Button>
+              </OverlayTrigger>
+              <Collapse in={isDisputeOpen}>
+                <ul className="list-unstyled ps-3 mt-2">
+                  <li className="mb-2">
+                    <NavLink
+                      to="disputes"
+                      end
+                      className={({ isActive }) =>
+                        `d-flex align-items-center p-2 rounded text-decoration-none ${
+                          isActive ? activeClassName : baseClassName
+                        }`
+                      }
+                      aria-label="Disputes"
+                      onClick={handleClose}
+                    >
+                      <PiSealWarningDuotone className="me-2" size={20}  />
+                      <span className="fs-6">All Disputes</span>
+                    </NavLink>
+                  </li>
+
+                  <li className="mb-3 SideNavItem">
+                    <NavLink
+                      to="disputes/disputes-in-progress"
+                      end
+                      className={({ isActive }) =>
+                        `d-flex align-items-center p-2 rounded text-decoration-none ${
+                          isActive ? activeClassName : baseClassName
+                        }`
+                      }
+                      onClick={handleClose}
+                    >
+                      <GrInProgress className="me-2" size={20} />
+                      <span className="fs-6">In Progress</span>
+                    </NavLink>
+                  </li>
+
+                  <li className="mb-3 SideNavItem">
+                    <NavLink
+                      to="disputes/completed-disputes"
+                      end
+                      className={({ isActive }) =>
+                        `d-flex align-items-center p-2 rounded text-decoration-none ${
+                          isActive ? activeClassName : baseClassName
+                        }`
+                      }
+                      aria-label="Disputes"
+                      onClick={handleClose}
+                    >
+                      <LiaHandshake className="me-2" size={25} fill="#838894" />
+                      <span className="fs-6">Resolved</span>
+                    </NavLink>
+                  </li>
+
+                  <li className="mb-2">
+                    <NavLink
+                       to="disputes/:transaction_id/initiate-dispute"
+                      className={({ isActive }) =>
+                        `d-flex align-items-center p-2 rounded gap-2 text-decoration-none ${isActive ? activeClassName : baseClassName}`
+                      }
+                      onClick={handleClose}
+                    >
+                       <FiArrowRightCircle size={20}  /> <span className="fs-6">Initiate Dispute</span>
+                    </NavLink>
+                  </li> 
+                </ul>
+              </Collapse>
             </li>
+            
 
             {/* Settings */}
             <li className="mb-4">
@@ -304,8 +402,7 @@ const MobileScreenSideNav = () => {
               variant="outline-danger"
               className="w-100 d-flex align-items-center justify-content-center"
             >
-              <span className="me-2"><LogoutIcon /></span>
-              Logout
+              <FiLogOut /> <span className="ms-1">Logout</span>
             </Button>
           </div>
         </Offcanvas.Body>
@@ -314,224 +411,6 @@ const MobileScreenSideNav = () => {
   );
 };
 
-
-
-// const MobileScreenSideNav = ({ name, ...props }) => {
-//   const [show, setShow] = useState(false);
-//   const handleClose = () => setShow(false);
-//   const toggleShow = () => setShow((s) => !s);
-//   const disappearEl = useRef(null);
-
-//   const handleDisappear = () => {
-//     disappearEl.style.display = "none";
-//   };
-//   let activeClassName = "active-linkSm";
-//   let baseClassName = "inactive-linkSm";
-
-//   const nav = () => {
-//     navigate("/");
-//   };
-
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-
-//   const logoutHandler = async () => {
-//     try {
-//       // await logout().unwrap();
-//       console.log("Dispatching logout action");
-//       dispatch(logout());
-//       console.log("Navigating to home");
-//       navigate("/");
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
-
-//   return (
-//     <>
-//       <Button
-//         onClick={toggleShow}
-//         className="me-2 bg-white border-0 d-lg-none position-fixed start-0 top-0"
-//       >
-//         <svg
-//           width="30"
-//           height="20"
-//           viewBox="0 0 30 20"
-//           fill="none"
-//           xmlns="http://www.w3.org/2000/svg"
-//         >
-//           <path
-//             d="M0 8.33333H22.5V11.6667H0V8.33333ZM0 0H30V3.33333H0V0ZM0 20H13.5656V16.6667H0V20Z"
-//             fill="#006747"
-//           />
-//         </svg>
-//       </Button>
-
-//       <Offcanvas
-//         show={show}
-//         onHide={handleClose}
-//         responsive="lg"
-//         className="d-lg-none text-white border-0 shadow"
-//         style={{ width: "6rem" }}
-//         {...props}
-//         ref={disappearEl}
-//         // id="off-canvas"x
-//       >
-//         <Offcanvas.Header>
-//           <Offcanvas.Title>
-//             <Link to={"/"}>
-//               <img src={smdoshlogo} alt="logo" className="smlogo" />
-//             </Link>
-//           </Offcanvas.Title>
-//         </Offcanvas.Header>
-//         <Offcanvas.Body>
-//           <div className="d-flex justify-content-between flex-column">
-//             <ul className="ps-2">
-//               <li className="d-flex mb-5 align-items-center">
-//                 <div>
-//                   <NavLink
-//                     to="../../userdashboard"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                       <DashboardIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-//               <li className="d-flex mb-5 align-items-center SideNavItem">
-//                 <div className="me-3">
-//                   <NavLink
-//                     to="transaction-history"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <div>
-//                        <span>Transaction</span>
-//                         <NavTransactionIcon />
-//                     </div>
-                   
-//                   </NavLink>
-//                 </div>
-//               </li>
-
-//               <li className="d-flex mb-5 align-items-center SideNavItem">
-//                 <div className="me-3">
-//                   <NavLink
-//                     to="transaction-history/confirm-escrow-product-transaction/transactions-in-progress-history"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <NavTransactionIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-
-//               <li className="d-flex mb-5 align-items-center SideNavItem">
-//                 <div className="me-3">
-//                   <NavLink
-//                     to="transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <NavTransactionIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-
-//               <li className="d-flex mb-5 align-items-center SideNavItem">
-//                 <div className="me-3">
-//                   <NavLink
-//                     to="transaction-history/confirm-escrow-product-transaction/shipping-history"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <NavTransactionIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-//               <li className="d-flex align-items-center SideNavItem mb-5">
-//                 <div>
-//                   <NavLink
-//                     to="notification"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <NotificationIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-
-//               <li className="d-flex  align-items-center SideNavItem mb-5">
-//                 <div className="me-3">
-//                   <NavLink
-//                     to="disputes"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <DisputeIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-
-//               <li className="d-flex align-items-center SideNavItem mb-5">
-//                 <div className="me-3">
-//                   <NavLink
-//                     to="settings"
-//                     end
-//                     className={({ isActive }) =>
-//                       isActive ? activeClassName : baseClassName
-//                     }
-//                     onClick={handleDisappear}
-//                   >
-//                     <SettingsIcon />
-//                   </NavLink>
-//                 </div>
-//               </li>
-//             </ul>
-
-//             <ul className="ps-3">
-//               <li className="d-flex align-items-center SideNavItem mt-5 position-fixed bottom">
-//                 <div className="me-3">
-//                   <LogoutIcon />
-//                 </div>
-//                 <li
-//                   className="d-flex align-items-center SideNavItem mt-5 bottom position-fixed"
-//                   onClick={logoutHandler}
-//                   style={{ cursor: "pointer" }}
-//                 >
-//                   <div className="me-3">
-//                     <LogoutIcon />
-//                   </div>
-//                 </li>
-//               </li>
-//             </ul>
-//           </div>
-//         </Offcanvas.Body>
-//       </Offcanvas>
-//     </>
-//   );
-// };
 
 const DesktopScreen = () => {
   const navigate = useNavigate();
@@ -738,41 +617,6 @@ const DesktopScreen = () => {
                      <FiArrowRightCircle /> <span>Initiate Dispute</span>
                   </NavLink>
                 </li> 
-                {/* <li className="mb-2">
-                  <NavLink
-                    to="disputes-in-progress"
-                    className={({ isActive }) =>
-                      `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
-                    }
-                  >
-                    <FiClock /> <span>In Progress</span>
-                  </NavLink>
-                </li> */}
-                {/* <li className="mb-2">
-                  <NavLink
-                    to="completed-disputes"
-                    className={({ isActive }) =>
-                      `d-flex align-items-center p-2 rounded gap-2 ${isActive ? activeClassName : baseClassName}`
-                    }
-                  >
-                    <FiCheckCircle /> <span>Resolved Disputes</span>
-                  </NavLink>
-                </li>
-                {/* <li className="mb-2">
-                  <NavLink
-                    to="transaction-history/confirm-escrow-product-transaction/shipping-history"
-                    end
-                    className={({ isActive }) =>
-                      `d-flex align-items-center p-2 rounded-3 text-decoration-none ${
-                        isActive ? activeClassName : baseClassName
-                      }`
-                    }
-                    aria-label="Shipping Details"
-                  >
-                    <ShippingDetailsTransactionIcon className="me-2" />
-                    <span>All Disputes</span>
-                  </NavLink>
-                </li> */}
               </ul>
             </Collapse>
           </li>

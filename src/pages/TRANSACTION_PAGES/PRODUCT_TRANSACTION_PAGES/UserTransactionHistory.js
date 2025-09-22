@@ -154,11 +154,11 @@ console.log('currentDispute:', currentDispute);
         <table className="table fs-sm">
           <thead>
             <tr className="d-md-none lightTextColor">
-              <th>Product Name</th>
-              <th className="text-center">Vendor</th>
-              <th className="text-center">Purchase Date</th>
-              <th className="text-center">Transaction Status</th>
-              <th className="text-center">Action</th>
+              <th className="fs-6">Product</th>
+              {/* <th className="text-center">Vendor</th> */}
+              <th className="fs-6 text-center">Date</th>
+              <th className="fs-6 text-center">Status</th>
+              <th className="fs-6 text-center">Action</th>
             </tr>
             <tr className="d-none d-md-table-row lightTextColor">
               <th>Product Name</th>
@@ -176,20 +176,20 @@ console.log('currentDispute:', currentDispute);
                 {/* Small screen row */}
                 <tr className="d-md-none">
                   <td>{history?.product_name}</td>
-                  <td className="text-center">{history?.vendor_name}</td>
+                  {/* <td className="text-center">{history?.vendor_name}</td> */}
                   <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
                   <td className="text-center">{history?.transaction_status}</td>
                   <td className="text-center">
                     <Button
                       variant={
-                        history?.transaction_status === "inDispute" ? "danger" : "primary"
+                        history?.transaction_status === "inDispute" ? "outline-danger" : "outline-success"
                       }
                       size="sm"
                       onClick={() => handleShowMore(history)}
                     >
                       {history?.transaction_status === "inDispute"
-                        ? "View More"
-                        : "View Details"}
+                        ? "View "
+                        : "View "}
                     </Button>
                   </td>
                 </tr>
