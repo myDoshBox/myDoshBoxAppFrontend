@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Form, Row, Col, FloatingLabel  } from "react-bootstrap";
+import { Button, Form, Row, Col, FloatingLabel, Table, Modal  } from "react-bootstrap";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
 import { Link, useNavigate } from "react-router-dom";
 import { CancelButton } from "../../../components/ButtonsComponent/OtherButtons";
@@ -10,6 +10,7 @@ import { setEscrowProduct } from "../../../redux/slices/escrowProductSlices/escr
 import { useAppContext } from "../../../context/appContext";
 import { toast } from "react-toastify";
 // import { useAppContext } from "../../context/AppContext";
+
 
 const InitiateProductEscrowForm = () => {
   return (
@@ -33,32 +34,40 @@ const InitiateProductEscrowForm = () => {
 const InitiateEscrowForm = () => {
   const loggedInUser = localStorage.getItem("userInfo");
   const userInfo = JSON.parse(loggedInUser)?.user?.email;
-  const { escrowProductInfo } = useSelector((state) => state.escrowProductInfo);
-
-  const initialValues = {
-    vendor_phone_number: "",
-    vendor_name: "",
-    vendor_email: "",
-    transaction_type: "buy",
-    product_name: "",
-    product_quantity: 0,
-    product_price: 0,
-    transaction_total: 0,
-    product_image: "",
-    product_description: "",
-    delivery_address: "",
-  };
-
-  const [transaction, setTransaction] = useState(escrowProductInfo || initialValues);
-  const [productImageURL, setProductImageURL] = useState("");
-  const [formErrors, setFormErrors] = useState({});
-  const [transactionTotal, setTransactionTotal] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleChange = async (e) => {
-    const { name, type, value, files } = e.target;
+  // Form states
+  const [vendor, setVendor] = useState({
+    vendor_name: "",
+    vendor_phone_number: "",
+    vendor_email: "",
+  });
 
+  const [product, setProduct] = useState({
+    product_name: "",
+    product_quantity: "",
+    product_price: "",
+    product_description: "",
+    product_image: "",
+  });
+
+  const [productList, setProductList] = useState([]);
+  const [productImageURL, setProductImageURL] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [showModal, setShowModal] = useState(false);
+
+  const [sumTotal, setSumTotal] = useState(0);
+  const [transactionTotal, setTransactionTotal] = useState(0);
+
+  // Handle vendor and product inputs
+  const handleVendorChange = (e) => {
+    const { name, value } = e.target;
+    setVendor((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProductChange = (e) => {
+    const { name, type, value, files } = e.target;
     if (type === "file") {
       const file = files[0];
       if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
@@ -67,220 +76,290 @@ const InitiateEscrowForm = () => {
         formData.append("upload_preset", "ldk7mrmm");
         formData.append("cloud_name", "dotkplv0d");
 
-        try {
-          const response = await fetch("https://api.cloudinary.com/v1_1/dotkplv0d/image/upload", {
-            method: "POST",
-            body: formData,
-          });
-          const data = await response.json();
-          setProductImageURL(data.secure_url);
-          setTransaction((prev) => ({
-            ...prev,
-            product_image: data.secure_url,
-          }));
-          setFormErrors((prev) => ({ ...prev, product_image: "" }));
-        } catch (error) {
-          console.error("Cloudinary upload failed", error);
-        }
-      } else {
-        setFormErrors((prev) => ({
-          ...prev,
-          product_image: "Only .jpg, .jpeg, and .png files are allowed",
-        }));
+        fetch("https://api.cloudinary.com/v1_1/dotkplv0d/image/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setProductImageURL(data.secure_url);
+            setProduct((prev) => ({ ...prev, product_image: data.secure_url }));
+          })
+          .catch(() => alert("Image upload failed"));
       }
     } else {
-      setTransaction((prev) => ({ ...prev, [name]: value }));
-      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+      setProduct((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const validate = (values) => {
+  // Validation
+  const validateProduct = () => {
     const errors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-
-    if (!values.vendor_name) errors.vendor_name = "Vendor name is required";
-    if (!values.vendor_phone_number) errors.vendor_phone_number = "Phone number is required";
-    if (!values.vendor_email) errors.vendor_email = "Vendor email is required";
-    else if (!emailRegex.test(values.vendor_email)) errors.vendor_email = "Invalid email format";
-    if (!values.product_name) errors.product_name = "Product name is required";
-    if (!values.product_quantity || values.product_quantity <= 0) errors.product_quantity = "Valid quantity required";
-    if (!values.product_price || values.product_price <= 0) errors.product_price = "Valid price required";
-    if (!values.delivery_address) errors.delivery_address = "Delivery address is required";
-    if (!values.product_description) errors.product_description = "Product description is required";
-    if (!values.product_image || !values.product_image.includes("http")) errors.product_image = "Product image is required";
-
+    if (!product.product_name) errors.product_name = "Product name required";
+    if (!product.product_quantity || product.product_quantity <= 0)
+      errors.product_quantity = "Valid quantity required";
+    if (!product.product_price || product.product_price <= 0)
+      errors.product_price = "Valid price required";
+    if (!product.product_description) errors.product_description = "Description required";
+    if (!product.product_image) errors.product_image = "Product image required";
     return errors;
   };
 
-  useEffect(() => {
-    const total =
-      parseInt(transaction.product_quantity) * parseFloat(transaction.product_price || 0) +
-      0.025 * parseFloat(transaction.product_price || 0);
-    setTransactionTotal(total.toFixed(2));
-    setTransaction((prev) => ({ ...prev, transaction_total: total.toFixed(2) }));
-  }, [transaction.product_quantity, transaction.product_price]);
-
-  useEffect(() => {
-    setFormErrors(validate(transaction));
-  }, [transaction]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errors = validate(transaction);
+  // Add product to list
+  const handleAddProduct = () => {
+    const errors = validateProduct();
     setFormErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
-    if (Object.keys(errors).length === 0) {
-      dispatch(setEscrowProduct(transaction));
-      navigate("/userdashboard/transactionsummary");
-    }
+    const newProduct = {
+      ...product,
+      total_price: product.product_quantity * product.product_price,
+    };
+    setProductList((prev) => [...prev, newProduct]);
+    setProduct({
+      product_name: "",
+      product_quantity: "",
+      product_price: "",
+      product_description: "",
+      product_image: "",
+    });
+    setProductImageURL("");
   };
 
-  const handleCancel = () => {
-    dispatch(setEscrowProduct(null));
-    navigate("/userdashboard");
+  // Calculate totals
+  useEffect(() => {
+    const total = productList.reduce((sum, item) => sum + Number(item.total_price), 0);
+    setSumTotal(total);
+    setTransactionTotal((total * 0.01).toFixed(2)); // 1%
+  }, [productList]);
+
+  const handleProceed = () => {
+    const fullTransaction = {
+      vendor,
+      products: productList,
+      sumTotal,
+      transactionTotal,
+      userEmail: userInfo,
+    };
+    dispatch(setEscrowProduct(fullTransaction));
+    setShowModal(true);
   };
+
+  const confirmProceed = () => {
+    setShowModal(false);
+    navigate("/userdashboard/transactionsummary");
+  };
+
+  const handleCancel = () => navigate("/userdashboard");
 
   return (
     <div className="px-lg-5">
-      <Form onSubmit={handleSubmit} className="w-100 mt-5 p-4 p-lg-5 rounded shadow bg-white">
-        <h4 className="mb-4 fw-bold text-center">Initiate Product Escrow</h4>
+      <Form className="w-100 mt-5 p-4 p-lg-5 rounded shadow bg-white">
+        <h3 className="mb-4 fw-bold text-center text-success">Initiate Product Escrow</h3>
 
-        <Row className="g-4">
-          <Col md={6}>
-            <FloatingLabel label="Vendor Name">
-              <Form.Control
-                type="text"
-                name="vendor_name"
-                value={transaction.vendor_name}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.vendor_name && <small className="text-danger">{formErrors.vendor_name}</small>}
-          </Col>
-
-          <Col md={6}>
-            <FloatingLabel label="Vendor Phone Number">
-              <Form.Control
-                type="text"
-                name="vendor_phone_number"
-                value={transaction.vendor_phone_number}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.vendor_phone_number && <small className="text-danger">{formErrors.vendor_phone_number}</small>}
-          </Col>
-
-          <Col md={6}>
-            <FloatingLabel label="Vendor Email">
-              <Form.Control
-                type="email"
-                name="vendor_email"
-                value={transaction.vendor_email}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.vendor_email && <small className="text-danger">{formErrors.vendor_email}</small>}
-          </Col>
-
-          <Col md={6}>
-            <FloatingLabel label="Product Name">
-              <Form.Control
-                type="text"
-                name="product_name"
-                value={transaction.product_name}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.product_name && <small className="text-danger">{formErrors.product_name}</small>}
-          </Col>
-
-          <Col md={6}>
-            <FloatingLabel label="Product Quantity">
-              <Form.Control
-                type="number"
-                name="product_quantity"
-                value={transaction.product_quantity}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.product_quantity && <small className="text-danger">{formErrors.product_quantity}</small>}
-          </Col>
-
-          <Col md={6}>
-            <FloatingLabel label="Product Price (₦)">
-              <Form.Control
-                type="number"
-                name="product_price"
-                value={transaction.product_price}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.product_price && <small className="text-danger">{formErrors.product_price}</small>}
-          </Col>
-
-          <Col md={12}>
-            <FloatingLabel label="Delivery Address">
-              <Form.Control
-                type="text"
-                name="delivery_address"
-                value={transaction.delivery_address}
-                onChange={handleChange}
-              />
-            </FloatingLabel>
-            {formErrors.delivery_address && <small className="text-danger">{formErrors.delivery_address}</small>}
-          </Col>
-
-          <Col md={12}>
-            <FloatingLabel label="Product Description">
-              <Form.Control
-                as="textarea"
-                name="product_description"
-                value={transaction.product_description}
-                onChange={handleChange}
-                style={{ height: "100px" }}
-              />
-            </FloatingLabel>
-            {formErrors.product_description && <small className="text-danger">{formErrors.product_description}</small>}
-          </Col>
-
-          <Col md={12}>
-            <Form.Label>Product Image</Form.Label>
-            <Form.Control
-              type="file"
-              name="product_image"
-              onChange={handleChange}
-              accept="image/png, image/jpeg"
-              className="mb-2"
-            />
-            {formErrors.product_image && <small className="text-danger">{formErrors.product_image}</small>}
-            {productImageURL && (
-              <div className="text-center mt-2">
-                <img
-                  src={productImageURL}
-                  alt="Preview"
-                  className="img-fluid rounded shadow-sm"
-                  style={{ maxWidth: "200px", height: "auto" }}
+        {/* Vendor Details Section */}
+        <div className="mb-4">
+          <h5 className="fw-semibold text-success mb-3">Vendor Details</h5>
+          <Row className="g-4">
+            <Col md={4}>
+              <FloatingLabel label="Vendor Name">
+                <Form.Control
+                  type="text"
+                  name="vendor_name"
+                  value={vendor.vendor_name}
+                  onChange={handleVendorChange}
                 />
-              </div>
-            )}
-          </Col>
+              </FloatingLabel>
+            </Col>
+            <Col md={4}>
+              <FloatingLabel label="Vendor Phone Number">
+                <Form.Control
+                  type="text"
+                  name="vendor_phone_number"
+                  value={vendor.vendor_phone_number}
+                  onChange={handleVendorChange}
+                />
+              </FloatingLabel>
+            </Col>
+            <Col md={4}>
+              <FloatingLabel label="Vendor Email">
+                <Form.Control
+                  type="email"
+                  name="vendor_email"
+                  value={vendor.vendor_email}
+                  onChange={handleVendorChange}
+                />
+              </FloatingLabel>
+            </Col>
+          </Row>
+        </div>
 
-          <Col md={12} className="text-end">
-            <div className="fw-semibold fs-6">
-              Total: ₦ <span className="text-success">{transactionTotal}</span>
-            </div>
-          </Col>
+        {/* Product Details Section */}
+        <div className="mb-4">
+          <h5 className="fw-semibold text-success mb-3">Product Details</h5>
+          <Row className="g-4">
+            <Col md={4}>
+              <FloatingLabel label="Product Name">
+                <Form.Control
+                  type="text"
+                  name="product_name"
+                  value={product.product_name}
+                  onChange={handleProductChange}
+                />
+              </FloatingLabel>
+              {formErrors.product_name && <small className="text-danger">{formErrors.product_name}</small>}
+            </Col>
 
-          <Col md={12} className="d-flex justify-content-center gap-3 mt-4">
-            <Button variant="outline-danger" onClick={handleCancel} style={{ width: "140px" }}>
-              Cancel
-            </Button>
-            <Button type="submit" className="btn-success text-white" style={{ width: "140px" }}>
-              Proceed
-            </Button>
-          </Col>
-        </Row>
+            <Col md={4}>
+              <FloatingLabel label="Quantity">
+                <Form.Control
+                  type="number"
+                  name="product_quantity"
+                  value={product.product_quantity}
+                  onChange={handleProductChange}
+                />
+              </FloatingLabel>
+              {formErrors.product_quantity && <small className="text-danger">{formErrors.product_quantity}</small>}
+            </Col>
+
+            <Col md={4}>
+              <FloatingLabel label="Price (₦)">
+                <Form.Control
+                  type="number"
+                  name="product_price"
+                  value={product.product_price}
+                  onChange={handleProductChange}
+                />
+              </FloatingLabel>
+              {formErrors.product_price && <small className="text-danger">{formErrors.product_price}</small>}
+            </Col>
+
+            <Col md={12}>
+              <FloatingLabel label="Product Description">
+                <Form.Control
+                  as="textarea"
+                  name="product_description"
+                  value={product.product_description}
+                  onChange={handleProductChange}
+                  style={{ height: "80px" }}
+                />
+              </FloatingLabel>
+              {formErrors.product_description && <small className="text-danger">{formErrors.product_description}</small>}
+            </Col>
+
+            <Col md={12}>
+              <Form.Label>Product Image</Form.Label>
+              <Form.Control type="file" name="product_image" onChange={handleProductChange} />
+              {formErrors.product_image && <small className="text-danger">{formErrors.product_image}</small>}
+              {productImageURL && (
+                <div className="text-center mt-2">
+                  <img
+                    src={productImageURL}
+                    alt="preview"
+                    className="img-fluid rounded shadow-sm"
+                    style={{ maxWidth: "200px" }}
+                  />
+                </div>
+              )}
+            </Col>
+
+            <Col md={12} className="text-center mt-3">
+              <Button variant="success" onClick={handleAddProduct}>
+                Add Product
+              </Button>
+            </Col>
+          </Row>
+        </div>
+
+        {/* Product Table */}
+        {productList.length > 0 && (
+          <div className="table-responsive mt-4">
+            <Table bordered hover>
+              <thead className="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Price (₦)</th>
+                  <th>Total (₦)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productList.map((p, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{p.product_name}</td>
+                    <td>{p.product_quantity}</td>
+                    <td>{p.product_price}</td>
+                    <td>{p.total_price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        )}
+
+        {/* Totals */}
+        <div className="mt-4">
+          <div className="d-flex justify-content-between fw-semibold">
+            <span>Sum Total (Product Price):</span>
+            <span>₦ {sumTotal.toFixed(2)}</span>
+          </div>
+          <div className="d-flex justify-content-between fw-semibold mt-2">
+            <span>Transaction Total (1%):</span>
+            <span>₦ {transactionTotal}</span>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="d-flex justify-content-center gap-3 mt-4">
+          <Button variant="outline-danger" onClick={handleCancel} style={{ width: "140px" }}>
+            Cancel
+          </Button>
+          <Button
+            className="btn-success text-white"
+            style={{ width: "140px" }}
+            onClick={handleProceed}
+            disabled={productList.length === 0}
+          >
+            Proceed
+          </Button>
+        </div>
       </Form>
+
+      {/* Transaction Summary Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Transaction Summary</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h6 className="fw-bold">Vendor Details</h6>
+          <p>Name: {vendor.vendor_name}</p>
+          <p>Email: {vendor.vendor_email}</p>
+          <p>Phone: {vendor.vendor_phone_number}</p>
+
+          <hr />
+          <h6 className="fw-bold">Products</h6>
+          <ul>
+            {productList.map((p, i) => (
+              <li key={i}>
+                {p.product_name} - {p.product_quantity} × ₦{p.product_price} = ₦{p.total_price}
+              </li>
+            ))}
+          </ul>
+          <hr />
+          <p className="fw-semibold mb-0">Sum Total: ₦ {sumTotal.toFixed(2)}</p>
+          <p className="fw-semibold">Transaction Total (1%): ₦ {transactionTotal}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={confirmProceed}>
+            Confirm & Proceed
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
