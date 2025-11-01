@@ -11,8 +11,10 @@ import buyerImage from "../../../images/transact_person.png";
 import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
 import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useCancelTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
+import { useBuyerConfirmsProductMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
 import {  useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
+
 import { useSelector } from "react-redux";
 
 const UserTransactionHistory = () => {
@@ -42,6 +44,7 @@ export const RecentTransactionTable = () => {
     });
 
   const [cancelTransaction] = useCancelTransactionMutation();
+  const [buyerConfirmsProduct] = useBuyerConfirmsProductMutation();
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,15 +64,11 @@ const {
   skip: !userEmail,
 });
 
-// ✅ ADD THIS: Find the dispute that belongs to the selected transaction
+ // Find the dispute that belongs to the selected transaction
 const currentDispute = allDisputes?.fetchDisputeDetails?.find(
   (d) => d.transaction_id === selectedTransaction?.transaction_id
 );
 
-// 🔍 DEBUG: Add this temporarily to see what's happening
-console.log('selectedTransaction:', selectedTransaction);
-console.log('allDisputes:', allDisputes);
-console.log('currentDispute:', currentDispute);
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) setCurrentPage(page);
@@ -349,30 +348,53 @@ console.log('currentDispute:', currentDispute);
                       Cancel Transaction
                     </Button>
                   )}
+                  {userEmail === selectedTransaction?.buyer_email &&
+                  selectedTransaction?.seller_confirm_status &&
+                  selectedTransaction?.transaction_status === "processing" && (
+                    <Button
+                      variant="outline-success"
+                      onClick={async () => {
+                        try {
+                          await buyerConfirmsProduct(selectedTransaction?.transaction_id).unwrap();
+                          toast.success("Product confirmed successfully!");
+                          handleCloseModal();
+                          refetch();
+                        } catch (error) {
+                          toast.error(error?.data?.message || "Failed to confirm product");
+                        }
+                      }}
+                    >
+                      Confirm Product Received
+                    </Button>
+                  )}
+
 
                   {/* Seller Actions */}
                   {userEmail === selectedTransaction?.vendor_email && (
-                    <>
-                      <Button
-                          variant="outline-primary"
-                          onClick={() =>
-                            navigate(
-                              `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`,
-                              { state: { transaction: selectedTransaction } } // ✅ pass full transaction
-                            )
-                          }
-                        >
-                          Confirm Transaction
-                        </Button>
+                      <>
+                        {!selectedTransaction?.seller_confirm_status && (
+                          <Button
+                            variant="outline-primary"
+                            onClick={() =>
+                              navigate(
+                                `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`,
+                                { state: { transaction: selectedTransaction } }
+                              )
+                            }
+                          >
+                            Confirm Transaction
+                          </Button>
+                        )}
 
-                      <Button
-                        variant="outline-warning"
-                        onClick={() => handleRaiseDispute(selectedTransaction)}
-                      >
-                        Raise Dispute
-                      </Button>
-                    </>
-                  )}
+                        <Button
+                          variant="outline-warning"
+                          onClick={() => handleRaiseDispute(selectedTransaction)}
+                        >
+                          Raise Dispute
+                        </Button>
+                      </>
+                    )}
+
                 </div>
               )}
 
@@ -471,573 +493,3 @@ export default UserTransactionHistory;
 
 
 
-
-
-
-
-
-
-
-
-
-// export const RecentTransactionTable = () => {
-//   // user detail for single user
-//   const { userInfo } = useSelector((state) => state.usersauth);
-//   const userEmail = userInfo?.user?.email;
-
-//   const {
-//     data: transactions,
-//     error,
-//     isLoading,
-//   } = useFetchAllTransactionsQuery(userEmail, {
-//     refetchOnMountOrArgChange: true,
-//   });
-
-//   // console.log("transactions", transactions);
-
-//   const dropdownBtnValues = [
-//     { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
-//     { label: "2021", value_1: "2022", value_2: "2023" },
-//   ];
-
-//   const itemsPerPage = 10;
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [totalPages, setTotalPages] = useState(0);
-//   // const [selectedTransaction, setSelectedTransaction] = useState(null); // For modal
-//   const [selectedTransaction, setSelectedTransaction] = useState(null); // For modal
-//   const [show, setShow] = useState(false);
-
-//   // const location = useLocation();
-
-//   // transactions fetched
-//   const fetchedTransactions = transactions?.transactions;
-//   // console.log("fetchedTransactions", fetchedTransactions);
-
-//   const handlePageChange = (page) => {
-//     if (page > 0 && page <= totalPages) {
-//       setCurrentPage(page);
-//     }
-//   };
-
-//   const handleShowMore = (transactionId) => {
-//     setSelectedTransaction(transactionId);
-//     setShow(true);
-//   };
-
-//   const handleCloseModal = () => {
-//     setShow(false);
-//     setSelectedTransaction(null);
-//   };
-
-//   const handleClose = () => setShow(false);
-//   const handleShow = () => setShow(true);
-
-//   const getSlicedData = () => {
-//     if (!fetchedTransactions || fetchedTransactions?.length === 0) {
-//       return []; // Return an empty array if there is no data
-//     }
-//     console.log("ft", fetchedTransactions);
-
-//     // const transactionsInProgress = fetchedTransactions?.filter(
-//     //   (transaction) =>
-//     //     // transaction?.transaction_status === "completed" &&
-//     //     // userEmail === transaction?.vendor_email &&
-//     //     // transaction?.buyer_email !== transaction?.vendor_email &&
-//     //     // transaction?.seller_confirm_status === false
-//     //     transaction?.transaction_status === "processing"
-//     // );
-
-//     // console.log("ct", transactionsInProgress);
-
-//     const startIndex = (currentPage - 1) * itemsPerPage;
-//     const endIndex = startIndex + itemsPerPage;
-
-//     return fetchedTransactions?.slice(startIndex, endIndex);
-//   };
-
-//   // console.log("getSlicedData", getSlicedData());
-
-//   // if (isLoading) return <p>Loading...</p>;
-//   // if (error) return <p>Error loading transactions: {error?.data?.message}</p>;
-//   return (
-//     <div className="bg-white rounded-1 p-3" style={{ width: "100%" }}>
-//       <div>
-//         <div className="d-md-flex justify-content-between align-items-center mb-3">
-//           <h3 className="fs-6 m-0 mb-3 mb-md-0" style={{}}>
-//            All Transactions
-//           </h3>
-//           <div className="d-flex">
-//             {dropdownBtnValues.map((item) => {
-//               return (
-//                 <Dropdown>
-//                   <Dropdown.Toggle
-//                     id="dropdown-basic"
-//                     className="border-1 border-gray my-1 rounded-1 btn bg-transparent text-black border-black me-3 fs-sm"
-//                     style={{
-//                       outline: "none",
-//                       borderColor: "#E7E7E7",
-//                     }}
-//                   >
-//                     {item.label}
-//                   </Dropdown.Toggle>
-
-//                   <Dropdown.Menu style={{ minWidth: "inherit" }}>
-//                     <div key={item.label}>
-//                       <Dropdown.Item className="fs-sm">
-//                         {item.value_1}
-//                       </Dropdown.Item>
-//                       <Dropdown.Item className="fs-sm">
-//                         {item.value_2}
-//                       </Dropdown.Item>
-//                     </div>
-//                   </Dropdown.Menu>
-//                 </Dropdown>
-//               );
-//             })}
-//             <Link to={"../initiate-escrow"} className="text-decoration-none">
-//               <Button
-//                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-3"
-//                 style={{
-//                   backgroundColor: "#006747EB",
-//                 }}
-//               >
-//                 Create Transaction
-//               </Button>
-//             </Link>
-
-//             <Link to={"../initiate-escrow"} className="text-decoration-none">
-//               <Button
-//                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block"
-//                 style={{
-//                   backgroundColor: "#006747EB",
-//                 }}
-//               >
-//                 Download Transaction Slip
-//               </Button>
-//             </Link>
-//           </div>
-//         </div>
-
-//         <table className="table fs-sm">
-//           <thead>
-//             <tr className="lightTextColor">
-//               <th className="px-0 d-none d-md-table-cell">Product Name</th>
-//               <th className="text-center d-none d-md-table-cell">Vendor</th>
-//               <th className="text-center d-none d-md-table-cell">
-//                 Purchase Date
-//               </th>
-//               {/* <div className="d-flex justify-content-between align-items-center border-md-bottom"> */}
-//               {/* <th className="text-center d-none d-md-table-cell">
-//                   Purchase By
-//                 </th> */}
-//               {/* <th className="text-center d-none d-md-table-cell">
-//                 Product Price
-//               </th> */}
-//               {/* </div> */}
-//               {/* <th className="text-center d-none d-md-table-cell">Slip</th> */}
-//               <th className="text-center d-none d-md-table-cell">
-//                 Product Price
-//               </th>
-//               <th className="text-center d-none d-md-table-cell">
-//                 Transaction Type
-//               </th>
-//               <th className="text-center d-none d-md-table-cell">
-//                 Transaction Status
-//               </th>
-//               <th className="text-center d-none d-md-table-cell">
-//                 View Details
-//               </th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {/* Use the getSlicedData function to map over only the data for the current page */}
-//             {getSlicedData()?.map((history) => {
-//               return (
-//                 <RecentTransactionTableData
-//                   {...history}
-//                   key={history.id}
-//                   onViewMore={() => handleShowMore(history)}
-//                   // onClick={console.log("hi")}
-//                 />
-
-//                 // <Button variant="primary" onClick={handleShow}>
-//                 // </Button>
-//               );
-//             })}
-
-//             {/* {console.log("gSD", getSlicedData())} */}
-//           </tbody>
-//         </table>
-//         <PaginationBar
-//           // data={TransactionData.user_recent_transaction}
-//           data={fetchedTransactions || "no transactions"}
-//           currentPage={currentPage}
-//           handlePageChange={handlePageChange}
-//           itemsPerPage={itemsPerPage}
-//           totalPages={totalPages}
-//           setTotalPages={setTotalPages}
-//         />
-
-//         {/* {console.log("ft", fetchedTransactions)} */}
-//       </div>
-
-//       <Modal show={show} onHide={handleClose}>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Transaction Details</Modal.Title>
-//         </Modal.Header>
-
-//         <Modal.Body>
-//           <Modal.Body>
-//             {/* {selectedTransaction &&
-//             userEmail === selectedTransaction?.vendor_email &&
-//             selectedTransaction?.buyer_email !==
-//               selectedTransaction?.vendor_email &&
-//             selectedTransaction?.seller_confirm_status === false ? ( */}
-//             {selectedTransaction ? (
-//               <>
-//                 {selectedTransaction.transaction_type === "buy" ? (
-//                   // Render for "buy" transaction type
-//                   <>
-//                     <p>
-//                       <strong>Product Description:</strong>{" "}
-//                       {selectedTransaction.product_description}
-//                     </p>
-//                     <p>
-//                       <strong>Product Image:</strong>{" "}
-//                       <img
-//                         src={selectedTransaction.product_image}
-//                         alt="Product"
-//                       />
-//                     </p>
-//                     <p>
-//                       <strong>Product Name:</strong>{" "}
-//                       {selectedTransaction.product_name}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction Total:</strong> ₦
-//                       {selectedTransaction.transaction_total}
-//                     </p>
-//                     <p>
-//                       <strong>Product Quantity:</strong>{" "}
-//                       {selectedTransaction.product_quantity}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction ID:</strong>{" "}
-//                       {selectedTransaction.transaction_id}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction Status:</strong>{" "}
-//                       {selectedTransaction.transaction_status}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction Type:</strong>{" "}
-//                       {selectedTransaction.transaction_type}
-//                     </p>
-//                     <p>
-//                       <strong>Purchase Date:</strong>{" "}
-//                       {selectedTransaction.createdAt?.slice(0, 10)}
-//                     </p>
-//                     <p>
-//                       <strong>Purchase Time:</strong>{" "}
-//                       {selectedTransaction.createdAt?.slice(11, 19)}
-//                     </p>
-//                     <p>
-//                       <strong>Vendor Email:</strong>{" "}
-//                       {selectedTransaction.vendor_email}
-//                     </p>
-//                     <p>
-//                       <strong>Vendor Name:</strong>{" "}
-//                       {selectedTransaction.vendor_name}
-//                     </p>
-//                     <p>
-//                       <strong>Vendor Phone Number:</strong>{" "}
-//                       {selectedTransaction.vendor_phone_number}
-//                     </p>
-//                     <p>
-//                       <strong>Delivery Address:</strong>{" "}
-//                       {selectedTransaction.delivery_address}
-//                     </p>
-//                   </>
-//                 ) : (
-//                   // Render for "sell" transaction type
-//                   <>
-//                     <p>
-//                       <strong>Product Description:</strong>{" "}
-//                       {selectedTransaction.product_description}
-//                     </p>
-//                     <p>
-//                       <strong>Product Image:</strong>{" "}
-//                       <img
-//                         src={selectedTransaction.product_image}
-//                         alt="Product"
-//                       />
-//                     </p>
-//                     <p>
-//                       <strong>Product Name:</strong>{" "}
-//                       {selectedTransaction.product_name}
-//                     </p>
-//                     <p>
-//                       <strong>Product Price:</strong> ₦
-//                       {selectedTransaction.product_price}
-//                     </p>
-//                     <p>
-//                       <strong>Product Quantity:</strong>{" "}
-//                       {selectedTransaction.product_quantity}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction ID:</strong>{" "}
-//                       {selectedTransaction.transaction_id}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction Status:</strong>{" "}
-//                       {selectedTransaction.transaction_status}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction Type:</strong>{" "}
-//                       {selectedTransaction.transaction_type}
-//                     </p>
-//                     <p>
-//                       <strong>Purchase Date:</strong>{" "}
-//                       {/* {selectedTransaction.createdAt} */}
-//                       {selectedTransaction.createdAt?.slice(0, 10)}
-//                     </p>
-//                     <p>
-//                       <strong>Purchase Time:</strong>{" "}
-//                       {/* {selectedTransaction.createdAt} */}
-//                       {selectedTransaction.createdAt?.slice(11, 19)}
-//                     </p>
-//                     <p>
-//                       <strong>Buyer Email:</strong>{" "}
-//                       {selectedTransaction.buyer_email}
-//                     </p>
-//                     <p>
-//                       <strong>Buyer Email:</strong>{" "}
-//                       {selectedTransaction.delivery_address}
-//                     </p>
-//                   </>
-//                 )}
-//               </>
-//             ) : (
-//               <p>No transaction details available.</p>
-//             )}
-//           </Modal.Body>
-//         </Modal.Body>
-//         <Modal.Footer>
-//           <Button variant="secondary" onClick={handleClose}>
-//             Close
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export const RecentTransactionTableData = (props) => {
-//   const { userInfo } = useSelector((state) => state.usersauth);
-//   const userEmail = userInfo?.user?.email;
-
-//   const {
-//     product_name,
-//     vendor_name,
-//     vendor_email,
-//     buyer_email,
-//     createdAt,
-//     // purchase_by,
-//     product_price,
-//     transaction_total,
-//     transaction_id,
-//     status,
-//     status_color,
-//     status_message,
-//     transaction_type,
-//     transaction_status,
-//     seller_confirm_status,
-//     onViewMore,
-//   } = props;
-
-//   const navigate = useNavigate();
-
-//   let maxWidth = window.innerWidth;
-
-//   if (maxWidth < 250) {
-//     maxWidth = "5rem";
-//   } else if (maxWidth < 330) {
-//     maxWidth = "9rem";
-//   } else if (maxWidth < 450) {
-//     maxWidth = "12rem";
-//   }
-
-//   const style = {
-//     maxWidth,
-//   };
-
-//   return (
-//     <>
-//       <tr className="border-bottom">
-//         <td className="border-0 border-md-bottom d-none d-md-table-cell py-md-3 px-0">
-//           {product_name}
-//         </td>
-//         <td className="d-none d-md-table-cell py-md-3 text-center">
-//           {vendor_name}
-//         </td>
-//         <td className="py-md-3 text-center lightTextColor">
-//           {createdAt?.slice(0, 10)}
-//         </td>
-
-//         <td className="d-none d-md-table-cell py-md-3 text-center">
-//           ₦{transaction_type === "buy" ? transaction_total : product_price}
-//         </td>
-//         <td className="d-none d-md-table-cell py-md-3 text-center">
-//           {transaction_type}
-//         </td>
-
-//         <td className="d-none d-md-table-cell py-md-3 text-center">
-//           {/* <Button
-//             className="border-0 rounded-1 btn all-btn text-white fs-sm"
-//             style={{
-//               backgroundColor: "#006747EB",
-//             }}
-//           >
-//             Generate Slip
-//           </Button> */}
-//           {transaction_status}
-//         </td>
-//         {/* <td
-//           className="py-md-3 text-center"
-//           style={{ color: `${status_color}` }}
-//         >
-//           {window.innerWidth < 768 ? (
-//             <span style={{ color: `${status_color}` }}>●</span>
-//           ) : (
-//             `${transaction_status}`
-//           )}
-//         </td> */}
-
-//         {/* ///// */}
-//         {/* <td className="d-none d-md-table-cell py-md-3 text-center">
-//           <Button
-//             variant="outline-primary"
-//             className="rounded-1 fs-sm"
-//             onClick={onViewMore}
-//           >
-//             View More
-//           </Button>
-//         </td> */}
-//         {/* ////// */}
-
-//         {/* <td className="d-none d-md-table-cell py-md-3 text-center">
-//           <Button
-//             variant="outline-primary"
-//             className="rounded-1 fs-sm"
-//             onClick={onViewMore}
-//           >
-//             {seller_confirm_status === "false"
-//               ? "View More"
-//               : "Confirm Transaction"}
-//           </Button>
-//         </td> */}
-
-//         {/* {userEmail === vendor_email &&
-//         buyer_email !== vendor_email &&
-//         seller_confirm_status === false &&
-//         transaction_status === "processing" ? (
-//           <td className="d-none d-md-table-cell py-md-3 text-center">
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={() =>
-//                 navigate(
-//                   `confirm-escrow-product-transaction/shipping-details-form/${transaction_id}`
-//                 )
-//               }
-//             >
-//               Confirm Transaction
-//             </Button>
-//           </td>
-//         ) : (
-//           <td className="d-none d-md-table-cell py-md-3 text-center">
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={onViewMore}
-//             >
-//               View More
-//             </Button>
-//           </td>
-//         )} */}
-
-//         {userEmail === vendor_email &&
-//         buyer_email !== vendor_email &&
-//         seller_confirm_status === false &&
-//         transaction_status !== "inDispute" &&
-//         transaction_status !== "cancelled" ? (
-//           <td className="d-none d-md-table-cell py-md-3 text-center">
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={() =>
-//                 navigate(
-//                   `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${transaction_id}`
-//                 )
-//               }
-//             >
-//               Confirm Transaction
-//             </Button>
-
-//             <Button
-//               variant="outline-danger" // Different color to distinguish
-//               className="rounded-1 fs-sm"
-//               onClick={() =>
-//                 navigate(
-//                   `/userdashboard/disputes/initiate-dispute/${transaction_id}` // Adjust the route as needed
-//                 )
-//               }
-//             >
-//               Raise Dispute
-//             </Button>
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={onViewMore}
-//             >
-//               View More
-//             </Button>
-//           </td>
-//         ) : transaction_status === "inDispute" ? (
-//           <td className="d-none d-md-table-cell py-md-3 text-center">
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={() =>
-//                 navigate(
-//                   `/userdashboard/transaction-history/resolve-conflict/${transaction_id}` // Adjust the route as needed
-//                 )
-//               }
-//             >
-//               Resolve Conflict
-//             </Button>
-//           </td>
-//         ) : (
-//           <td className="d-none d-md-table-cell py-md-3 text-center">
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={onViewMore}
-//             >
-//               View More
-//             </Button>
-//             <Button
-//               variant="outline-primary"
-//               className="rounded-1 fs-sm"
-//               onClick={onViewMore}
-//             >
-//               Cancel
-//             </Button>
-//           </td>
-//         )}
-//       </tr>
-//     </>
-//   );
-// };
-
-// export default UserTransactionHistory;
