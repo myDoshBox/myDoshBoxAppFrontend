@@ -123,8 +123,12 @@ const currentDispute = allDisputes?.fetchDisputeDetails?.find(
     return transactions?.transactions?.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading transactions.</p>;
+  // if (isLoading) return <p>Loading...</p>;
+  // if (error) return <p>Error loading transactions.</p>;
+
+   // Get the sliced data
+const slicedData = getSlicedData();
+const hasNoData = !slicedData || slicedData.length === 0;
 
   return (
     <div className="bg-white rounded-1 p-3 w-100">
@@ -198,13 +202,13 @@ const currentDispute = allDisputes?.fetchDisputeDetails?.find(
 
                 {/* Desktop row */}
                 <tr className="d-none d-md-table-row">
-                  <td>{history?.product_name}</td>
+                  <td>{history?.products?.[0]?.name || "N/A"}</td>
                   <td className="text-center">{history?.vendor_name}</td>
-                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
                   <td className="text-center">
-                    {history?.transaction_type === "buy"
-                      ? history?.transaction_total
-                      : history?.product_price}
+                    {history?.createdAt?.slice(0, 10)}
+                  </td>
+                  <td className="text-center">
+                    ₦{history?.products?.[0]?.price?.toLocaleString() || "N/A"}
                   </td>
                   <td className="text-center">{history?.transaction_type}</td>
                   <td className="text-center">{history?.transaction_status}</td>
@@ -247,193 +251,272 @@ const currentDispute = allDisputes?.fetchDisputeDetails?.find(
               : "Transaction Details"}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {selectedTransaction ? (
-            <>
-              {/* ---- If inDispute: show toggles ---- */}
-              {/* ✅ Get current dispute for this transaction */}
-              {selectedTransaction?.transaction_status === "inDispute" ? (
-                <Accordion defaultActiveKey="0">
-                  {/* Transaction Details */}
-                  <Accordion.Item eventKey="0">
-                    <Accordion.Header>Transaction Details</Accordion.Header>
-                    <Accordion.Body>
-                      <p><strong>Product Name:</strong> {selectedTransaction?.product_name}</p>
-                      <p><strong>Product Description:</strong> {selectedTransaction?.product_description}</p>
-                      {selectedTransaction?.product_image && (
-                        <p>
-                          <strong>Product Image:</strong><br />
-                          <img
-                            src={selectedTransaction?.product_image}
-                            alt="Product"
-                            style={{ maxWidth: "150px" }}
-                          />
-                        </p>
-                      )}
-                      <p><strong>Transaction Total:</strong> ₦
-                        {selectedTransaction?.transaction_type === "buy"
-                          ? selectedTransaction?.transaction_total
-                          : selectedTransaction?.product_price}
-                      </p>
-                      <p><strong>Purchase Time:</strong> {selectedTransaction?.createdAt?.slice(11, 19)}</p>
-                      <p><strong>Transaction Status:</strong> {selectedTransaction?.transaction_status}</p>
-                      <p><strong>Purchase Date:</strong> {selectedTransaction?.createdAt?.slice(0, 10)}</p>
-                      <p><strong>Vendor Email:</strong> {selectedTransaction?.vendor_email}</p>
-                      <p><strong>Vendor Name:</strong> {selectedTransaction?.vendor_name}</p>
-                      <p><strong>Vendor Tel:</strong> {selectedTransaction?.vendor_phone_number}</p>
-                      <p><strong>Buyer Email:</strong> {selectedTransaction?.buyer_email}</p>
-                    </Accordion.Body>
-                  </Accordion.Item>
+       <Modal.Body>
+  {selectedTransaction ? (
+    <>
+      <Accordion defaultActiveKey="0">
+        {/* 🟢 Transaction Details Accordion */}
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>
+            <span
+              style={{
+                color: "#0f5132",
+                backgroundColor: "#d1e7dd",
+                padding: "8px 12px",
+                borderRadius: "8px",
+                width: "100%",
+                fontWeight: "600",
+              }}
+            >
+              Transaction Details
+            </span>
+          </Accordion.Header>
 
-                  {/* Dispute Details */}
-                  <Accordion.Item eventKey="1">
-                    <Accordion.Header>Dispute Details</Accordion.Header>
-                      <Accordion.Body>
-                      {disputeLoading ? (
-                        <p>Loading dispute details...</p>
-                      ) : disputeError ? (
-                        <p style={{ color: "red" }}>
-                          Error loading disputes: {disputeError?.data?.message || disputeError?.message}
-                        </p>
-                      ) : currentDispute ? (
-                        <>
-                          <p><strong>Reason for Dispute:</strong> {currentDispute?.reason_for_dispute || "N/A"}</p>
-                          <p><strong>Dispute Description:</strong> {currentDispute?.dispute_description || "N/A"}</p>
-                        </>
-                      ) : (
-                        <p>No dispute details available for this transaction.</p>
-                      )}
-                    </Accordion.Body>
-                  </Accordion.Item>
-                </Accordion>
-              ) : (
-                <>
-                  {/* ---- Normal Transaction Details ---- */}
-                  <p><strong>Product Name:</strong> {selectedTransaction?.product_name}</p>
-                  <p><strong>Product Description:</strong> {selectedTransaction?.product_description}</p>
-                  {selectedTransaction?.product_image && (
-                    <p>
-                      <strong>Product Image:</strong><br />
-                      <img
-                        src={selectedTransaction?.product_image}
-                        alt="Product"
-                        style={{ maxWidth: "150px" }}
-                      />
-                    </p>
-                  )}
-                  <p><strong>Transaction Total:</strong> ₦
-                    {selectedTransaction?.transaction_type === "buy"
-                      ? selectedTransaction?.transaction_total
-                      : selectedTransaction?.product_price}
-                  </p>
-                  <p><strong>Purchase Time:</strong> {selectedTransaction?.createdAt?.slice(11, 19)}</p>
-                  <p><strong>Transaction Status:</strong> {selectedTransaction?.transaction_status}</p>
-                  <p><strong>Purchase Date:</strong> {selectedTransaction?.createdAt?.slice(0, 10)}</p>
-                  <p><strong>Vendor Email:</strong> {selectedTransaction?.vendor_email}</p>
+          <Accordion.Body>
+            <p><strong>Transaction ID:</strong> {selectedTransaction?.transaction_id}</p>
+            <p><strong>Transaction Status:</strong> {selectedTransaction?.transaction_status}</p>
+            <p><strong>Purchase Date:</strong> {selectedTransaction?.createdAt?.slice(0, 10)}</p>
+            <p><strong>Purchase Time:</strong> {selectedTransaction?.createdAt?.slice(11, 19)}</p>
+
+            {/* 🆕 Nested Accordions for Vendor, Buyer, and Products */}
+            <Accordion defaultActiveKey={["vendor-info", "buyer-info", "product-0"]} alwaysOpen className="mt-3">
+              {/* Vendor Info Accordion */}
+              <Accordion.Item eventKey="vendor-info">
+                <Accordion.Header>
+                  <span
+                    style={{
+                      color: "#0a3622",
+                      backgroundColor: "#d1e7dd",
+                      padding: "6px 10px",
+                      borderRadius: "6px",
+                      width: "100%",
+                      fontWeight: "500",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    Vendor Information
+                  </span>
+                </Accordion.Header>
+                <Accordion.Body>
                   <p><strong>Vendor Name:</strong> {selectedTransaction?.vendor_name}</p>
-                  <p><strong>Vendor Tel:</strong> {selectedTransaction?.vendor_phone_number}</p>
-                  <p><strong>Buyer Email:</strong> {selectedTransaction?.buyer_email}</p>
-                </>
-              )}
+                  <p><strong>Vendor Email:</strong> {selectedTransaction?.vendor_email}</p>
+                  <p className="mb-0"><strong>Vendor Phone:</strong> {selectedTransaction?.vendor_phone_number}</p>
+                </Accordion.Body>
+              </Accordion.Item>
 
-              {/* ---- Action Buttons ---- */}
-              {selectedTransaction?.transaction_status === "processing" && (
-                <div className="mt-3 d-flex gap-2 flex-wrap">
-                  {/* Buyer Actions */}
-                  {userEmail === selectedTransaction?.buyer_email && (
-                    <Button
-                      variant="outline-danger"
-                      onClick={() => setConfirmCancel(true)}
-                    >
-                      Cancel Transaction
-                    </Button>
-                  )}
-                  {userEmail === selectedTransaction?.buyer_email &&
-                  selectedTransaction?.seller_confirm_status &&
-                  selectedTransaction?.transaction_status === "processing" && (
-                    <Button
-                      variant="outline-success"
-                      onClick={async () => {
-                        try {
-                          await buyerConfirmsProduct(selectedTransaction?.transaction_id).unwrap();
-                          toast.success("Product confirmed successfully!");
-                          handleCloseModal();
-                          refetch();
-                        } catch (error) {
-                          toast.error(error?.data?.message || "Failed to confirm product");
-                        }
+              {/* Buyer Info Accordion */}
+              <Accordion.Item eventKey="buyer-info">
+                <Accordion.Header>
+                  <span
+                    style={{
+                      color: "#0a3622",
+                      backgroundColor: "#d1e7dd",
+                      padding: "6px 10px",
+                      borderRadius: "6px",
+                      width: "100%",
+                      fontWeight: "500",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    Buyer Information
+                  </span>
+                </Accordion.Header>
+                <Accordion.Body>
+                  <p><strong>Buyer Email:</strong> {selectedTransaction?.buyer_email}</p>
+                  <p className="mb-0"><strong>Delivery Address:</strong> {selectedTransaction?.delivery_address}</p>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+
+            {/* Products Information Header */}
+            <h6 className="fw-semibold text-success mt-3 mb-2">Products Information</h6>
+            
+            <Accordion defaultActiveKey="product-0">
+              {/* Products Accordions */}
+              {selectedTransaction?.products?.map((product, index) => (
+                <Accordion.Item eventKey={`product-${index}`} key={product._id || index}>
+                  <Accordion.Header>
+                    <span
+                      style={{
+                        color: "#084298",
+                        backgroundColor: "#cfe2ff",
+                        padding: "6px 10px",
+                        borderRadius: "6px",
+                        width: "100%",
+                        fontWeight: "500",
+                        fontSize: "0.95rem",
                       }}
                     >
-                      Confirm Product Received
-                    </Button>
-                  )}
+                      {product.name} {selectedTransaction?.products?.length > 1 ? `(${index + 1} of ${selectedTransaction.products.length})` : ''}
+                    </span>
+                  </Accordion.Header>
+                  
+                  <Accordion.Body>
+                    <p><strong>Product Name:</strong> {product.name}</p>
+                    <p><strong>Quantity:</strong> {product.quantity}</p>
+                    <p><strong>Price:</strong> ₦{product.price?.toLocaleString()}</p>
+                    <p><strong>Subtotal:</strong> ₦{(product.price * product.quantity)?.toLocaleString()}</p>
+                    <p><strong>Description:</strong> {product.description || "N/A"}</p>
 
-
-                  {/* Seller Actions */}
-                  {userEmail === selectedTransaction?.vendor_email && (
-                      <>
-                        {!selectedTransaction?.seller_confirm_status && (
-                          <Button
-                            variant="outline-primary"
-                            onClick={() =>
-                              navigate(
-                                `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`,
-                                { state: { transaction: selectedTransaction } }
-                              )
-                            }
-                          >
-                            Confirm Transaction
-                          </Button>
-                        )}
-
-                        <Button
-                          variant="outline-warning"
-                          onClick={() => handleRaiseDispute(selectedTransaction)}
-                        >
-                          Raise Dispute
-                        </Button>
-                      </>
+                    {product.image && (
+                      <div className="mt-2">
+                        <strong>Product Image:</strong><br />
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          style={{
+                            maxWidth: "150px",
+                            borderRadius: "8px",
+                            border: "1px solid #ccc",
+                            marginTop: "6px",
+                          }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      </div>
                     )}
+                  </Accordion.Body>
+                </Accordion.Item>
+              ))}
+            </Accordion>
 
-                </div>
+            {/* Total Amount */}
+            <div className="mt-3 p-2" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
+              <p className="mb-1 "><strong className="bg-success text-white p-1 rounded-1">Sum Total:</strong> ₦{selectedTransaction?.sum_total?.toLocaleString()}</p>
+            
+            </div>
+          </Accordion.Body>
+        </Accordion.Item>
+
+        {/* 🔴 Dispute Details Accordion (only when inDispute) */}
+        {selectedTransaction?.transaction_status === "inDispute" && (
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>
+              <span
+                style={{
+                  color: "#842029",
+                  backgroundColor: "#f8d7da",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  width: "100%",
+                  fontWeight: "600",
+                }}
+              >
+                Dispute Details
+              </span>
+            </Accordion.Header>
+
+            <Accordion.Body>
+              {disputeLoading ? (
+                <p>Loading dispute details...</p>
+              ) : disputeError ? (
+                <p style={{ color: "red" }}>
+                  Error loading disputes: {disputeError?.data?.message || disputeError?.message}
+                </p>
+              ) : currentDispute ? (
+                <>
+                  <p><strong>Reason for Dispute:</strong> {currentDispute?.reason_for_dispute || "N/A"}</p>
+                  <p><strong>Dispute Description:</strong> {currentDispute?.dispute_description || "N/A"}</p>
+                </>
+              ) : (
+                <p>No dispute details available for this transaction.</p>
               )}
+            </Accordion.Body>
+          </Accordion.Item>
+        )}
+      </Accordion>
 
-              {selectedTransaction?.transaction_status === "inDispute" && (
-                <div className="mt-3 d-flex gap-2 flex-wrap">
-                  {/* Buyer sees Cancel + Resolve */}
-                  {userEmail === selectedTransaction?.buyer_email && (
-                    <>
-                      <Button
-                        variant="outline-danger"
-                        onClick={() => setConfirmCancel(true)}
-                      >
-                        Cancel Transaction
-                      </Button>
-                      <Button
-                        variant="outline-success"
-                        onClick={() => handleResolveConflict(selectedTransaction)}
-                      >
-                        Resolve Dispute
-                      </Button>
-                    </>
-                  )}
-
-                  {/* Seller sees Involve Mediator */}
-                  {userEmail === selectedTransaction?.vendor_email && (
-                    <Button
-                      variant="outline-warning"
-                      onClick={() => toast.info("Mediator has been involved!")}
-                    >
-                      Involve Mediator
-                    </Button>
-                  )}
-                </div>
-              )}
-            </>
-          ) : (
-            <p>No transaction details available.</p>
+      {/* ✅ Action Buttons Section */}
+      {selectedTransaction?.transaction_status === "processing" && (
+        <div className="mt-3 d-flex gap-2 flex-wrap">
+          {userEmail === selectedTransaction?.buyer_email && (
+            <Button variant="outline-danger" onClick={() => setConfirmCancel(true)}>
+              Cancel Transaction
+            </Button>
           )}
-        </Modal.Body>
+
+          {userEmail === selectedTransaction?.buyer_email &&
+            selectedTransaction?.seller_confirm_status &&
+            selectedTransaction?.transaction_status === "processing" && (
+              <Button
+                variant="outline-success"
+                onClick={async () => {
+                  try {
+                    await buyerConfirmsProduct(selectedTransaction?.transaction_id).unwrap();
+                    toast.success("Product confirmed successfully!");
+                    handleCloseModal();
+                    refetch();
+                  } catch (error) {
+                    toast.error(error?.data?.message || "Failed to confirm product");
+                  }
+                }}
+              >
+                Confirm Product Received
+              </Button>
+            )}
+
+          {userEmail === selectedTransaction?.vendor_email && (
+            <>
+              {!selectedTransaction?.seller_confirm_status && (
+                <Button
+                  variant="outline-primary"
+                  onClick={() =>
+                    navigate(
+                      `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`,
+                      { state: { transaction: selectedTransaction } }
+                    )
+                  }
+                >
+                  Confirm Transaction
+                </Button>
+              )}
+              <Button
+                variant="outline-warning"
+                onClick={() => handleRaiseDispute(selectedTransaction)}
+              >
+                Raise Dispute
+              </Button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ✅ In Dispute Buttons */}
+      {selectedTransaction?.transaction_status === "inDispute" && (
+        <div className="mt-3 d-flex gap-2 flex-wrap">
+          {userEmail === selectedTransaction?.buyer_email && (
+            <>
+              <Button
+                variant="outline-danger"
+                onClick={() => setConfirmCancel(true)}
+              >
+                Cancel Transaction
+              </Button>
+              <Button
+                variant="outline-success"
+                onClick={() => handleResolveConflict(selectedTransaction)}
+              >
+                Resolve Dispute
+              </Button>
+            </>
+          )}
+          {userEmail === selectedTransaction?.vendor_email && (
+            <Button
+              variant="outline-warning"
+              onClick={() => toast.info("Mediator has been involved!")}
+            >
+              Involve Mediator
+            </Button>
+          )}
+        </div>
+      )}
+    </>
+  ) : (
+    <p>No transaction details available.</p>
+  )}
+</Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Close

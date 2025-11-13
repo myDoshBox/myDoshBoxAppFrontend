@@ -418,6 +418,10 @@ const InitiateEscrowForm = () => {
             <span>Transaction Total (1% Commission):</span>
             <span>₦ {transactionTotal}</span>
           </div>
+          <div className="d-flex justify-content-between fw-bold fs-5 mt-3 border-top pt-2">
+            <span> Total</span>
+            <span>₦ {(sumTotal + Number(transactionTotal)).toFixed(2)}</span>
+          </div>
         </div>
 
         {/* Buttons */}
@@ -493,8 +497,22 @@ const InitiateEscrowForm = () => {
 
           <hr />
           
-          <p className="fw-semibold mb-0">Sum Total: ₦ {sumTotal.toFixed(2)}</p>
-          <p className="fw-semibold">Commission (1%): ₦ {transactionTotal}</p>
+          {/* Totals */}
+        <div className="mt-4">
+          <div className="d-flex justify-content-between fw-semibold">
+            <span className="bg-success text-white p-1 rounded-1">Sum Total (Product Price):</span>
+            <span>₦ {sumTotal.toFixed(2)}</span>
+          </div>
+          <div className="d-flex justify-content-between fw-semibold mt-2">
+            <span className="bg-success text-white p-1 rounded-1">Transaction Total (1% Commission):</span>
+            <span>₦ {transactionTotal}</span>
+          </div>
+          <div className="d-flex justify-content-between fw-bold fs-5 mt-3 border-top pt-2">
+            <span className="bg-success text-white p-1 rounded-1"> Total</span>
+            <span>₦ {(sumTotal + Number(transactionTotal)).toFixed(2)}</span>
+          </div>
+        </div>
+          
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>

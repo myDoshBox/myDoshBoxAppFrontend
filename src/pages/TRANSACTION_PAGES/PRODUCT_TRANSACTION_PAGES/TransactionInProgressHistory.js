@@ -52,11 +52,29 @@ export const RecentTransactionTable = () => {
 
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    if (transactions?.transactions) {
-      setAllTransactions(transactions.transactions);
-    }
-  }, [transactions]);
+ useEffect(() => {
+  if (transactions?.transactions) {
+    const transformedTransactions = transactions.transactions.map(transaction => {
+      // Calculate total items across all products
+      const totalItems = transaction.products?.reduce((sum, p) => sum + p.quantity, 0) || 0;
+      const productCount = transaction.products?.length || 0;
+      
+      return {
+        ...transaction,
+        // Use first product for table display
+        product_name: productCount > 1 
+          ? `${transaction.products[0]?.name} (+${productCount - 1} more)` 
+          : transaction.products?.[0]?.name || 'N/A',
+        product_price: transaction.sum_total, // Show sum_total instead of single product price
+        product_description: transaction.products?.[0]?.description || '',
+        product_image: transaction.products?.[0]?.image || '',
+        product_quantity: totalItems,
+        product_count: productCount,
+      };
+    });
+    setAllTransactions(transformedTransactions);
+  }
+}, [transactions]);
 
   const filteredData = searchFilter(
     allTransactions?.filter(t => t.transaction_status === "processing") || [],
@@ -115,17 +133,17 @@ export const RecentTransactionTable = () => {
         <div className="table-responsive">
   {/* Desktop Table */}
   <table className="table fs-sm d-none d-md-table">
-    <thead>
-      <tr className="lightTextColor">
-        <th>Product Name</th>
-        <th>Vendor</th>
-        <th>Purchase Date</th>
-        <th>Product Price</th>
-        <th>Transaction Type</th>
-        <th>Transaction Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
+      <thead>
+    <tr className="lightTextColor">
+      <th>Product Name</th>
+      <th>Vendor</th>
+      <th>Purchase Date</th>
+      <th>Total Amount</th> {/* Changed from "Product Price" */}
+      <th>Transaction Type</th>
+      <th>Transaction Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
     <tbody>
       {getSlicedData()?.map((history) => (
         <RecentTransactionTableData
