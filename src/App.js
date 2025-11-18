@@ -44,6 +44,7 @@ import SignUpPage from "./pages/AUTHENTICATION_PAGES/SignUp";
 import VerifyEmailForm from "./pages/AUTHENTICATION_PAGES/VerifyEmailForm";
 import EmailVerificationMsg from "./pages/AUTHENTICATION_PAGES/EmailVerificationMsg";
 import ResetPassword from "./pages/AUTHENTICATION_PAGES/resetPassword";
+import ForgotPassword from "./pages/AUTHENTICATION_PAGES/forgotPassword";
 import EscrowAgreement from "./pages/TRANSACTION_PAGES/EscrowAgreement";
 import InitiateDisputesForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/InitiateProductDisputesForm";
 import { GeneratedTicket } from "./pages/DISPUTE_PAGES/GeneratedTicket";
@@ -229,7 +230,8 @@ function App() {
         <Route path="signin" element={<SignInPage />} />
         <Route path="signup" element={<SignUpPage />} />
         <Route path="VerifyEmailForm" element={<VerifyEmailForm />} />
-        <Route path="ResetPassword" element={<ResetPassword />} />
+        <Route path="ForgotPassword" element={<ForgotPassword />} />
+        <Route path="auth/reset-password" element={<ResetPassword />} />
         <Route path="linkverification" element={<EmailVerificationMsg />} />
         <Route path={`auth/verify-email`} element={<VerifyEmail />} />
         {/* CHECCCCCCCCCCCCCCCCCCCCCCCCKKKKKKKKK */}

@@ -1,14 +1,10 @@
-// import { apiSlice } from "./apiSlice";
-// import { testSlice } from "./testSlice";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// const URL = "/auth";
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: "https://mydoshbox-be.vercel.app/auth", // ✅ New URL
-  credentials: 'include',
+export const baseQuery = fetchBaseQuery({
+  baseUrl: "https://mydoshbox-be.vercel.app/auth",
+  credentials: "include",
   prepareHeaders: (headers) => {
-    headers.set('Content-Type', 'application/json');
+    headers.set("Content-Type", "application/json");
     return headers;
   },
 });
@@ -20,7 +16,7 @@ export const usersAPISlice = createApi({
   endpoints: (builder) => ({
     createIndUser: builder.mutation({
       query: (data) => ({
-        url: `individual/signup`,
+        url: "individual/signup",
         method: "POST",
         body: data,
       }),
@@ -28,43 +24,72 @@ export const usersAPISlice = createApi({
 
     createOrgUser: builder.mutation({
       query: (data) => ({
-        url: `organization/signup`,
+        url: "organization/signup",
         method: "POST",
         body: data,
       }),
     }),
 
     verifyUser: builder.mutation({
-      // query: ({ token }) => ({
       query: (token) => ({
-        url: `verify-email`,
-        method: "POST",
-        // params: { token },
-        body: { token },
-      }),
-    }),
-     
-      login: builder.mutation({ 
-         query: (body) => ({
-            url: `/individual/login`,  // Correct endpoint
-            method: "POST",
-            body,
-          }),
-        }),
-           
-        getMe: builder.query({
-      query: () => ({
-        url: "/auth/me",
+        url: `individual/verify-email?token=${token}`,
+        method: "GET",
       }),
     }),
 
-    // login: builder.mutation({
-    //   query: (data) => ({
-    //     url: `/individual/login`,
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
+    login: builder.mutation({
+      query: (body) => ({
+        url: "individual/login",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // Forgot Password endpoints
+    forgotPasswordIndividual: builder.mutation({
+      query: (email) => ({
+        url: "individual/forgot-password",
+        method: "POST",
+        body: { email },
+      }),
+    }),
+
+    forgotPasswordOrganization: builder.mutation({
+      query: (email) => ({
+        url: "organization/forgot-password",
+        method: "POST",
+        body: { organization_email: email },
+      }),
+    }),
+
+    // Reset Password endpoints
+    resetPasswordIndividual: builder.mutation({
+      query: ({ token, password, confirmPassword }) => ({
+        url: `individual/reset-password?token=${token}`,
+        method: "POST",
+        body: {
+          password,
+          confirm_password: confirmPassword,
+        },
+      }),
+    }),
+
+    resetPasswordOrganization: builder.mutation({
+      query: ({ token, password, confirmPassword }) => ({
+        url: `organization/reset-password?token=${token}`,
+        method: "POST",
+        body: {
+          password,
+          confirm_password: confirmPassword,
+        },
+      }),
+    }),
+
+    getMe: builder.query({
+      query: () => ({
+        url: "/me",
+      }),
+    }),
 
     getGoogleUrl: builder.query({
       query: () => "individual/oauth",
@@ -80,7 +105,7 @@ export const usersAPISlice = createApi({
 
     createIndividualGoogles: builder.mutation({
       query: (data) => ({
-        url: `/individual/googleauth`,
+        url: "individual/googleauth",
         method: "POST",
         body: data,
       }),
@@ -100,6 +125,10 @@ export const {
   useGetMeQuery,
   useLoginMutation,
   useCreateOrgUserMutation,
+  useForgotPasswordIndividualMutation,
+  useForgotPasswordOrganizationMutation,
+  useResetPasswordIndividualMutation,
+  useResetPasswordOrganizationMutation,
   useLazyCreateIndividualGoogleQuery,
   useCreateIndividualGooglesMutation,
   useGetGoogleUrlQuery,

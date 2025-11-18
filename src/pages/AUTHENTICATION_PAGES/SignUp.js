@@ -9,16 +9,16 @@ import logo from "../../images/doshlogolight.png";
 
 const SignUpPage = () => {
   return (
-          <div className="">
-            <SignUpForm />
-            {/* <Link
+    <div className="">
+      <SignUpForm />
+      {/* <Link
               to={"../LinkVerificationMsg"}
               className="text-decoration-none ms-1 text-success"
               style={{ fontSize: "14px" }}
             >
               LinkVerificationMsg
             </Link> */}
-          </div>
+    </div>
   );
 };
 
@@ -31,8 +31,7 @@ const SignUpForm = () => {
           <Col
             xs={12}
             md={6}
-            className="d-flex flex-column justify-content-center align-items-start bg-success text-white p-4 p-md-5"
-          >
+            className="d-flex flex-column justify-content-center align-items-start bg-success text-white p-4 p-md-5">
             <div className="w-100">
               <h1 className="fw-bold mb-3">Start your journey with us.</h1>
               <p className="lead text-white">
@@ -45,8 +44,7 @@ const SignUpForm = () => {
           <Col
             xs={12}
             md={6}
-            className="d-flex flex-column justify-content-center align-items-center bg-white p-4 p-md-5"
-          >
+            className="d-flex flex-column justify-content-center align-items-center bg-white p-4 p-md-5">
             <div className="container-fluid">
               <h3 className="text-center fw-bold mb-3">
                 Set up your Doshbox account
@@ -70,8 +68,7 @@ const SignUpForm = () => {
                 <Link
                   to="/signin"
                   className="text-success text-decoration-none fw-semibold"
-                  style={{ fontSize: "14px" }}
-                >
+                  style={{ fontSize: "14px" }}>
                   Sign In
                 </Link>
               </div>
@@ -143,5 +140,3 @@ export default SignUpPage;
 //     </div>
 //   );
 // };
-
-
