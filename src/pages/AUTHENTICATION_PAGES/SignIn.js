@@ -7,7 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 // import { addUser, setCredentials } from "../../redux/slices/authSlice";
-import { useLoginMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
+import { useLoginMutation, useGetMeQuery } from "../../redux/slices/userSlices/allUsersAPISlice";
 import { setCredentials } from "../../redux/slices/userSlices/allUsersAuthSlice";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
@@ -49,62 +49,72 @@ const SignInPage = () => {
   );
 };
 
-
 export const SignInForm = () => {
   const [passwordToggle, setPasswordToggle] = useState(false);
-  const [user, setUser] = useState({ email: "", user_password: "" });
+  const [user, setUser] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [login, { isLoading }] = useLoginMutation();
-  const [loading, setLoading] = useState(false);
   const { userInfo } = useSelector((state) => state.usersauth);
 
+  // Redirect if already logged in
   useEffect(() => {
-    if (userInfo) {
-      navigate("/userdashboard");
-    }
+    if (userInfo) navigate("/userdashboard");
   }, [navigate, userInfo]);
 
+  // Optional: auto-login if cookies exist
+  const { data: me, isLoading: meLoading } = useGetMeQuery();
+  useEffect(() => {
+    if (me?.status === "success" && me.user) {
+      dispatch(setCredentials(me));
+      navigate("/userdashboard");
+    }
+  }, [me, dispatch, navigate]);
+
+  // Handle input change
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  // Toggle password visibility
   const handleShowHide = (e) => {
     e.preventDefault();
     setPasswordToggle(!passwordToggle);
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    if (!user.email || !user.user_password) {
+    if (!user.email || !user.password) {
       toast.error("All fields are required");
-      setLoading(false);
       return;
     }
+
+    // Debug: log payload to ensure correct structure
+    console.log("Login payload:", user);
 
     try {
       const res = await login({ ...user }).unwrap();
 
-      if (res?.status === "false") {
-        toast.error(res?.message);
-        navigate("/signin");
-      } else {
-        dispatch(setCredentials({ ...res }));
-        toast.success("Login successful!");
-        setTimeout(() => navigate("/userdashboard"), 1000);
+      if (res.status !== "success") {
+        toast.error(res.message || "Login failed");
+        return;
       }
+
+      dispatch(setCredentials(res)); // save user in Redux & localStorage
+      toast.success("Login successful!");
+      navigate("/userdashboard");
     } catch (err) {
       console.error(err);
+      // backend may return 404 or other errors
       toast.error(err?.data?.message || err?.error || "Login failed");
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading || isLoading) return <Loader />;
+  // Show loader if logging in or fetching user
+  if (isLoading || meLoading) return <Loader />;
 
   return (
     <div className="w-100" style={{ maxWidth: "600px" }}>
@@ -129,8 +139,8 @@ export const SignInForm = () => {
         <div className="mb-3 input-group">
           <input
             type={passwordToggle ? "text" : "password"}
-            name="user_password"
-            value={user.user_password}
+            name="password"
+            value={user.password}
             onChange={handleChange}
             className="form-control form-control-lg"
             placeholder="Password"
@@ -152,10 +162,6 @@ export const SignInForm = () => {
               Remember me
             </label>
           </div>
-          {/* Correct Route */}
-          {/* <Link to="../VerifyEmailForm" className="text-success fw-semibold">
-            Forgot Password?
-          </Link> */}
           <Link to="#" className="text-success fw-semibold">
             Forgot Password?
           </Link>
@@ -166,7 +172,7 @@ export const SignInForm = () => {
         </div>
 
         <p className="text-center">
-          Don't have an account?
+          Don't have an account?{" "}
           <Link to="../signup" className="text-success fw-semibold">
             Sign Up
           </Link>

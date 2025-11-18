@@ -5,10 +5,12 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // const URL = "/auth";
 
 const baseQuery = fetchBaseQuery({
-  // baseUrl: "http://localhost:9000/auth/",
-  baseUrl: "https://mydoshbox-be.onrender.com/auth",
-  // baseUrl: "http://localhost:54020/auth",
-  // baseUrl: "https://my-dosh-box-be.vercel.app",
+  baseUrl: "https://mydoshbox-be.vercel.app/auth", // ✅ New URL
+  credentials: 'include',
+  prepareHeaders: (headers) => {
+    headers.set('Content-Type', 'application/json');
+    return headers;
+  },
 });
 
 export const usersAPISlice = createApi({
@@ -41,14 +43,28 @@ export const usersAPISlice = createApi({
         body: { token },
       }),
     }),
-
-    login: builder.mutation({
-      query: (data) => ({
-        url: `/login`,
-        method: "POST",
-        body: data,
+     
+      login: builder.mutation({ 
+         query: (body) => ({
+            url: `/individual/login`,  // Correct endpoint
+            method: "POST",
+            body,
+          }),
+        }),
+           
+        getMe: builder.query({
+      query: () => ({
+        url: "/auth/me",
       }),
     }),
+
+    // login: builder.mutation({
+    //   query: (data) => ({
+    //     url: `/individual/login`,
+    //     method: "POST",
+    //     body: data,
+    //   }),
+    // }),
 
     getGoogleUrl: builder.query({
       query: () => "individual/oauth",
@@ -81,6 +97,7 @@ export const usersAPISlice = createApi({
 
 export const {
   useCreateIndUserMutation,
+  useGetMeQuery,
   useLoginMutation,
   useCreateOrgUserMutation,
   useLazyCreateIndividualGoogleQuery,

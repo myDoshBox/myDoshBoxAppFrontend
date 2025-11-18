@@ -64,12 +64,14 @@ export const escrowProductsAPISlice = createApi({
       }),
 
 
-
-
-
-
-
-
+        sellerConfirmsTransaction: builder.mutation({
+              query: ({ transaction_id, confirmation, vendor_email }) => ({
+                url: "seller-confirm-escrow-product-transaction",
+                method: "POST",
+                body: { transaction_id, confirmation, vendor_email },
+              }),
+              invalidatesTags: ["Transactions"], // refresh transaction list
+            }),
 
 
     // sellerConfirmEscrowProduct: builder.mutation({
@@ -110,13 +112,15 @@ export const escrowProductsAPISlice = createApi({
   }),
 });
 
+
+
 export const {
   useInitiateEscrowProductTransactionMutation,
   useVerifyEscrowProductTransactionPaymentMutation,
   useBuyerConfirmsProductMutation,
+  useSellerConfirmsTransactionMutation,
   useFetchAllTransactionsQuery,
   useFetchSingleTransactionsQuery,
-  // useSellerConfirmEscrowProductMutation,
   useSellerFillOutShippingDetailsMutation,
   useFetchAllShippingDetailsQuery,
   useCancelTransactionMutation,
