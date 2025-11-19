@@ -8,8 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 // import { addUser, setCredentials } from "../../redux/slices/authSlice";
 import {
-  useLoginMutation,
-  useGetMeQuery,
+  useLoginMutation
 } from "../../redux/slices/userSlices/allUsersAPISlice";
 import { setCredentials } from "../../redux/slices/userSlices/allUsersAuthSlice";
 import { toast } from "react-toastify";
@@ -63,15 +62,6 @@ export const SignInForm = () => {
     if (userInfo) navigate("/userdashboard");
   }, [navigate, userInfo]);
 
-  // Optional: auto-login if cookies exist
-  const { data: me, isLoading: meLoading } = useGetMeQuery();
-  useEffect(() => {
-    if (me?.status === "success" && me.user) {
-      dispatch(setCredentials(me));
-      navigate("/userdashboard");
-    }
-  }, [me, dispatch, navigate]);
-
   // Handle input change
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -92,9 +82,6 @@ export const SignInForm = () => {
       return;
     }
 
-    // Debug: log payload to ensure correct structure
-    console.log("Login payload:", user);
-
     try {
       const res = await login({ ...user }).unwrap();
 
@@ -108,13 +95,12 @@ export const SignInForm = () => {
       navigate("/userdashboard");
     } catch (err) {
       console.error(err);
-      // backend may return 404 or other errors
       toast.error(err?.data?.message || err?.error || "Login failed");
     }
   };
 
-  // Show loader if logging in or fetching user
-  if (isLoading || meLoading) return <Loader />;
+  // Show loader if logging in
+  if (isLoading) return <Loader />;
 
   return (
     <div className="w-100" style={{ maxWidth: "600px" }}>
@@ -149,7 +135,8 @@ export const SignInForm = () => {
           <button
             className="btn btn-outline-secondary"
             onClick={handleShowHide}
-            type="button">
+            type="button"
+          >
             {passwordToggle ? <HidePassWordIcon /> : <ShowPassWordIcon />}
           </button>
         </div>
@@ -184,6 +171,7 @@ export const SignInForm = () => {
     </div>
   );
 };
+
 
 const ShowPassWordIcon = () => (
   <svg

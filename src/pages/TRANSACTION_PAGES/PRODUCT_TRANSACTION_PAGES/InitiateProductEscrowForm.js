@@ -37,7 +37,11 @@ const InitiateEscrowForm = () => {
   const dispatch = useDispatch();
 
   const loggedInUser = localStorage.getItem("userInfo");
-  const userInfo = JSON.parse(loggedInUser)?.user?.email;
+    // const userInfo = JSON.parse(loggedInUser)?.user?.email;
+  const { userInfo } = useSelector((state) => state.usersauth);
+  console.log(userInfo);
+  console.log(loggedInUser);
+  
 
   const [initiateTransaction, { isLoading }] =
     useInitiateEscrowProductTransactionMutation();

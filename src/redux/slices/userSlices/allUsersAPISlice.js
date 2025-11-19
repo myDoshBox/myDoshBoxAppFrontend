@@ -36,14 +36,24 @@ export const usersAPISlice = createApi({
         method: "GET",
       }),
     }),
-
-    login: builder.mutation({
-      query: (body) => ({
+     
+      login: builder.mutation({
+      query: (credentials) => ({
         url: "individual/login",
         method: "POST",
-        body,
+        body: credentials,
+        credentials: "include",
       }),
     }),
+
+
+    // login: builder.mutation({
+    //   query: (body) => ({
+    //     url: "individual/login",
+    //     method: "POST",
+    //     body,
+    //   }),
+    // }),
 
     // Forgot Password endpoints
     forgotPasswordIndividual: builder.mutation({
@@ -85,11 +95,6 @@ export const usersAPISlice = createApi({
       }),
     }),
 
-    getMe: builder.query({
-      query: () => ({
-        url: "/me",
-      }),
-    }),
 
     getGoogleUrl: builder.query({
       query: () => "individual/oauth",
@@ -122,7 +127,6 @@ export const usersAPISlice = createApi({
 
 export const {
   useCreateIndUserMutation,
-  useGetMeQuery,
   useLoginMutation,
   useCreateOrgUserMutation,
   useForgotPasswordIndividualMutation,
