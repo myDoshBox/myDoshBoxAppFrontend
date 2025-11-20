@@ -36,9 +36,11 @@ const ShippingDetailsHistory = () => {
 export const RecentTransactionTable = () => {
   // user detail for single user
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
-  console.log("userEmail", userEmail);
-
+  const userEmail =
+    userInfo?.user?.email ||
+    userInfo?.email ||
+    userInfo?.organization_email ||
+    userInfo?.userInfo?.email;
   // transaction detail for single user
   // const { escrowProductInfo } = useSelector((state) => state.escrowProductInfo);
   // const transactionId = escrowProductInfo;
@@ -166,8 +168,7 @@ export const RecentTransactionTable = () => {
                     style={{
                       outline: "none",
                       borderColor: "#E7E7E7",
-                    }}
-                  >
+                    }}>
                     {item.label}
                   </Dropdown.Toggle>
 
@@ -189,8 +190,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-3"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Create Transaction
               </Button>
             </Link>
@@ -200,8 +200,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Download Transaction Slip
               </Button>
             </Link>
@@ -382,8 +381,7 @@ export const RecentTransactionTable = () => {
 
           <Link
             to={`/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-history/${selectedTransaction?.product?.transaction_id}/initiate-dispute`}
-            className="border-0 mt-3 btn text-white pale-red"
-          >
+            className="border-0 mt-3 btn text-white pale-red">
             No, I will like to open a dispute
           </Link>
 
@@ -392,8 +390,7 @@ export const RecentTransactionTable = () => {
             className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
             onClick={(e) =>
               handleSubmit(selectedTransaction?.product?.transaction_id, e)
-            }
-          >
+            }>
             Yes, I am satisfied
           </Button>
         </Modal.Footer>
@@ -479,8 +476,7 @@ export const RecentTransactionTableData = (props) => {
             <Button
               variant="outline-primary"
               className="rounded-1 fs-sm"
-              onClick={verifyProduct}
-            >
+              onClick={verifyProduct}>
               Verify Product
             </Button>
           </td>
@@ -489,8 +485,7 @@ export const RecentTransactionTableData = (props) => {
             <Button
               variant="outline-primary"
               className="rounded-1 fs-sm"
-              onClick={onViewMore}
-            >
+              onClick={onViewMore}>
               View More
             </Button>
           </td>

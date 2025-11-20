@@ -1,17 +1,61 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { setCredentials, logout } from "./allUsersAuthSlice";
+import backendURL from "./../../../components/utils/config";
 
-export const baseQuery = fetchBaseQuery({
-  baseUrl: "https://mydoshbox-be.vercel.app/auth",
+const baseQuery = fetchBaseQuery({
+  baseUrl: `${backendURL}/auth`,
   credentials: "include",
-  prepareHeaders: (headers) => {
+  prepareHeaders: (headers, { getState, endpoint }) => {
+    // Only add Authorization header for refresh token endpoint
+    if (endpoint === "refreshToken") {
+      const token = getState().usersauth.userInfo?.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+    }
     headers.set("Content-Type", "application/json");
     return headers;
   },
 });
 
+// Wrapper to handle token refresh on 401 errors
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  // If we get a 401, try to refresh the token
+  if (result?.error?.status === 401) {
+    console.log("Token expired, attempting refresh...");
+
+    // Try to get a new token - this will use the refreshToken endpoint
+    const refreshResult = await baseQuery(
+      {
+        url: "/individual/refresh-token",
+        method: "POST",
+        credentials: "include",
+      },
+      api,
+      extraOptions
+    );
+
+    if (refreshResult?.data) {
+      // Store the new token
+      api.dispatch(setCredentials(refreshResult.data));
+
+      // Retry the original query with new token
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      // Refresh failed, log the user out
+      api.dispatch(logout());
+      window.location.href = "/signin";
+    }
+  }
+
+  return result;
+};
+
 export const usersAPISlice = createApi({
   reducerPath: "usersAPI",
-  baseQuery,
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Users"],
   endpoints: (builder) => ({
     createIndUser: builder.mutation({
@@ -36,24 +80,14 @@ export const usersAPISlice = createApi({
         method: "GET",
       }),
     }),
-     
-      login: builder.mutation({
+
+    login: builder.mutation({
       query: (credentials) => ({
         url: "individual/login",
         method: "POST",
         body: credentials,
-        credentials: "include",
       }),
     }),
-
-
-    // login: builder.mutation({
-    //   query: (body) => ({
-    //     url: "individual/login",
-    //     method: "POST",
-    //     body,
-    //   }),
-    // }),
 
     // Forgot Password endpoints
     forgotPasswordIndividual: builder.mutation({
@@ -95,7 +129,6 @@ export const usersAPISlice = createApi({
       }),
     }),
 
-
     getGoogleUrl: builder.query({
       query: () => "individual/oauth",
     }),
@@ -113,6 +146,14 @@ export const usersAPISlice = createApi({
         url: "individual/googleauth",
         method: "POST",
         body: data,
+      }),
+    }),
+
+    refreshToken: builder.mutation({
+      query: () => ({
+        url: "/individual/refresh-token",
+        method: "POST",
+        credentials: "include",
       }),
     }),
 
@@ -139,4 +180,5 @@ export const {
   useCreateIndividualGoogleMutation,
   useVerifyUserMutation,
   useLogoutMutation,
+  useRefreshTokenMutation,
 } = usersAPISlice;

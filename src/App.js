@@ -4,9 +4,9 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-
   // Navigate,
 } from "react-router-dom";
+import { useTokenRefresh } from "./components/Hook/useTokenRefresh";
 import { GuestNavbar } from "./components/NavbarComponents/TopNavbars";
 import Homepage from "./pages/GENERAL_PAGES/Homepage";
 import AboutUs from "./pages/GENERAL_PAGES/AboutUs";
@@ -84,6 +84,7 @@ import InitiateProductDisputesForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_P
 import CancelledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/CancelledTransactionHistory";
 
 function App() {
+  useTokenRefresh();
   return (
     <Router>
       <Routes>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState, useMemo  } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import TransactionData from "../../../data/dummyData/transactionData.json";
 import { PaginationBar } from "../../../components/PaginationComponent";
@@ -13,8 +13,8 @@ import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux
 import { useCancelTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useBuyerConfirmsProductMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
-import {  useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
-import {  useSellerConfirmsTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // NEW
+import { useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
+import { useSellerConfirmsTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // NEW
 
 import { useSelector } from "react-redux";
 
@@ -37,12 +37,20 @@ const UserTransactionHistory = () => {
 
 export const RecentTransactionTable = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail =
+    userInfo?.user?.email ||
+    userInfo?.email ||
+    userInfo?.organization_email ||
+    userInfo?.userInfo?.email;
 
-  const { data: transactions, isLoading, error, refetch } =
-    useFetchAllTransactionsQuery(userEmail, {
-      refetchOnMountOrArgChange: true,
-    });
+  const {
+    data: transactions,
+    isLoading,
+    error,
+    refetch,
+  } = useFetchAllTransactionsQuery(userEmail, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const [cancelTransaction] = useCancelTransactionMutation();
   const [buyerConfirmsProduct] = useBuyerConfirmsProductMutation();
@@ -87,15 +95,21 @@ export const RecentTransactionTable = () => {
   };
 
   const handleRaiseDispute = (transaction) => {
-    navigate(`/userdashboard/disputes/initiate-dispute/${transaction?.transaction_id}`, {
-      state: { transaction },
-    });
+    navigate(
+      `/userdashboard/disputes/initiate-dispute/${transaction?.transaction_id}`,
+      {
+        state: { transaction },
+      }
+    );
   };
 
   const handleResolveConflict = (transaction) => {
-    navigate(`/userdashboard/disputes/resolve-dispute/${transaction?.transaction_id}`, {
-      state: { transaction },
-    });
+    navigate(
+      `/userdashboard/disputes/resolve-dispute/${transaction?.transaction_id}`,
+      {
+        state: { transaction },
+      }
+    );
   };
 
   const handleCancelTransaction = async () => {
@@ -134,7 +148,9 @@ export const RecentTransactionTable = () => {
       }).unwrap();
 
       if (confirmation) {
-        toast.success("Transaction confirmed! Buyer has been notified to proceed with payment.");
+        toast.success(
+          "Transaction confirmed! Buyer has been notified to proceed with payment."
+        );
       } else {
         toast.info("Transaction declined. Buyer has been notified.");
       }
@@ -149,15 +165,21 @@ export const RecentTransactionTable = () => {
 
   // NEW: Handle proceed to payment
   const handleProceedToPayment = () => {
-    navigate(`/userdashboard/transaction-history/payment/${selectedTransaction.transaction_id}`, {
-      state: { transaction: selectedTransaction },
-    });
+    navigate(
+      `/userdashboard/transaction-history/payment/${selectedTransaction.transaction_id}`,
+      {
+        state: { transaction: selectedTransaction },
+      }
+    );
   };
 
   const getSlicedData = () => {
     if (!transactions?.transactions?.length) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return transactions?.transactions?.slice(startIndex, startIndex + itemsPerPage);
+    return transactions?.transactions?.slice(
+      startIndex,
+      startIndex + itemsPerPage
+    );
   };
 
   const slicedData = getSlicedData();
@@ -171,16 +193,14 @@ export const RecentTransactionTable = () => {
           <Link to="../initiate-escrow" className="text-decoration-none me-2">
             <Button
               className="border-0 my-1 rounded-1 all-btn text-white fs-sm"
-              style={{ backgroundColor: "#006747EB" }}
-            >
+              style={{ backgroundColor: "#006747EB" }}>
               Create Transaction
             </Button>
           </Link>
           <Link to="../initiate-escrow" className="text-decoration-none">
             <Button
               className="border-0 my-1 rounded-1 all-btn text-white fs-sm"
-              style={{ backgroundColor: "#006747EB" }}
-            >
+              style={{ backgroundColor: "#006747EB" }}>
               Download Transaction Slip
             </Button>
           </Link>
@@ -213,7 +233,9 @@ export const RecentTransactionTable = () => {
                 {/* Small screen row */}
                 <tr className="d-md-none">
                   <td>{history?.product_name}</td>
-                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
+                  <td className="text-center">
+                    {history?.createdAt?.slice(0, 10)}
+                  </td>
                   <td className="text-center">{history?.transaction_status}</td>
                   <td className="text-center">
                     <Button
@@ -223,9 +245,10 @@ export const RecentTransactionTable = () => {
                           : "outline-success"
                       }
                       size="sm"
-                      onClick={() => handleShowMore(history)}
-                    >
-                      {history?.transaction_status === "inDispute" ? "View " : "View "}
+                      onClick={() => handleShowMore(history)}>
+                      {history?.transaction_status === "inDispute"
+                        ? "View "
+                        : "View "}
                     </Button>
                   </td>
                 </tr>
@@ -234,7 +257,9 @@ export const RecentTransactionTable = () => {
                 <tr className="d-none d-md-table-row">
                   <td>{history?.products?.[0]?.name || "N/A"}</td>
                   <td className="text-center">{history?.vendor_name}</td>
-                  <td className="text-center">{history?.createdAt?.slice(0, 10)}</td>
+                  <td className="text-center">
+                    {history?.createdAt?.slice(0, 10)}
+                  </td>
                   <td className="text-center">
                     ₦{history?.products?.[0]?.price?.toLocaleString() || "N/A"}
                   </td>
@@ -248,8 +273,7 @@ export const RecentTransactionTable = () => {
                           : "outline-success"
                       }
                       size="sm"
-                      onClick={() => handleShowMore(history)}
-                    >
+                      onClick={() => handleShowMore(history)}>
                       View More
                     </Button>
                   </td>
@@ -294,15 +318,15 @@ export const RecentTransactionTable = () => {
                         borderRadius: "8px",
                         width: "100%",
                         fontWeight: "600",
-                      }}
-                    >
+                      }}>
                       Transaction Details
                     </span>
                   </Accordion.Header>
 
                   <Accordion.Body>
                     <p>
-                      <strong>Transaction ID:</strong> {selectedTransaction?.transaction_id}
+                      <strong>Transaction ID:</strong>{" "}
+                      {selectedTransaction?.transaction_id}
                     </p>
                     <p>
                       <strong>Transaction Status:</strong>{" "}
@@ -319,10 +343,13 @@ export const RecentTransactionTable = () => {
 
                     {/* Nested Accordions for Vendor, Buyer, and Products */}
                     <Accordion
-                      defaultActiveKey={["vendor-info", "buyer-info", "product-0"]}
+                      defaultActiveKey={[
+                        "vendor-info",
+                        "buyer-info",
+                        "product-0",
+                      ]}
                       alwaysOpen
-                      className="mt-3"
-                    >
+                      className="mt-3">
                       {/* Vendor Info Accordion */}
                       <Accordion.Item eventKey="vendor-info">
                         <Accordion.Header>
@@ -335,17 +362,18 @@ export const RecentTransactionTable = () => {
                               width: "100%",
                               fontWeight: "500",
                               fontSize: "0.95rem",
-                            }}
-                          >
+                            }}>
                             Vendor Information
                           </span>
                         </Accordion.Header>
                         <Accordion.Body>
                           <p>
-                            <strong>Vendor Name:</strong> {selectedTransaction?.vendor_name}
+                            <strong>Vendor Name:</strong>{" "}
+                            {selectedTransaction?.vendor_name}
                           </p>
                           <p>
-                            <strong>Vendor Email:</strong> {selectedTransaction?.vendor_email}
+                            <strong>Vendor Email:</strong>{" "}
+                            {selectedTransaction?.vendor_email}
                           </p>
                           <p className="mb-0">
                             <strong>Vendor Phone:</strong>{" "}
@@ -366,14 +394,14 @@ export const RecentTransactionTable = () => {
                               width: "100%",
                               fontWeight: "500",
                               fontSize: "0.95rem",
-                            }}
-                          >
+                            }}>
                             Buyer Information
                           </span>
                         </Accordion.Header>
                         <Accordion.Body>
                           <p>
-                            <strong>Buyer Email:</strong> {selectedTransaction?.buyer_email}
+                            <strong>Buyer Email:</strong>{" "}
+                            {selectedTransaction?.buyer_email}
                           </p>
                           <p className="mb-0">
                             <strong>Delivery Address:</strong>{" "}
@@ -393,8 +421,7 @@ export const RecentTransactionTable = () => {
                       {selectedTransaction?.products?.map((product, index) => (
                         <Accordion.Item
                           eventKey={`product-${index}`}
-                          key={product._id || index}
-                        >
+                          key={product._id || index}>
                           <Accordion.Header>
                             <span
                               style={{
@@ -405,11 +432,12 @@ export const RecentTransactionTable = () => {
                                 width: "100%",
                                 fontWeight: "500",
                                 fontSize: "0.95rem",
-                              }}
-                            >
+                              }}>
                               {product.name}{" "}
                               {selectedTransaction?.products?.length > 1
-                                ? `(${index + 1} of ${selectedTransaction.products.length})`
+                                ? `(${index + 1} of ${
+                                    selectedTransaction.products.length
+                                  })`
                                 : ""}
                             </span>
                           </Accordion.Header>
@@ -422,14 +450,18 @@ export const RecentTransactionTable = () => {
                               <strong>Quantity:</strong> {product.quantity}
                             </p>
                             <p>
-                              <strong>Price:</strong> ₦{product.price?.toLocaleString()}
+                              <strong>Price:</strong> ₦
+                              {product.price?.toLocaleString()}
                             </p>
                             <p>
                               <strong>Subtotal:</strong> ₦
-                              {(product.price * product.quantity)?.toLocaleString()}
+                              {(
+                                product.price * product.quantity
+                              )?.toLocaleString()}
                             </p>
                             <p>
-                              <strong>Description:</strong> {product.description || "N/A"}
+                              <strong>Description:</strong>{" "}
+                              {product.description || "N/A"}
                             </p>
 
                             {product.image && (
@@ -459,8 +491,10 @@ export const RecentTransactionTable = () => {
                     {/* Total Amount */}
                     <div
                       className="mt-3 p-2"
-                      style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}
-                    >
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        borderRadius: "6px",
+                      }}>
                       <p className="mb-1 ">
                         <strong className="bg-success text-white p-1 rounded-1">
                           Sum Total:
@@ -483,8 +517,7 @@ export const RecentTransactionTable = () => {
                           borderRadius: "8px",
                           width: "100%",
                           fontWeight: "600",
-                        }}
-                      >
+                        }}>
                         Dispute Details
                       </span>
                     </Accordion.Header>
@@ -509,7 +542,9 @@ export const RecentTransactionTable = () => {
                           </p>
                         </>
                       ) : (
-                        <p>No dispute details available for this transaction.</p>
+                        <p>
+                          No dispute details available for this transaction.
+                        </p>
                       )}
                     </Accordion.Body>
                   </Accordion.Item>
@@ -523,7 +558,9 @@ export const RecentTransactionTable = () => {
                   <div className="mt-3 d-flex gap-2 flex-wrap">
                     {/* Buyer Actions */}
                     {userEmail === selectedTransaction?.buyer_email && (
-                      <Button variant="outline-danger" onClick={() => setConfirmCancel(true)}>
+                      <Button
+                        variant="outline-danger"
+                        onClick={() => setConfirmCancel(true)}>
                         Cancel Transaction
                       </Button>
                     )}
@@ -533,14 +570,14 @@ export const RecentTransactionTable = () => {
                       <>
                         <Button
                           variant="outline-primary"
-                          onClick={() => setShowVendorConfirmModal(true)}
-                        >
+                          onClick={() => setShowVendorConfirmModal(true)}>
                           Confirm Transaction
                         </Button>
                         <Button
                           variant="outline-warning"
-                          onClick={() => handleRaiseDispute(selectedTransaction)}
-                        >
+                          onClick={() =>
+                            handleRaiseDispute(selectedTransaction)
+                          }>
                           Raise Dispute
                         </Button>
                       </>
@@ -550,15 +587,15 @@ export const RecentTransactionTable = () => {
 
               {/* NEW: Buyer Proceed to Payment Button (after vendor confirms) */}
               {selectedTransaction?.seller_confirmed &&
-                selectedTransaction?.transaction_status === "awaiting_payment" &&
+                selectedTransaction?.transaction_status ===
+                  "awaiting_payment" &&
                 userEmail === selectedTransaction?.buyer_email && (
                   <div className="mt-3">
                     <Button
                       variant="success"
                       size="lg"
                       onClick={handleProceedToPayment}
-                      className="w-100"
-                    >
+                      className="w-100">
                       Proceed to Payment
                     </Button>
                   </div>
@@ -569,13 +606,16 @@ export const RecentTransactionTable = () => {
                 <div className="mt-3 d-flex gap-2 flex-wrap">
                   {userEmail === selectedTransaction?.buyer_email && (
                     <>
-                      <Button variant="outline-danger" onClick={() => setConfirmCancel(true)}>
+                      <Button
+                        variant="outline-danger"
+                        onClick={() => setConfirmCancel(true)}>
                         Cancel Transaction
                       </Button>
                       <Button
                         variant="outline-success"
-                        onClick={() => handleResolveConflict(selectedTransaction)}
-                      >
+                        onClick={() =>
+                          handleResolveConflict(selectedTransaction)
+                        }>
                         Resolve Dispute
                       </Button>
                     </>
@@ -583,8 +623,7 @@ export const RecentTransactionTable = () => {
                   {userEmail === selectedTransaction?.vendor_email && (
                     <Button
                       variant="outline-warning"
-                      onClick={() => toast.info("Mediator has been involved!")}
-                    >
+                      onClick={() => toast.info("Mediator has been involved!")}>
                       Involve Mediator
                     </Button>
                   )}
@@ -607,8 +646,7 @@ export const RecentTransactionTable = () => {
       <Modal
         show={showVendorConfirmModal}
         onHide={() => setShowVendorConfirmModal(false)}
-        centered
-      >
+        centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Transaction</Modal.Title>
         </Modal.Header>
@@ -618,27 +656,30 @@ export const RecentTransactionTable = () => {
             variant="secondary"
             onClick={() => {
               handleVendorConfirmTransaction(false);
-            }}
-          >
+            }}>
             No
           </Button>
           <Button
             variant="success"
             onClick={() => {
               handleVendorConfirmTransaction(true);
-            }}
-          >
+            }}>
             Yes
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Confirm Cancel Modal */}
-      <Modal show={confirmCancel} onHide={() => setConfirmCancel(false)} centered>
+      <Modal
+        show={confirmCancel}
+        onHide={() => setConfirmCancel(false)}
+        centered>
         <Modal.Header closeButton>
           <Modal.Title>Cancel Transaction</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to cancel this transaction?</Modal.Body>
+        <Modal.Body>
+          Are you sure you want to cancel this transaction?
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setConfirmCancel(false)}>
             No
@@ -670,8 +711,7 @@ export const RecentTransactionTableData = ({
         <Button
           variant="outline-primary"
           className="rounded-1 fs-sm"
-          onClick={onViewMore}
-        >
+          onClick={onViewMore}>
           View Details
         </Button>
       </td>
@@ -680,6 +720,3 @@ export const RecentTransactionTableData = ({
 };
 
 export default UserTransactionHistory;
-
-
-

@@ -12,9 +12,7 @@ import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux
 
 import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
 import { useSelector } from "react-redux";
-import {searchFilter} from "../../../components/utils/searchFilter"
-
-
+import { searchFilter } from "../../../components/utils/searchFilter";
 
 const TransactionInProgressHistory = () => {
   return (
@@ -35,7 +33,11 @@ const TransactionInProgressHistory = () => {
 
 export const RecentTransactionTable = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail =
+    userInfo?.user?.email ||
+    userInfo?.email ||
+    userInfo?.organization_email ||
+    userInfo?.userInfo?.email;
 
   const { data: transactions } = useFetchAllTransactionsQuery(userEmail, {
     refetchOnMountOrArgChange: true,
@@ -52,34 +54,44 @@ export const RecentTransactionTable = () => {
 
   const itemsPerPage = 10;
 
- useEffect(() => {
-  if (transactions?.transactions) {
-    const transformedTransactions = transactions.transactions.map(transaction => {
-      // Calculate total items across all products
-      const totalItems = transaction.products?.reduce((sum, p) => sum + p.quantity, 0) || 0;
-      const productCount = transaction.products?.length || 0;
-      
-      return {
-        ...transaction,
-        // Use first product for table display
-        product_name: productCount > 1 
-          ? `${transaction.products[0]?.name} (+${productCount - 1} more)` 
-          : transaction.products?.[0]?.name || 'N/A',
-        product_price: transaction.sum_total, // Show sum_total instead of single product price
-        product_description: transaction.products?.[0]?.description || '',
-        product_image: transaction.products?.[0]?.image || '',
-        product_quantity: totalItems,
-        product_count: productCount,
-      };
-    });
-    setAllTransactions(transformedTransactions);
-  }
-}, [transactions]);
+  useEffect(() => {
+    if (transactions?.transactions) {
+      const transformedTransactions = transactions.transactions.map(
+        (transaction) => {
+          // Calculate total items across all products
+          const totalItems =
+            transaction.products?.reduce((sum, p) => sum + p.quantity, 0) || 0;
+          const productCount = transaction.products?.length || 0;
+
+          return {
+            ...transaction,
+            // Use first product for table display
+            product_name:
+              productCount > 1
+                ? `${transaction.products[0]?.name} (+${productCount - 1} more)`
+                : transaction.products?.[0]?.name || "N/A",
+            product_price: transaction.sum_total, // Show sum_total instead of single product price
+            product_description: transaction.products?.[0]?.description || "",
+            product_image: transaction.products?.[0]?.image || "",
+            product_quantity: totalItems,
+            product_count: productCount,
+          };
+        }
+      );
+      setAllTransactions(transformedTransactions);
+    }
+  }, [transactions]);
 
   const filteredData = searchFilter(
-    allTransactions?.filter(t => t.transaction_status === "processing") || [],
+    allTransactions?.filter((t) => t.transaction_status === "processing") || [],
     query,
-    ["product_name", "vendor_name", "createdAt", "transaction_status", "product_price"]
+    [
+      "product_name",
+      "vendor_name",
+      "createdAt",
+      "transaction_status",
+      "product_price",
+    ]
   );
 
   const handlePageChange = (page) => {
@@ -101,7 +113,9 @@ export const RecentTransactionTable = () => {
   const confirmDeleteTransaction = () => {
     if (transactionToCancel) {
       setAllTransactions((prev) =>
-        prev.filter((item) => item.transaction_id !== transactionToCancel.transaction_id)
+        prev.filter(
+          (item) => item.transaction_id !== transactionToCancel.transaction_id
+        )
       );
       setShowCancelConfirmModal(false);
       setShow(false);
@@ -131,61 +145,59 @@ export const RecentTransactionTable = () => {
 
       <div className="table-responsive">
         <div className="table-responsive">
-  {/* Desktop Table */}
-  <table className="table fs-sm d-none d-md-table">
-      <thead>
-    <tr className="lightTextColor">
-      <th>Product Name</th>
-      <th>Vendor</th>
-      <th>Purchase Date</th>
-      <th>Total Amount</th> {/* Changed from "Product Price" */}
-      <th>Transaction Type</th>
-      <th>Transaction Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-    <tbody>
-      {getSlicedData()?.map((history) => (
-        <RecentTransactionTableData
-          key={history.transaction_id}
-          {...history}
-          onViewMore={() => handleShowMore(history)}
-        />
-      ))}
-    </tbody>
-  </table>
+          {/* Desktop Table */}
+          <table className="table fs-sm d-none d-md-table">
+            <thead>
+              <tr className="lightTextColor">
+                <th>Product Name</th>
+                <th>Vendor</th>
+                <th>Purchase Date</th>
+                <th>Total Amount</th> {/* Changed from "Product Price" */}
+                <th>Transaction Type</th>
+                <th>Transaction Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {getSlicedData()?.map((history) => (
+                <RecentTransactionTableData
+                  key={history.transaction_id}
+                  {...history}
+                  onViewMore={() => handleShowMore(history)}
+                />
+              ))}
+            </tbody>
+          </table>
 
-  {/* Mobile Table */}
-  <table className="table fs-sm d-md-none">
-    <thead>
-      <tr className="lightTextColor">
-        <th>Product Name</th>
-        <th>Vendor</th>
-        <th>Status</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-      {getSlicedData()?.map((history) => (
-        <tr key={history.transaction_id}>
-          <td>{history.product_name}</td>
-          <td>{history.vendor_name}</td>
-          <td>{history.transaction_status}</td>
-          <td>
-            <Button
-              variant="outline-primary"
-              className="rounded-1 fs-sm"
-              onClick={() => handleShowMore(history)}
-            >
-              View
-            </Button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
+          {/* Mobile Table */}
+          <table className="table fs-sm d-md-none">
+            <thead>
+              <tr className="lightTextColor">
+                <th>Product Name</th>
+                <th>Vendor</th>
+                <th>Status</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {getSlicedData()?.map((history) => (
+                <tr key={history.transaction_id}>
+                  <td>{history.product_name}</td>
+                  <td>{history.vendor_name}</td>
+                  <td>{history.transaction_status}</td>
+                  <td>
+                    <Button
+                      variant="outline-primary"
+                      className="rounded-1 fs-sm"
+                      onClick={() => handleShowMore(history)}>
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <PaginationBar
@@ -203,95 +215,192 @@ export const RecentTransactionTable = () => {
           <Modal.Title>Transaction Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-  {selectedTransaction ? (
-    <>
-      {selectedTransaction.transaction_type === "buy" ? (
-          <>
-            <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
-            <p><strong>Product Image:</strong><br />
-              <img
-                src={selectedTransaction.product_image}
-                alt="Product"
-                className="img-fluid"
-              />
-            </p>
-            <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
-            <p><strong>Transaction Total:</strong> ₦{selectedTransaction.transaction_total}</p>
-            <p><strong>Product Quantity:</strong> {selectedTransaction.product_quantity}</p>
-            <p><strong>Transaction ID:</strong> {selectedTransaction.transaction_id}</p>
-            <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
-            <p><strong>Transaction Type:</strong> {selectedTransaction.transaction_type}</p>
-            <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
-            <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
-            <p><strong>Vendor Email:</strong> {selectedTransaction.vendor_email}</p>
-            <p><strong>Vendor Name:</strong> {selectedTransaction.vendor_name}</p>
-            <p><strong>Vendor Phone Number:</strong> {selectedTransaction.vendor_phone_number}</p>
-            <p><strong>Delivery Address:</strong> {selectedTransaction.delivery_address}</p>
-          </>
-        ) : (
-          <>
-            <p><strong>Product Description:</strong> {selectedTransaction.product_description}</p>
-            <p><strong>Product Image:</strong><br />
-              <img
-                src={selectedTransaction.product_image}
-                alt="Product"
-                className="img-fluid"
-              />
-            </p>
-            <p><strong>Product Name:</strong> {selectedTransaction.product_name}</p>
-            <p><strong>Product Price:</strong> ₦{selectedTransaction.product_price}</p>
-            <p><strong>Product Quantity:</strong> {selectedTransaction.product_quantity}</p>
-            <p><strong>Transaction ID:</strong> {selectedTransaction.transaction_id}</p>
-            <p><strong>Transaction Status:</strong> {selectedTransaction.transaction_status}</p>
-            <p><strong>Transaction Type:</strong> {selectedTransaction.transaction_type}</p>
-            <p><strong>Purchase Date:</strong> {selectedTransaction.createdAt?.slice(0, 10)}</p>
-            <p><strong>Purchase Time:</strong> {selectedTransaction.createdAt?.slice(11, 19)}</p>
-            <p><strong>Buyer Email:</strong> {selectedTransaction.buyer_email}</p>
-            <p><strong>Buyer Name:</strong> {selectedTransaction.buyer_name}</p>
-            <p><strong>Buyer Phone Number:</strong> {selectedTransaction.buyer_phone_number}</p>
-            <p><strong>Delivery Address:</strong> {selectedTransaction.delivery_address}</p>
-          </>
-        )}
-      </>
-    ) : (
-      <p>No transaction selected.</p>
-    )}
-  </Modal.Body>
+          {selectedTransaction ? (
+            <>
+              {selectedTransaction.transaction_type === "buy" ? (
+                <>
+                  <p>
+                    <strong>Product Description:</strong>{" "}
+                    {selectedTransaction.product_description}
+                  </p>
+                  <p>
+                    <strong>Product Image:</strong>
+                    <br />
+                    <img
+                      src={selectedTransaction.product_image}
+                      alt="Product"
+                      className="img-fluid"
+                    />
+                  </p>
+                  <p>
+                    <strong>Product Name:</strong>{" "}
+                    {selectedTransaction.product_name}
+                  </p>
+                  <p>
+                    <strong>Transaction Total:</strong> ₦
+                    {selectedTransaction.transaction_total}
+                  </p>
+                  <p>
+                    <strong>Product Quantity:</strong>{" "}
+                    {selectedTransaction.product_quantity}
+                  </p>
+                  <p>
+                    <strong>Transaction ID:</strong>{" "}
+                    {selectedTransaction.transaction_id}
+                  </p>
+                  <p>
+                    <strong>Transaction Status:</strong>{" "}
+                    {selectedTransaction.transaction_status}
+                  </p>
+                  <p>
+                    <strong>Transaction Type:</strong>{" "}
+                    {selectedTransaction.transaction_type}
+                  </p>
+                  <p>
+                    <strong>Purchase Date:</strong>{" "}
+                    {selectedTransaction.createdAt?.slice(0, 10)}
+                  </p>
+                  <p>
+                    <strong>Purchase Time:</strong>{" "}
+                    {selectedTransaction.createdAt?.slice(11, 19)}
+                  </p>
+                  <p>
+                    <strong>Vendor Email:</strong>{" "}
+                    {selectedTransaction.vendor_email}
+                  </p>
+                  <p>
+                    <strong>Vendor Name:</strong>{" "}
+                    {selectedTransaction.vendor_name}
+                  </p>
+                  <p>
+                    <strong>Vendor Phone Number:</strong>{" "}
+                    {selectedTransaction.vendor_phone_number}
+                  </p>
+                  <p>
+                    <strong>Delivery Address:</strong>{" "}
+                    {selectedTransaction.delivery_address}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    <strong>Product Description:</strong>{" "}
+                    {selectedTransaction.product_description}
+                  </p>
+                  <p>
+                    <strong>Product Image:</strong>
+                    <br />
+                    <img
+                      src={selectedTransaction.product_image}
+                      alt="Product"
+                      className="img-fluid"
+                    />
+                  </p>
+                  <p>
+                    <strong>Product Name:</strong>{" "}
+                    {selectedTransaction.product_name}
+                  </p>
+                  <p>
+                    <strong>Product Price:</strong> ₦
+                    {selectedTransaction.product_price}
+                  </p>
+                  <p>
+                    <strong>Product Quantity:</strong>{" "}
+                    {selectedTransaction.product_quantity}
+                  </p>
+                  <p>
+                    <strong>Transaction ID:</strong>{" "}
+                    {selectedTransaction.transaction_id}
+                  </p>
+                  <p>
+                    <strong>Transaction Status:</strong>{" "}
+                    {selectedTransaction.transaction_status}
+                  </p>
+                  <p>
+                    <strong>Transaction Type:</strong>{" "}
+                    {selectedTransaction.transaction_type}
+                  </p>
+                  <p>
+                    <strong>Purchase Date:</strong>{" "}
+                    {selectedTransaction.createdAt?.slice(0, 10)}
+                  </p>
+                  <p>
+                    <strong>Purchase Time:</strong>{" "}
+                    {selectedTransaction.createdAt?.slice(11, 19)}
+                  </p>
+                  <p>
+                    <strong>Buyer Email:</strong>{" "}
+                    {selectedTransaction.buyer_email}
+                  </p>
+                  <p>
+                    <strong>Buyer Name:</strong>{" "}
+                    {selectedTransaction.buyer_name}
+                  </p>
+                  <p>
+                    <strong>Buyer Phone Number:</strong>{" "}
+                    {selectedTransaction.buyer_phone_number}
+                  </p>
+                  <p>
+                    <strong>Delivery Address:</strong>{" "}
+                    {selectedTransaction.delivery_address}
+                  </p>
+                </>
+              )}
+            </>
+          ) : (
+            <p>No transaction selected.</p>
+          )}
+        </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>Close</Button>
+          <Button variant="secondary" onClick={() => setShow(false)}>
+            Close
+          </Button>
           {userEmail === selectedTransaction?.vendor_email &&
-            selectedTransaction?.buyer_email !== selectedTransaction?.vendor_email &&
-            selectedTransaction?.seller_confirm_status === false ? (
+          selectedTransaction?.buyer_email !==
+            selectedTransaction?.vendor_email &&
+          selectedTransaction?.seller_confirm_status === false ? (
+            <Button
+              variant="success"
+              onClick={() =>
+                navigate(
+                  `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`
+                )
+              }>
+              Confirm Transaction
+            </Button>
+          ) : (
+            selectedTransaction?.transaction_status === "processing" && (
               <Button
-                variant="success"
-                onClick={() =>
-                  navigate(
-                    `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${selectedTransaction.transaction_id}`
-                  )
-                }
-              >
-                Confirm Transaction
+                variant="danger"
+                onClick={() => handleCancelClick(selectedTransaction)}>
+                Cancel Transaction
               </Button>
-            ) : (
-              selectedTransaction?.transaction_status === "processing" && (
-                <Button variant="danger" onClick={() => handleCancelClick(selectedTransaction)}>
-                  Cancel Transaction
-                </Button>
-              )
-            )}
+            )
+          )}
         </Modal.Footer>
       </Modal>
 
       {/* Cancel confirmation */}
-      <Modal show={showCancelConfirmModal} onHide={() => setShowCancelConfirmModal(false)} centered>
+      <Modal
+        show={showCancelConfirmModal}
+        onHide={() => setShowCancelConfirmModal(false)}
+        centered>
         <Modal.Header closeButton>
           <Modal.Title>Cancel Transaction</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to cancel your transaction?</Modal.Body>
+        <Modal.Body>
+          Are you sure you want to cancel your transaction?
+        </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" onClick={() => setShowCancelConfirmModal(false)}>No</Button>
-          <Button variant="danger" onClick={confirmDeleteTransaction}>Yes</Button>
+          <Button
+            variant="success"
+            onClick={() => setShowCancelConfirmModal(false)}>
+            No
+          </Button>
+          <Button variant="danger" onClick={confirmDeleteTransaction}>
+            Yes
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
@@ -304,7 +413,7 @@ export const RecentTransactionTableData = ({
   vendor_email,
   buyer_email,
   createdAt,
-   // purchase_by,
+  // purchase_by,
   product_price,
   transaction_type,
   transaction_status,
@@ -314,7 +423,7 @@ export const RecentTransactionTableData = ({
   status_color,
   status_message,
   seller_confirm_status,
-  onViewMore,  
+  onViewMore,
 }) => {
   return (
     <tr className="border-bottom">
@@ -328,8 +437,7 @@ export const RecentTransactionTableData = ({
         <Button
           variant="outline-primary"
           className="rounded-1 fs-sm"
-          onClick={onViewMore}
-        >
+          onClick={onViewMore}>
           View More
         </Button>
       </td>
@@ -337,9 +445,7 @@ export const RecentTransactionTableData = ({
   );
 };
 
-
 export default TransactionInProgressHistory;
-
 
 // export const RecentTransactionTable = () => {
 //   // user detail for single user
@@ -753,7 +859,7 @@ export default TransactionInProgressHistory;
 //         </td>
 
 //         <td className="d-none d-md-table-cell py-md-3 text-center">
-          
+
 //           {transaction_status}
 //         </td>
 //         {userEmail === vendor_email &&

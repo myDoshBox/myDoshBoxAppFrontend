@@ -68,7 +68,11 @@ export const RecentTransactionTable = () => {
 
   // user detail for single user
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail =
+    userInfo?.user?.email ||
+    userInfo?.email ||
+    userInfo?.organization_email ||
+    userInfo?.userInfo?.email;
 
   // transaction detail for single user
   // const { escrowProductInfo } = useSelector((state) => state.escrowProductInfo);
@@ -162,8 +166,7 @@ export const RecentTransactionTable = () => {
                     style={{
                       outline: "none",
                       borderColor: "#E7E7E7",
-                    }}
-                  >
+                    }}>
                     {item.label}
                   </Dropdown.Toggle>
 
@@ -185,8 +188,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-3"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Create Transaction
               </Button>
             </Link>
@@ -196,8 +198,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Download Transaction Slip
               </Button>
             </Link>
@@ -482,8 +483,7 @@ export const RecentTransactionTableData = (props) => {
                 navigate(
                   `confirm-escrow-product-transaction/shipping-details-form/${transaction_id}`
                 )
-              }
-            >
+              }>
               Confirm Transaction
             </Button>
           </td>
@@ -492,8 +492,7 @@ export const RecentTransactionTableData = (props) => {
             <Button
               variant="outline-primary"
               className="rounded-1 fs-sm"
-              onClick={onViewMore}
-            >
+              onClick={onViewMore}>
               View More
             </Button>
           </td>

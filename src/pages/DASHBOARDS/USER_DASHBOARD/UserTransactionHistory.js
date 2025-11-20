@@ -7,12 +7,45 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Modal, Form } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import buyerImage from "../../../images/transact_person.png";
-import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
+import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
-import React, {  useMemo } from "react";
-import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
+import React, { useMemo } from "react";
+import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useSelector } from "react-redux";
 import { searchFilter } from "../../../components/utils/searchFilter";
+
+const DebugAuthState = () => {
+  const authState = useSelector((state) => state.usersauth);
+  const { userInfo } = authState;
+
+  return (
+    <div
+      style={{
+        padding: "20px",
+        background: "#f0f0f0",
+        margin: "20px",
+        borderRadius: "8px",
+        fontFamily: "monospace",
+      }}>
+      <h3>🐛 Debug Auth State</h3>
+      <div>
+        <strong>Full Auth State:</strong>
+        <pre>{JSON.stringify(authState, null, 2)}</pre>
+      </div>
+      <div>
+        <strong>userInfo:</strong>
+        <pre>{JSON.stringify(userInfo, null, 2)}</pre>
+      </div>
+      <div>
+        <strong>userInfo?.email:</strong> {userInfo?.email || "UNDEFINED"}
+      </div>
+      <div>
+        <strong>localStorage userInfo:</strong>
+        <pre>{localStorage.getItem("userInfo")}</pre>
+      </div>
+    </div>
+  );
+};
 
 const UserTransactionHistory = () => {
   return (
@@ -31,23 +64,32 @@ const UserTransactionHistory = () => {
   );
 };
 
-
-
-
 export const RecentTransactionTable = () => {
-  // user detail for single user
+  // FIXED: Direct access to email from userInfo
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail =
+    userInfo?.user?.email ||
+    userInfo?.email ||
+    userInfo?.organization_email ||
+    userInfo?.userInfo?.email;
+
+  console.log("🔍 Full userInfo:", userInfo);
+  console.log("📧 Extracted userEmail:", userEmail);
 
   const {
     data: transactions,
     error,
     isLoading,
+    isFetching,
   } = useFetchAllTransactionsQuery(userEmail, {
+    skip: !userEmail, // Don't fetch if no email
     refetchOnMountOrArgChange: true,
   });
 
-  // console.log("transactions", transactions);
+  console.log("User Email:", userEmail);
+  console.log("Transactions Data:", transactions);
+  console.log("Error:", error);
+  console.log("Loading:", isLoading);
 
   const dropdownBtnValues = [
     { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
@@ -57,15 +99,48 @@ export const RecentTransactionTable = () => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  // const [selectedTransaction, setSelectedTransaction] = useState(null); // For modal
-  const [selectedTransaction, setSelectedTransaction] = useState(null); // For modal
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [show, setShow] = useState(false);
-
-  // const location = useLocation();
 
   // transactions fetched
   const fetchedTransactions = transactions?.transactions;
-  // console.log("fetchedTransactions", fetchedTransactions);
+
+  // Show loading state
+  if (isLoading || isFetching) {
+    return (
+      <div className="bg-white rounded-1 p-3 text-center">
+        <p>Loading transactions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-1 p-3 text-center">
+        <p className="text-danger">
+          Error loading transactions:{" "}
+          {error?.data?.message || error?.error || "Unknown error"}
+        </p>
+        <button
+          className="btn btn-primary mt-2"
+          onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // Show empty state
+  if (!fetchedTransactions || fetchedTransactions.length === 0) {
+    return (
+      <div className="bg-white rounded-1 p-3 text-center">
+        <p>No transactions found</p>
+        <Link to="../initiate-escrow" className="btn btn-primary mt-2">
+          Create Your First Transaction
+        </Link>
+      </div>
+    );
+  }
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) {
@@ -88,20 +163,9 @@ export const RecentTransactionTable = () => {
 
   const getSlicedData = () => {
     if (!fetchedTransactions || fetchedTransactions?.length === 0) {
-      return []; // Return an empty array if there is no data
+      return [];
     }
     console.log("ft", fetchedTransactions);
-
-    // const transactionsInProgress = fetchedTransactions?.filter(
-    //   (transaction) =>
-    //     // transaction?.transaction_status === "completed" &&
-    //     // userEmail === transaction?.vendor_email &&
-    //     // transaction?.buyer_email !== transaction?.vendor_email &&
-    //     // transaction?.seller_confirm_status === false
-    //     transaction?.transaction_status === "processing"
-    // );
-
-    // console.log("ct", transactionsInProgress);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -109,10 +173,6 @@ export const RecentTransactionTable = () => {
     return fetchedTransactions?.slice(startIndex, endIndex);
   };
 
-  // console.log("getSlicedData", getSlicedData());
-
-  // if (isLoading) return <p>Loading...</p>;
-  // if (error) return <p>Error loading transactions: {error?.data?.message}</p>;
   return (
     <div className="bg-white rounded-1 p-3" style={{ width: "100%" }}>
       <div>
@@ -123,15 +183,14 @@ export const RecentTransactionTable = () => {
           <div className="d-flex">
             {dropdownBtnValues.map((item) => {
               return (
-                <Dropdown>
+                <Dropdown key={item.label}>
                   <Dropdown.Toggle
                     id="dropdown-basic"
                     className="border-1 border-gray my-1 rounded-1 btn bg-transparent text-black border-black me-3 fs-sm"
                     style={{
                       outline: "none",
                       borderColor: "#E7E7E7",
-                    }}
-                  >
+                    }}>
                     {item.label}
                   </Dropdown.Toggle>
 
@@ -153,8 +212,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-3"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Create Transaction
               </Button>
             </Link>
@@ -164,8 +222,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Download Transaction Slip
               </Button>
             </Link>
@@ -180,15 +237,6 @@ export const RecentTransactionTable = () => {
               <th className="text-center d-none d-md-table-cell">
                 Purchase Date
               </th>
-              {/* <div className="d-flex justify-content-between align-items-center border-md-bottom"> */}
-              {/* <th className="text-center d-none d-md-table-cell">
-                  Purchase By
-                </th> */}
-              {/* <th className="text-center d-none d-md-table-cell">
-                Product Price
-              </th> */}
-              {/* </div> */}
-              {/* <th className="text-center d-none d-md-table-cell">Slip</th> */}
               <th className="text-center d-none d-md-table-cell">
                 Product Price
               </th>
@@ -204,26 +252,18 @@ export const RecentTransactionTable = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Use the getSlicedData function to map over only the data for the current page */}
             {getSlicedData()?.map((history) => {
               return (
                 <RecentTransactionTableData
                   {...history}
                   key={history.id}
                   onViewMore={() => handleShowMore(history)}
-                  // onClick={console.log("hi")}
                 />
-
-                // <Button variant="primary" onClick={handleShow}>
-                // </Button>
               );
             })}
-
-            {/* {console.log("gSD", getSlicedData())} */}
           </tbody>
         </table>
         <PaginationBar
-          // data={TransactionData.user_recent_transaction}
           data={fetchedTransactions || "no transactions"}
           currentPage={currentPage}
           handlePageChange={handlePageChange}
@@ -231,8 +271,6 @@ export const RecentTransactionTable = () => {
           totalPages={totalPages}
           setTotalPages={setTotalPages}
         />
-
-        {/* {console.log("ft", fetchedTransactions)} */}
       </div>
 
       <Modal show={show} onHide={handleClose}>
@@ -242,15 +280,9 @@ export const RecentTransactionTable = () => {
 
         <Modal.Body>
           <Modal.Body>
-            {/* {selectedTransaction &&
-            userEmail === selectedTransaction?.vendor_email &&
-            selectedTransaction?.buyer_email !==
-              selectedTransaction?.vendor_email &&
-            selectedTransaction?.seller_confirm_status === false ? ( */}
             {selectedTransaction ? (
               <>
                 {selectedTransaction.transaction_type === "buy" ? (
-                  // Render for "buy" transaction type
                   <>
                     <p>
                       <strong>Product Description:</strong>{" "}
@@ -313,7 +345,6 @@ export const RecentTransactionTable = () => {
                     </p>
                   </>
                 ) : (
-                  // Render for "sell" transaction type
                   <>
                     <p>
                       <strong>Product Description:</strong>{" "}
@@ -352,12 +383,10 @@ export const RecentTransactionTable = () => {
                     </p>
                     <p>
                       <strong>Purchase Date:</strong>{" "}
-                      {/* {selectedTransaction.createdAt} */}
                       {selectedTransaction.createdAt?.slice(0, 10)}
                     </p>
                     <p>
                       <strong>Purchase Time:</strong>{" "}
-                      {/* {selectedTransaction.createdAt} */}
                       {selectedTransaction.createdAt?.slice(11, 19)}
                     </p>
                     <p>
@@ -365,7 +394,7 @@ export const RecentTransactionTable = () => {
                       {selectedTransaction.buyer_email}
                     </p>
                     <p>
-                      <strong>Buyer Email:</strong>{" "}
+                      <strong>Delivery Address:</strong>{" "}
                       {selectedTransaction.delivery_address}
                     </p>
                   </>
@@ -387,8 +416,12 @@ export const RecentTransactionTable = () => {
 };
 
 export const RecentTransactionTableData = (props) => {
+  // FIXED: Direct access to email
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail = userInfo?.email;
+
+  console.log("Current userInfo in TableData:", userInfo);
+  console.log("Current userEmail in TableData:", userEmail);
 
   const {
     product_name,
@@ -396,7 +429,6 @@ export const RecentTransactionTableData = (props) => {
     vendor_email,
     buyer_email,
     createdAt,
-    // purchase_by,
     product_price,
     transaction_total,
     transaction_id,
@@ -446,79 +478,8 @@ export const RecentTransactionTableData = (props) => {
         </td>
 
         <td className="d-none d-md-table-cell py-md-3 text-center">
-          {/* <Button
-            className="border-0 rounded-1 btn all-btn text-white fs-sm"
-            style={{
-              backgroundColor: "#006747EB",
-            }}
-          >
-            Generate Slip
-          </Button> */}
           {transaction_status}
         </td>
-        {/* <td
-          className="py-md-3 text-center"
-          style={{ color: `${status_color}` }}
-        >
-          {window.innerWidth < 768 ? (
-            <span style={{ color: `${status_color}` }}>●</span>
-          ) : (
-            `${transaction_status}`
-          )}
-        </td> */}
-
-        {/* ///// */}
-        {/* <td className="d-none d-md-table-cell py-md-3 text-center">
-          <Button
-            variant="outline-primary"
-            className="rounded-1 fs-sm"
-            onClick={onViewMore}
-          >
-            View More
-          </Button>
-        </td> */}
-        {/* ////// */}
-
-        {/* <td className="d-none d-md-table-cell py-md-3 text-center">
-          <Button
-            variant="outline-primary"
-            className="rounded-1 fs-sm"
-            onClick={onViewMore}
-          >
-            {seller_confirm_status === "false"
-              ? "View More"
-              : "Confirm Transaction"}
-          </Button>
-        </td> */}
-
-        {/* {userEmail === vendor_email &&
-        buyer_email !== vendor_email &&
-        seller_confirm_status === false &&
-        transaction_status === "processing" ? (
-          <td className="d-none d-md-table-cell py-md-3 text-center">
-            <Button
-              variant="outline-primary"
-              className="rounded-1 fs-sm"
-              onClick={() =>
-                navigate(
-                  `confirm-escrow-product-transaction/shipping-details-form/${transaction_id}`
-                )
-              }
-            >
-              Confirm Transaction
-            </Button>
-          </td>
-        ) : (
-          <td className="d-none d-md-table-cell py-md-3 text-center">
-            <Button
-              variant="outline-primary"
-              className="rounded-1 fs-sm"
-              onClick={onViewMore}
-            >
-              View More
-            </Button>
-          </td>
-        )} */}
 
         {userEmail === vendor_email &&
         buyer_email !== vendor_email &&
@@ -533,20 +494,18 @@ export const RecentTransactionTableData = (props) => {
                 navigate(
                   `/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/${transaction_id}`
                 )
-              }
-            >
+              }>
               Confirm Transaction
             </Button>
 
             <Button
-              variant="outline-danger" // Different color to distinguish
-              className="rounded-1 fs-sm"
+              variant="outline-danger"
+              className="rounded-1 fs-sm ms-2"
               onClick={() =>
                 navigate(
-                  `/userdashboard/disputes/${transaction_id}/initiate-dispute` // Adjust the route as needed
+                  `/userdashboard/disputes/${transaction_id}/initiate-dispute`
                 )
-              }
-            >
+              }>
               Raise Dispute
             </Button>
           </td>
@@ -557,10 +516,9 @@ export const RecentTransactionTableData = (props) => {
               className="rounded-1 fs-sm"
               onClick={() =>
                 navigate(
-                  `/userdashboard/transaction-history/resolve-conflict/${transaction_id}` // Adjust the route as needed
+                  `/userdashboard/transaction-history/resolve-conflict/${transaction_id}`
                 )
-              }
-            >
+              }>
               Resolve Conflict
             </Button>
           </td>
@@ -569,8 +527,7 @@ export const RecentTransactionTableData = (props) => {
             <Button
               variant="outline-primary"
               className="rounded-1 fs-sm"
-              onClick={onViewMore}
-            >
+              onClick={onViewMore}>
               View More
             </Button>
           </td>

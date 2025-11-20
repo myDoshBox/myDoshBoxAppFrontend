@@ -1,4 +1,12 @@
-import { Nav, Navbar, Container, Form, Row, Col, Dropdown } from "react-bootstrap";
+import {
+  Nav,
+  Navbar,
+  Container,
+  Form,
+  Row,
+  Col,
+  Dropdown,
+} from "react-bootstrap";
 import logo from "../../images/Homepage Img/logo.png";
 import image from "../../images/Image.jpg";
 import { Link, Outlet } from "react-router-dom";
@@ -21,15 +29,13 @@ export const GuestNavbar = () => {
       <Navbar expand="lg" className="guest-nav sticky-top bg-white mb-2">
         <Navbar.Toggle
           aria-controls="basic-navbar-nav"
-          className="hamburgerIcon"
-        >
+          className="hamburgerIcon">
           <svg
             width="30"
             height="20"
             viewBox="0 0 30 20"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+            xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0 8.33333H22.5V11.6667H0V8.33333ZM0 0H30V3.33333H0V0ZM0 20H13.5656V16.6667H0V20Z"
               fill="#006747"
@@ -46,43 +52,37 @@ export const GuestNavbar = () => {
             <Link
               to="/"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}
-            >
+              onClick={() => handleDisappear}>
               Home
             </Link>
             <Link
               to="/aboutus"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}
-            >
+              onClick={() => handleDisappear}>
               About Us
             </Link>
             <Link
               to="/pricingpage"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}
-            >
+              onClick={() => handleDisappear}>
               Pricing
             </Link>
             <Link
               to="/faqs"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}
-            >
+              onClick={() => handleDisappear}>
               FAQs
             </Link>
             <Link
               to="/contactus"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}
-            >
+              onClick={() => handleDisappear}>
               Contact Us
             </Link>
             <Link
               to="/signup"
               className="nav-links nav-btn"
-              onClick={() => handleDisappear}
-            >
+              onClick={() => handleDisappear}>
               <HomePageSignUpBtn />
             </Link>
           </Nav>
@@ -93,7 +93,6 @@ export const GuestNavbar = () => {
   );
 };
 
-
 // Truncate function: Show first 17 characters, then add "..."
 const truncateEmailAfter17 = (email, maxLength = 17) => {
   if (!email) return "";
@@ -103,12 +102,11 @@ const truncateEmailAfter17 = (email, maxLength = 17) => {
 export const UserDashboardNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
 
-  const userEmail = userInfo?.user?.email || userInfo?.user?.organization_email || "";
-  const userPhone = userInfo?.user?.phone_number || userInfo?.user?.contact_number || "";
-
-//  const truncateText = (text, maxLength = 25) => {
-//   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-// };
+  const userEmail = userInfo?.email || userInfo?.organization_email || "";
+  const userPhone = userInfo?.phone_number || userInfo?.contact_number || "";
+  //  const truncateText = (text, maxLength = 25) => {
+  //   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  // };
 
   return (
     <Container fluid className="mt-5">
@@ -129,32 +127,31 @@ export const UserDashboardNavbar = () => {
         <Col
           xs={12}
           md={4}
-          className="d-flex justify-content-md-end justify-content-end"
-        >
+          className="d-flex justify-content-md-end justify-content-end">
           <Dropdown align="end">
             <Dropdown.Toggle
               variant="light"
               className="d-flex align-items-center gap-2 border"
-              id="user-dropdown"
-            >
+              id="user-dropdown">
               <img
                 src={image}
                 alt="User"
                 className="rounded-circle"
                 style={{ width: "35px", height: "35px", objectFit: "cover" }}
               />
-             <span className="d-none d-sm-inline fw-semibold">
-            {truncateEmailAfter17(userEmail)}
-            </span>
-
+              <span className="d-none d-sm-inline fw-semibold">
+                {truncateEmailAfter17(userEmail)}
+              </span>
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-            <Dropdown.ItemText className="fw-semibold">
-             {truncateEmailAfter17(userEmail)}
-            </Dropdown.ItemText>
+              <Dropdown.ItemText className="fw-semibold">
+                {truncateEmailAfter17(userEmail)}
+              </Dropdown.ItemText>
 
-              <Dropdown.ItemText className="text-muted">{userPhone}</Dropdown.ItemText>
+              <Dropdown.ItemText className="text-muted">
+                {userPhone}
+              </Dropdown.ItemText>
               <Dropdown.Divider />
               <Dropdown.Item href="settings">Account Settings</Dropdown.Item>
               <Dropdown.Item href="/">Logout</Dropdown.Item>
@@ -165,11 +162,6 @@ export const UserDashboardNavbar = () => {
     </Container>
   );
 };
-
-
-
-
-
 
 // export const UserDashboardNavbar = () => {
 //   // console.count("UserDashboardNavbar: ");

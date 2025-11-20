@@ -7,9 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 // import { addUser, setCredentials } from "../../redux/slices/authSlice";
-import {
-  useLoginMutation
-} from "../../redux/slices/userSlices/allUsersAPISlice";
+import { useLoginMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
 import { setCredentials } from "../../redux/slices/userSlices/allUsersAuthSlice";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
@@ -90,7 +88,13 @@ export const SignInForm = () => {
         return;
       }
 
-      dispatch(setCredentials(res)); // save user in Redux & localStorage
+      const credentials = {
+        user: res.user,
+        accessToken: res.accessToken,
+        refreshToken: res.refreshToken,
+      };
+
+      dispatch(setCredentials(credentials)); // Pass structured credentials
       toast.success("Login successful!");
       navigate("/userdashboard");
     } catch (err) {
@@ -135,8 +139,7 @@ export const SignInForm = () => {
           <button
             className="btn btn-outline-secondary"
             onClick={handleShowHide}
-            type="button"
-          >
+            type="button">
             {passwordToggle ? <HidePassWordIcon /> : <ShowPassWordIcon />}
           </button>
         </div>
@@ -171,7 +174,6 @@ export const SignInForm = () => {
     </div>
   );
 };
-
 
 const ShowPassWordIcon = () => (
   <svg
