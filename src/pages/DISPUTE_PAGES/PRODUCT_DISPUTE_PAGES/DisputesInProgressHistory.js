@@ -32,19 +32,18 @@ const DisputesInProgressHistory = () => {
 export const RecentDisputeTable = () => {
   // user detail for single user
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail =
+    userInfo?.email || userInfo?.user?.email || userInfo?.organization_email;
   console.log("userEmail:", userEmail);
 
   const {
-    data: productDisputeDetails,
+    data: disputeResponse,
     error,
     isLoading,
   } = useFetchDisputeDetailsQuery(userEmail, {
     refetchOnMountOrArgChange: true,
-    // skip: !userEmail, // Skip the query if userEmail is not available
+    skip: !userEmail,
   });
-
-  console.log("disputeDetails", productDisputeDetails);
 
   const dropdownBtnValues = [
     { label: "All Data", value_1: "Last 7 days", value_2: "Over $1000" },
@@ -62,8 +61,8 @@ export const RecentDisputeTable = () => {
   // const location = useLocation();
 
   // transactions fetched
-  const fetchedDisputes = productDisputeDetails?.fetchDisputeDetails || [];
-  // console.log("fetchedDisputess", fetchedDisputes);
+  const fetchedDisputes = disputeResponse?.data?.disputes || [];
+  const pagination = disputeResponse?.data?.pagination;
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) {
@@ -167,8 +166,7 @@ export const RecentDisputeTable = () => {
                     style={{
                       outline: "none",
                       borderColor: "#E7E7E7",
-                    }}
-                  >
+                    }}>
                     {item.label}
                   </Dropdown.Toggle>
 
@@ -190,8 +188,7 @@ export const RecentDisputeTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-3"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Raise a Dispute
               </Button>
             </Link>
@@ -201,8 +198,7 @@ export const RecentDisputeTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Download Dispute Detail
               </Button>
             </Link>
@@ -417,8 +413,7 @@ vendor_phone_number
 
           <Link
             to={`/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-history/${selectedDispute?.dispute?.transaction_id}/initiate-dispute`}
-            className="border-0 mt-3 btn text-white pale-red"
-          >
+            className="border-0 mt-3 btn text-white pale-red">
             Yes, I will like resolve this dispute
           </Link>
 
@@ -427,8 +422,7 @@ vendor_phone_number
             className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
             onClick={(e) =>
               handleSubmit(selectedDispute?.dispute?.transaction_id, e)
-            }
-          >
+            }>
             I will like to involve a mediator
           </Button>
         </Modal.Footer>
@@ -511,8 +505,7 @@ export const RecentDisputeTableData = (props) => {
             <Button
               variant="outline-primary"
               className="rounded-1 fs-sm"
-              onClick={resolveDispute}
-            >
+              onClick={resolveDispute}>
               Resolve Dispute
             </Button>
           </td>
@@ -521,8 +514,7 @@ export const RecentDisputeTableData = (props) => {
             <Button
               variant="outline-primary"
               className="rounded-1 fs-sm"
-              onClick={onViewMore}
-            >
+              onClick={onViewMore}>
               View More
             </Button>
           </td>

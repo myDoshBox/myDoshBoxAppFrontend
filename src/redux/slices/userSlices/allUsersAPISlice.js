@@ -5,28 +5,44 @@ import backendURL from "./../../../components/utils/config";
 const baseQuery = fetchBaseQuery({
   baseUrl: `${backendURL}/auth`,
   credentials: "include",
-  prepareHeaders: (headers, { getState, endpoint }) => {
-    // Only add Authorization header for refresh token endpoint
-    if (endpoint === "refreshToken") {
-      const token = getState().usersauth.userInfo?.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-    }
+  prepareHeaders: (headers) => {
     headers.set("Content-Type", "application/json");
     return headers;
   },
 });
 
+// Endpoints that should NOT trigger token refresh on 401
+// These are public/auth endpoints where 401 means "wrong credentials", not "expired token"
+const AUTH_ENDPOINTS = [
+  "login",
+  "createIndUser",
+  "createOrgUser",
+  "verifyUser",
+  "forgotPasswordIndividual",
+  "forgotPasswordOrganization",
+  "resetPasswordIndividual",
+  "resetPasswordOrganization",
+  "refreshToken",
+  "createIndividualGoogle",
+  "createIndividualGoogles",
+  "getGoogleUrl",
+];
+
 // Wrapper to handle token refresh on 401 errors
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  // If we get a 401, try to refresh the token
-  if (result?.error?.status === 401) {
-    console.log("Token expired, attempting refresh...");
+  // Get the endpoint name
+  const endpoint = api.endpoint;
+  if (AUTH_ENDPOINTS.includes(endpoint)) {
+    return result;
+  }
 
-    // Try to get a new token - this will use the refreshToken endpoint
+  // If we get a 401 on a PROTECTED endpoint, try to refresh the token
+  if (result?.error?.status === 401) {
+    console.log("Token expired on protected route, attempting refresh...");
+
+    // Try to get a new token
     const refreshResult = await baseQuery(
       {
         url: "/individual/refresh-token",
@@ -37,15 +53,20 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       extraOptions
     );
 
-    if (refreshResult?.data) {
-      // Store the new token
+    if (refreshResult?.data?.status === "success") {
+      console.log("Token refresh successful, retrying original request...");
       api.dispatch(setCredentials(refreshResult.data));
 
       // Retry the original query with new token
       result = await baseQuery(args, api, extraOptions);
     } else {
+      console.log("Token refresh failed, logging out...");
+
       // Refresh failed, log the user out
       api.dispatch(logout());
+
+      // Mark that this is an auth redirect (not a manual visit to login)
+      sessionStorage.setItem("auth_redirect", "true");
       window.location.href = "/signin";
     }
   }
@@ -89,7 +110,6 @@ export const usersAPISlice = createApi({
       }),
     }),
 
-    // Forgot Password endpoints
     forgotPasswordIndividual: builder.mutation({
       query: (email) => ({
         url: "individual/forgot-password",
@@ -106,7 +126,6 @@ export const usersAPISlice = createApi({
       }),
     }),
 
-    // Reset Password endpoints
     resetPasswordIndividual: builder.mutation({
       query: ({ token, password, confirmPassword }) => ({
         url: `individual/reset-password?token=${token}`,
@@ -161,6 +180,7 @@ export const usersAPISlice = createApi({
       query: () => ({
         url: "/logout",
         method: "POST",
+        credentials: "include",
       }),
     }),
   }),

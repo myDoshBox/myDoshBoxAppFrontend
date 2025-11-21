@@ -33,7 +33,9 @@ const SettledTransactionHistory = () => {
 export const RecentTransactionTable = () => {
   // user detail for single user
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userEmail = userInfo?.user?.email;
+  const userEmail =
+    userInfo?.email || userInfo?.user?.email || userInfo?.organization_email;
+  console.log("userEmail:", userEmail);
 
   const {
     data: transactions,
@@ -126,8 +128,7 @@ export const RecentTransactionTable = () => {
                     style={{
                       outline: "none",
                       borderColor: "#E7E7E7",
-                    }}
-                  >
+                    }}>
                     {item.label}
                   </Dropdown.Toggle>
 
@@ -149,8 +150,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block me-3"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Create Transaction
               </Button>
             </Link>
@@ -160,8 +160,7 @@ export const RecentTransactionTable = () => {
                 className="border-0 my-1 rounded-1 btn all-btn text-white fs-sm d-none d-md-block"
                 style={{
                   backgroundColor: "#006747EB",
-                }}
-              >
+                }}>
                 Download Transaction Slip
               </Button>
             </Link>
@@ -538,8 +537,7 @@ export const RecentTransactionTableData = (props) => {
           <Button
             variant="outline-primary"
             className="rounded-1 fs-sm"
-            onClick={onViewMore}
-          >
+            onClick={onViewMore}>
             View More
           </Button>
         </td>

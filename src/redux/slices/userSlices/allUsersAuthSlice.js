@@ -11,16 +11,21 @@ const usersAuthSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      console.log("🔄 setCredentials payload:", action.payload);
-
       const { user, accessToken, refreshToken } = action.payload;
 
-      // Store the user data directly (not nested)
-      state.userInfo = {
-        ...user, // This spreads: { id, email, phone_number, role }
-        token: accessToken,
-        refreshToken: refreshToken,
-      };
+      if (user) {
+        state.userInfo = {
+          ...user,
+          token: accessToken,
+          refreshToken: refreshToken,
+        };
+      } else {
+        state.userInfo = {
+          ...state.userInfo,
+          token: accessToken,
+          refreshToken: refreshToken || state.userInfo?.refreshToken,
+        };
+      }
 
       localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
     },
