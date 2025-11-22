@@ -7,6 +7,7 @@ import {
   // Navigate,
 } from "react-router-dom";
 import { useTokenRefresh } from "./components/Hook/useTokenRefresh";
+import PublicRoute from "../src/components/PublicRoute";
 import { GuestNavbar } from "./components/NavbarComponents/TopNavbars";
 import Homepage from "./pages/GENERAL_PAGES/Homepage";
 import AboutUs from "./pages/GENERAL_PAGES/AboutUs";
@@ -41,6 +42,7 @@ import {
 } from "./pages/DISPUTE_PAGES/Conflicts";
 import SignInPage from "./pages/AUTHENTICATION_PAGES/SignIn";
 import SignUpPage from "./pages/AUTHENTICATION_PAGES/SignUp";
+import GoogleCallback from "./pages/AUTHENTICATION_PAGES/GoogleCallback";
 import VerifyEmailForm from "./pages/AUTHENTICATION_PAGES/VerifyEmailForm";
 import EmailVerificationMsg from "./pages/AUTHENTICATION_PAGES/EmailVerificationMsg";
 import ResetPassword from "./pages/AUTHENTICATION_PAGES/resetPassword";
@@ -228,8 +230,11 @@ function App() {
           </Route>
         </Route>
         {/* <Route path="*" element={<Navigate to={<Error404 />} />} /> */}
-        <Route path="signin" element={<SignInPage />} />
-        <Route path="signup" element={<SignUpPage />} />
+        <Route element={<PublicRoute />}>
+          <Route path="signin" element={<SignInPage />} />
+          <Route path="signup" element={<SignUpPage />} />
+        </Route>
+        <Route path="/auth/google/callback" element={<GoogleCallback />} />
         <Route path="VerifyEmailForm" element={<VerifyEmailForm />} />
         <Route path="ForgotPassword" element={<ForgotPassword />} />
         <Route path="auth/reset-password" element={<ResetPassword />} />

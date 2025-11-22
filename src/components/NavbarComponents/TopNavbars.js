@@ -11,17 +11,27 @@ import logo from "../../images/Homepage Img/logo.png";
 import image from "../../images/Image.jpg";
 import { Link, Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import {
   HomePageSignUpBtn,
   SignUpButton,
 } from "../ButtonsComponent/AuthenticationButtons";
+import { logout } from "../../redux/slices/userSlices/allUsersAuthSlice";
 
 export const GuestNavbar = () => {
+  const { userInfo } = useSelector((state) => state.usersauth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const disappearEl = useRef(null);
 
   const handleDisappear = () => {
     disappearEl.style.display = "none";
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
   };
 
   return (
@@ -79,12 +89,38 @@ export const GuestNavbar = () => {
               onClick={() => handleDisappear}>
               Contact Us
             </Link>
-            <Link
-              to="/signup"
-              className="nav-links nav-btn"
-              onClick={() => handleDisappear}>
-              <HomePageSignUpBtn />
-            </Link>
+
+            {/* Conditional rendering based on auth state */}
+            {userInfo ? (
+              <>
+                <Link
+                  to="/userdashboard"
+                  className="nav-link nav-links"
+                  onClick={() => handleDisappear}>
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="nav-links nav-btn btn btn-outline-success ms-2">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  className="nav-link nav-links"
+                  onClick={() => handleDisappear}>
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="nav-links nav-btn"
+                  onClick={() => handleDisappear}>
+                  <HomePageSignUpBtn />
+                </Link>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Navbar>
@@ -101,9 +137,21 @@ const truncateEmailAfter17 = (email, maxLength = 17) => {
 
 export const UserDashboardNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const userEmail = userInfo?.email || userInfo?.organization_email || "";
   const userPhone = userInfo?.phone_number || userInfo?.contact_number || "";
+  const userImage =
+    userInfo?.picture && userInfo.picture.trim() !== ""
+      ? userInfo.picture
+      : null;
+
+  const logoutHandler = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+
   //  const truncateText = (text, maxLength = 25) => {
   //   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   // };
@@ -133,12 +181,23 @@ export const UserDashboardNavbar = () => {
               variant="light"
               className="d-flex align-items-center gap-2 border"
               id="user-dropdown">
-              <img
-                src={image}
-                alt="User"
-                className="rounded-circle"
-                style={{ width: "35px", height: "35px", objectFit: "cover" }}
-              />
+              {userImage ? (
+                <img
+                  src={userImage}
+                  alt="User"
+                  className="rounded-circle"
+                  style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                  onError={(e) => (e.currentTarget.src = image)} // fallback if broken
+                />
+              ) : (
+                <img
+                  src={image}
+                  alt="User"
+                  className="rounded-circle"
+                  style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                />
+              )}
+
               <span className="d-none d-sm-inline fw-semibold">
                 {truncateEmailAfter17(userEmail)}
               </span>
@@ -154,7 +213,7 @@ export const UserDashboardNavbar = () => {
               </Dropdown.ItemText>
               <Dropdown.Divider />
               <Dropdown.Item href="settings">Account Settings</Dropdown.Item>
-              <Dropdown.Item href="/">Logout</Dropdown.Item>
+              <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Col>

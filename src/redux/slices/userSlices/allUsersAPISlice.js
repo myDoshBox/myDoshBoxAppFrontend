@@ -12,7 +12,6 @@ const baseQuery = fetchBaseQuery({
 });
 
 // Endpoints that should NOT trigger token refresh on 401
-// These are public/auth endpoints where 401 means "wrong credentials", not "expired token"
 const AUTH_ENDPOINTS = [
   "login",
   "createIndUser",
@@ -26,23 +25,18 @@ const AUTH_ENDPOINTS = [
   "createIndividualGoogle",
   "createIndividualGoogles",
   "getGoogleUrl",
+  "googleLogin",
+  "facebookLogin",
 ];
 
-// Wrapper to handle token refresh on 401 errors
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-
-  // Get the endpoint name
   const endpoint = api.endpoint;
-  if (AUTH_ENDPOINTS.includes(endpoint)) {
-    return result;
-  }
 
-  // If we get a 401 on a PROTECTED endpoint, try to refresh the token
+  if (AUTH_ENDPOINTS.includes(endpoint)) return result;
+
   if (result?.error?.status === 401) {
-    console.log("Token expired on protected route, attempting refresh...");
-
-    // Try to get a new token
+    console.log("Token expired, attempting refresh...");
     const refreshResult = await baseQuery(
       {
         url: "/individual/refresh-token",
@@ -54,23 +48,14 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     );
 
     if (refreshResult?.data?.status === "success") {
-      console.log("Token refresh successful, retrying original request...");
       api.dispatch(setCredentials(refreshResult.data));
-
-      // Retry the original query with new token
       result = await baseQuery(args, api, extraOptions);
     } else {
-      console.log("Token refresh failed, logging out...");
-
-      // Refresh failed, log the user out
       api.dispatch(logout());
-
-      // Mark that this is an auth redirect (not a manual visit to login)
       sessionStorage.setItem("auth_redirect", "true");
       window.location.href = "/signin";
     }
   }
-
   return result;
 };
 
@@ -110,6 +95,24 @@ export const usersAPISlice = createApi({
       }),
     }),
 
+    // Google OAuth Login
+    googleLogin: builder.mutation({
+      query: (credential) => ({
+        url: "individual/google",
+        method: "POST",
+        body: { credential },
+      }),
+    }),
+
+    // Facebook OAuth Login
+    facebookLogin: builder.mutation({
+      query: (accessToken) => ({
+        url: "individual/facebook",
+        method: "POST",
+        body: { accessToken },
+      }),
+    }),
+
     forgotPasswordIndividual: builder.mutation({
       query: (email) => ({
         url: "individual/forgot-password",
@@ -130,10 +133,7 @@ export const usersAPISlice = createApi({
       query: ({ token, password, confirmPassword }) => ({
         url: `individual/reset-password?token=${token}`,
         method: "POST",
-        body: {
-          password,
-          confirm_password: confirmPassword,
-        },
+        body: { password, confirm_password: confirmPassword },
       }),
     }),
 
@@ -141,10 +141,7 @@ export const usersAPISlice = createApi({
       query: ({ token, password, confirmPassword }) => ({
         url: `organization/reset-password?token=${token}`,
         method: "POST",
-        body: {
-          password,
-          confirm_password: confirmPassword,
-        },
+        body: { password, confirm_password: confirmPassword },
       }),
     }),
 
@@ -177,11 +174,7 @@ export const usersAPISlice = createApi({
     }),
 
     logout: builder.mutation({
-      query: () => ({
-        url: "/logout",
-        method: "POST",
-        credentials: "include",
-      }),
+      query: () => ({ url: "/logout", method: "POST", credentials: "include" }),
     }),
   }),
 });
@@ -201,4 +194,6 @@ export const {
   useVerifyUserMutation,
   useLogoutMutation,
   useRefreshTokenMutation,
+  useGoogleLoginMutation,
+  useFacebookLoginMutation,
 } = usersAPISlice;
