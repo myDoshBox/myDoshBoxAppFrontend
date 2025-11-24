@@ -496,6 +496,7 @@
 // };
 
 // export default ShippingDetailsHistory;
+
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { PaginationBar } from "../../../components/PaginationComponent";
@@ -769,7 +770,7 @@ export const RecentTransactionTable = () => {
       {/* Shipping Details Table */}
       {!isLoading && !error && getSlicedData()?.length > 0 && (
         <>
-          <div className="table-responsive">
+          <div className="table-responsive" style={{ overflowX: "auto" }}>
             <table className="table table-hover align-middle">
               <thead
                 style={{
@@ -790,6 +791,11 @@ export const RecentTransactionTable = () => {
                     className="text-center"
                     style={{ fontSize: "0.875rem", fontWeight: "600" }}>
                     Status
+                  </th>
+                  <th
+                    className="text-center"
+                    style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                    Actions
                   </th>
                   <th
                     className="text-center"
@@ -826,6 +832,11 @@ export const RecentTransactionTable = () => {
                     className="text-center"
                     style={{ fontSize: "0.875rem", fontWeight: "600" }}>
                     Status
+                  </th>
+                  <th
+                    className="text-center"
+                    style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                    View
                   </th>
                   <th
                     className="text-center"
@@ -867,30 +878,36 @@ export const RecentTransactionTable = () => {
                       <td className="text-center">
                         {getStatusBadge(shipping?.product?.transaction_status)}
                       </td>
+
                       <td className="text-center">
-                        <div className="d-flex flex-column gap-1">
+                        <div className="d-flex gap-2 justify-content-center flex-wrap">
                           <Button
                             variant="outline-primary"
                             size="sm"
                             onClick={() => handleShowMore(shipping)}
-                            style={{ fontSize: "0.75rem", padding: "4px 8px" }}>
-                            View
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "6px 12px",
+                            }}>
+                            View Details
                           </Button>
-                          {shouldShowVerifyButton(shipping) && (
-                            <Button
-                              variant="success"
-                              size="sm"
-                              onClick={() => handleShowVerification(shipping)}
-                              style={{
-                                fontSize: "0.75rem",
-                                padding: "4px 8px",
-                                backgroundColor: "#006747EB",
-                                border: "none",
-                              }}>
-                              Verify
-                            </Button>
-                          )}
                         </div>
+                      </td>
+                      <td>
+                        {shouldShowVerifyButton(shipping) && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleShowVerification(shipping)}
+                            className="border-0"
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "6px 12px",
+                              backgroundColor: "#006747EB",
+                            }}>
+                            <i className="bi bi-check-circle me-1"></i>
+                            Verify Product
+                          </Button>
+                        )}
                       </td>
                     </tr>
 
@@ -939,6 +956,7 @@ export const RecentTransactionTable = () => {
                           }
                         )}
                       </td>
+
                       <td className="text-center">
                         {getStatusBadge(shipping?.product?.transaction_status)}
                       </td>
@@ -954,21 +972,23 @@ export const RecentTransactionTable = () => {
                             }}>
                             View Details
                           </Button>
-                          {shouldShowVerifyButton(shipping) && (
-                            <Button
-                              size="sm"
-                              onClick={() => handleShowVerification(shipping)}
-                              className="border-0"
-                              style={{
-                                fontSize: "0.75rem",
-                                padding: "6px 12px",
-                                backgroundColor: "#006747EB",
-                              }}>
-                              <i className="bi bi-check-circle me-1"></i>
-                              Verify Product
-                            </Button>
-                          )}
                         </div>
+                      </td>
+                      <td>
+                        {shouldShowVerifyButton(shipping) && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleShowVerification(shipping)}
+                            className="border-0"
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "6px 12px",
+                              backgroundColor: "#006747EB",
+                            }}>
+                            <i className="bi bi-check-circle me-1"></i>
+                            Verify Product
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   </React.Fragment>
@@ -1051,7 +1071,6 @@ export const RecentTransactionTable = () => {
                   </div>
                 </div>
               </div>
-
               {/* Shipping Information */}
               <div className="mb-4">
                 <h6
@@ -1150,6 +1169,210 @@ export const RecentTransactionTable = () => {
                 </div>
               </div>
 
+              {/* Product Details */}
+              <div className="mb-4">
+                <h6
+                  className="fw-bold mb-3 pb-2"
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "#006747EB",
+                    borderBottom: "2px solid #e5e7eb",
+                  }}>
+                  <i className="bi bi-box-seam me-2"></i>
+                  Product Details
+                </h6>
+                {selectedShipping?.product?.products?.length > 0 ? (
+                  <div className="row g-3">
+                    {selectedShipping.product.products.map((product, index) => (
+                      <div key={product._id || index} className="col-12">
+                        <div
+                          className="d-flex gap-3 p-3 rounded"
+                          style={{
+                            backgroundColor: "#f8f9fa",
+                            border: "1px solid #e5e7eb",
+                          }}>
+                          {/* Product Image */}
+                          {product.image && (
+                            <div style={{ flexShrink: 0 }}>
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                  border: "1px solid #dee2e6",
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          {/* Product Info */}
+                          <div className="flex-grow-1">
+                            <div className="mb-2">
+                              <span
+                                className="fw-semibold d-block"
+                                style={{
+                                  fontSize: "0.95rem",
+                                  color: "#1a1a1a",
+                                }}>
+                                {product.name}
+                              </span>
+                              <small
+                                className="text-muted"
+                                style={{ fontSize: "0.75rem" }}>
+                                {product.description}
+                              </small>
+                            </div>
+
+                            <div className="d-flex flex-wrap gap-3 mt-2">
+                              <div>
+                                <small
+                                  className="text-muted d-block"
+                                  style={{ fontSize: "0.7rem" }}>
+                                  Quantity
+                                </small>
+                                <span
+                                  className="fw-semibold"
+                                  style={{ fontSize: "0.875rem" }}>
+                                  {product.quantity}
+                                </span>
+                              </div>
+                              <div>
+                                <small
+                                  className="text-muted d-block"
+                                  style={{ fontSize: "0.7rem" }}>
+                                  Unit Price
+                                </small>
+                                <span
+                                  className="fw-semibold"
+                                  style={{ fontSize: "0.875rem" }}>
+                                  ₦{product.price?.toLocaleString()}
+                                </span>
+                              </div>
+                              <div>
+                                <small
+                                  className="text-muted d-block"
+                                  style={{ fontSize: "0.7rem" }}>
+                                  Subtotal
+                                </small>
+                                <span
+                                  className="fw-semibold text-success"
+                                  style={{ fontSize: "0.875rem" }}>
+                                  ₦
+                                  {(
+                                    product.price * product.quantity
+                                  )?.toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Transaction Total */}
+                    <div className="col-12">
+                      <div
+                        className="d-flex justify-content-between align-items-center p-3 rounded"
+                        style={{ backgroundColor: "#e7f5f1" }}>
+                        <span
+                          className="fw-bold"
+                          style={{ fontSize: "0.95rem" }}>
+                          Transaction Total:
+                        </span>
+                        <span
+                          className="fw-bold"
+                          style={{ fontSize: "1.1rem", color: "#006747EB" }}>
+                          ₦
+                          {selectedShipping?.product?.transaction_total?.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p
+                    className="text-muted mb-0"
+                    style={{ fontSize: "0.875rem" }}>
+                    No product details available
+                  </p>
+                )}
+              </div>
+              {/* Vendor Information */}
+              <div className="mb-4">
+                <h6
+                  className="fw-bold mb-3 pb-2"
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "#006747EB",
+                    borderBottom: "2px solid #e5e7eb",
+                  }}>
+                  <i className="bi bi-shop me-2"></i>
+                  Vendor Information
+                </h6>
+                <div
+                  className="p-3 rounded"
+                  style={{ backgroundColor: "#f8f9fa" }}>
+                  <div className="row g-2">
+                    <div className="col-md-6">
+                      <small
+                        className="text-muted d-block"
+                        style={{ fontSize: "0.75rem" }}>
+                        Vendor Name
+                      </small>
+                      <span
+                        className="fw-semibold"
+                        style={{ fontSize: "0.875rem" }}>
+                        {selectedShipping?.product?.vendor_name ||
+                          selectedShipping?.vendor_name}
+                      </span>
+                    </div>
+                    <div className="col-md-6">
+                      <small
+                        className="text-muted d-block"
+                        style={{ fontSize: "0.75rem" }}>
+                        Contact Email
+                      </small>
+                      <span style={{ fontSize: "0.875rem" }}>
+                        {selectedShipping?.product?.vendor_email ||
+                          selectedShipping?.vendor_email}
+                      </span>
+                    </div>
+                    {(selectedShipping?.product?.vendor_phone_number ||
+                      selectedShipping?.vendor_phone_number) && (
+                      <div className="col-md-6">
+                        <small
+                          className="text-muted d-block"
+                          style={{ fontSize: "0.75rem" }}>
+                          Phone Number
+                        </small>
+                        <span style={{ fontSize: "0.875rem" }}>
+                          {selectedShipping?.product?.vendor_phone_number ||
+                            selectedShipping?.vendor_phone_number}
+                        </span>
+                      </div>
+                    )}
+                    <div className="col-md-6">
+                      <small
+                        className="text-muted d-block"
+                        style={{ fontSize: "0.75rem" }}>
+                        Payment Status
+                      </small>
+                      {selectedShipping?.product?.verified_payment_status ? (
+                        <Badge bg="success" style={{ fontSize: "0.75rem" }}>
+                          <i className="bi bi-check-circle me-1"></i>
+                          Paid
+                        </Badge>
+                      ) : (
+                        <Badge bg="warning" style={{ fontSize: "0.75rem" }}>
+                          Pending
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
               {/* Timeline */}
               <div className="mb-4">
                 <h6
@@ -1176,6 +1399,14 @@ export const RecentTransactionTable = () => {
                     })}
                   </div>
                 </div>
+                <Link
+                  to={`/userdashboard/disputes/initiate-dispute/${selectedShipping?.product?.transaction_id}`}
+                  state={{ transaction: selectedShipping?.product }}
+                  className="btn btn-outline-danger"
+                  style={{ fontSize: "0.875rem" }}>
+                  <i className="bi bi-flag me-1"></i>
+                  Not Satisfied?, Raise Dispute
+                </Link>
               </div>
             </>
           ) : (

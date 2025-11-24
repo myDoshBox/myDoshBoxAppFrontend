@@ -39,7 +39,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     console.log("Token expired, attempting refresh...");
     const refreshResult = await baseQuery(
       {
-        url: "/individual/refresh-token",
+        url: "individual/refresh-token",
         method: "POST",
         credentials: "include",
       },
@@ -167,7 +167,7 @@ export const usersAPISlice = createApi({
 
     refreshToken: builder.mutation({
       query: () => ({
-        url: "/individual/refresh-token",
+        url: "individual/refresh-token",
         method: "POST",
         credentials: "include",
       }),

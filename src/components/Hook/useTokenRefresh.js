@@ -13,6 +13,8 @@ export const useTokenRefresh = () => {
   const [refreshToken] = useRefreshTokenMutation();
   const refreshTimerRef = useRef(null);
   const isRefreshingRef = useRef(false);
+  const lastRefreshAttemptRef = useRef(0);
+  const mountedRef = useRef(true);
 
   // Clear timer helper
   const clearRefreshTimer = useCallback(() => {
@@ -23,42 +25,79 @@ export const useTokenRefresh = () => {
   }, []);
 
   const performRefresh = useCallback(async () => {
+    // Prevent multiple simultaneous refresh attempts
     if (isRefreshingRef.current) {
       console.log("🔒 Refresh already in progress, skipping...");
       return null;
     }
 
+    // Prevent refresh attempts within 5 seconds of last attempt
+    const now = Date.now();
+    if (now - lastRefreshAttemptRef.current < 5000) {
+      console.log("⏱️ Too soon since last refresh attempt, skipping...");
+      return null;
+    }
+
     isRefreshingRef.current = true;
+    lastRefreshAttemptRef.current = now;
 
     try {
       console.log("🔄 Refreshing token...");
       const response = await refreshToken().unwrap();
 
-      if (response.status === "success") {
-        dispatch(setCredentials(response));
-        console.log("✅ Token refreshed successfully");
-        // Return the new token so we can use it immediately
-        return response.accessToken;
+      if (!mountedRef.current) {
+        console.log("⚠️ Component unmounted, skipping state update");
+        return null;
       }
-      return null;
+
+      if (response.status === "success") {
+        // Update credentials with new tokens
+        dispatch(
+          setCredentials({
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+          })
+        );
+        console.log("✅ Token refreshed successfully");
+        return response.accessToken;
+      } else {
+        console.error("❌ Refresh response not successful:", response);
+        return null;
+      }
     } catch (error) {
       console.error("❌ Token refresh failed:", error);
-      dispatch(logout());
-      window.location.href = "/signin";
+
+      if (!mountedRef.current) {
+        return null;
+      }
+
+      // Only logout if it's an authentication error (401, 403)
+      if (
+        error?.status === 401 ||
+        error?.status === 403 ||
+        error?.originalStatus === 401 ||
+        error?.originalStatus === 403
+      ) {
+        console.log("🚪 Authentication failed, logging out...");
+        dispatch(logout());
+        window.location.href = "/signin";
+      } else {
+        console.log("⚠️ Network/server error, will retry later");
+      }
       return null;
     } finally {
       isRefreshingRef.current = false;
     }
   }, [refreshToken, dispatch]);
 
-  useEffect(() => {
-    if (!userInfo?.token) {
+  const scheduleNextRefresh = useCallback(
+    (token) => {
       clearRefreshTimer();
-      return;
-    }
 
-    const scheduleNextRefresh = (token) => {
-      clearRefreshTimer();
+      if (!token) {
+        console.log("⚠️ No token provided to schedule refresh");
+        return;
+      }
 
       try {
         const decoded = jwtDecode(token);
@@ -66,85 +105,158 @@ export const useTokenRefresh = () => {
         const now = Date.now();
         const timeUntilExpiry = expiresAt - now;
 
-        // Refresh 1 minute before expiry
-        const refreshTime = timeUntilExpiry - 60 * 1000;
+        // Refresh 2 minutes before expiry for safety
+        const bufferTime = 2 * 60 * 1000;
+        const refreshTime = Math.max(0, timeUntilExpiry - bufferTime);
 
-        if (refreshTime <= 0) {
-          console.log("⚠️ Token already expired or expiring very soon");
+        if (timeUntilExpiry <= 0) {
+          console.log("⚠️ Token already expired, refreshing immediately");
+          performRefresh();
           return;
         }
 
+        if (refreshTime === 0) {
+          console.log("⚠️ Token expiring very soon, refreshing immediately");
+          performRefresh().then((newToken) => {
+            if (newToken && mountedRef.current) {
+              scheduleNextRefresh(newToken);
+            }
+          });
+          return;
+        }
+
+        const expiryMinutes = Math.floor(timeUntilExpiry / 60000);
+        const refreshMinutes = Math.floor(refreshTime / 60000);
+
         console.log(
-          `⏰ Token expires in ${Math.round(timeUntilExpiry / 1000)}s, ` +
-            `scheduling refresh in ${Math.round(refreshTime / 1000)}s`
+          `⏰ Token expires in ${expiryMinutes}m ${Math.round(
+            (timeUntilExpiry % 60000) / 1000
+          )}s, ` +
+            `scheduling refresh in ${refreshMinutes}m ${Math.round(
+              (refreshTime % 60000) / 1000
+            )}s`
         );
 
         refreshTimerRef.current = setTimeout(async () => {
+          if (!mountedRef.current) return;
+
           const newToken = await performRefresh();
-          if (newToken) {
-            // Use the NEW token to schedule, not the old one from closure
+          if (newToken && mountedRef.current) {
             scheduleNextRefresh(newToken);
           }
         }, refreshTime);
       } catch (error) {
         console.error("❌ Error decoding token:", error);
+        // Token is invalid, logout
+        dispatch(logout());
+        window.location.href = "/signin";
       }
-    };
+    },
+    [clearRefreshTimer, performRefresh, dispatch]
+  );
 
-    const checkAndRefreshToken = async () => {
-      try {
-        const decoded = jwtDecode(userInfo.token);
-        const expiresAt = decoded.exp * 1000;
-        const now = Date.now();
-        const timeUntilExpiry = expiresAt - now;
+  const checkAndRefreshToken = useCallback(async () => {
+    const currentToken = userInfo?.token;
 
-        console.log(
-          `🔍 Token expires in ${Math.round(timeUntilExpiry / 1000)} seconds`
-        );
+    if (!currentToken) {
+      console.log("⚠️ No token found in userInfo");
+      return;
+    }
 
-        // If token is expired or expires within 1 minute, refresh immediately
-        if (timeUntilExpiry < 60 * 1000) {
-          console.log(
-            "⚠️ Token expired or expiring soon, refreshing immediately..."
-          );
-          const newToken = await performRefresh();
-          if (newToken) {
-            scheduleNextRefresh(newToken);
-          }
-        } else {
-          // Token is still valid, schedule refresh
-          scheduleNextRefresh(userInfo.token);
+    try {
+      const decoded = jwtDecode(currentToken);
+      const expiresAt = decoded.exp * 1000;
+      const now = Date.now();
+      const timeUntilExpiry = expiresAt - now;
+
+      const minutes = Math.floor(timeUntilExpiry / 60000);
+      const seconds = Math.round((timeUntilExpiry % 60000) / 1000);
+
+      console.log(`🔍 Token expires in ${minutes}m ${seconds}s`);
+
+      // If token is expired
+      if (timeUntilExpiry <= 0) {
+        console.log("⚠️ Token expired, refreshing immediately...");
+        const newToken = await performRefresh();
+        if (newToken && mountedRef.current) {
+          scheduleNextRefresh(newToken);
         }
-      } catch (error) {
-        console.error("❌ Error decoding token:", error);
-        await performRefresh();
+        return;
       }
-    };
 
-    // Check token on mount
+      // If token expires within 3 minutes, refresh immediately
+      if (timeUntilExpiry < 3 * 60 * 1000) {
+        console.log(
+          "⚠️ Token expiring soon (< 3 min), refreshing immediately..."
+        );
+        const newToken = await performRefresh();
+        if (newToken && mountedRef.current) {
+          scheduleNextRefresh(newToken);
+        }
+      } else {
+        // Token is still valid, schedule refresh for later
+        scheduleNextRefresh(currentToken);
+      }
+    } catch (error) {
+      console.error("❌ Error checking token:", error);
+      // Token is malformed, try to refresh
+      console.log("⚠️ Token decode failed, attempting refresh...");
+      const newToken = await performRefresh();
+      if (newToken && mountedRef.current) {
+        scheduleNextRefresh(newToken);
+      }
+    }
+  }, [userInfo?.token, performRefresh, scheduleNextRefresh]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    if (!userInfo?.token) {
+      clearRefreshTimer();
+      return;
+    }
+
+    console.log("🚀 Token refresh hook initialized");
+
+    // Initial check
     checkAndRefreshToken();
 
-    // Handle tab visibility
+    // Handle tab visibility changes
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        console.log("👁️ Tab became visible, checking token...");
+      if (document.visibilityState === "visible" && mountedRef.current) {
+        console.log("👁️ Tab became visible, checking token status...");
         checkAndRefreshToken();
       }
     };
 
     // Handle coming back online
     const handleOnline = () => {
-      console.log("🌐 Back online, checking token...");
-      checkAndRefreshToken();
+      if (mountedRef.current) {
+        console.log("🌐 Connection restored, checking token status...");
+        checkAndRefreshToken();
+      }
+    };
+
+    // Handle page focus
+    const handleFocus = () => {
+      if (mountedRef.current) {
+        console.log("🎯 Window focused, checking token status...");
+        checkAndRefreshToken();
+      }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("online", handleOnline);
+    window.addEventListener("focus", handleFocus);
 
     return () => {
+      mountedRef.current = false;
       clearRefreshTimer();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);
+      window.removeEventListener("focus", handleFocus);
     };
-  }, [userInfo?.token, performRefresh, clearRefreshTimer]);
+  }, [userInfo?.token, checkAndRefreshToken, clearRefreshTimer]);
+
+  return null;
 };
