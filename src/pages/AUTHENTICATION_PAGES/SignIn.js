@@ -165,6 +165,83 @@ export const SignInForm = () => {
   }, []);
 
   // Google OAuth using popup window (more reliable than FedCM)
+  // const handleGoogleClick = () => {
+  //   setSocialLoading((prev) => ({ ...prev, google: true }));
+
+  //   const redirectUri = window.location.origin + "/auth/google/callback";
+  //   const scope = "openid email profile";
+  //   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+  //     redirectUri
+  //   )}&response_type=token id_token&scope=${encodeURIComponent(
+  //     scope
+  //   )}&nonce=${Date.now()}`;
+
+  //   const width = 500;
+  //   const height = 600;
+  //   const left = window.screenX + (window.outerWidth - width) / 2;
+  //   const top = window.screenY + (window.outerHeight - height) / 2;
+
+  //   const popup = window.open(
+  //     authUrl,
+  //     "Google Sign In",
+  //     `width=${width},height=${height},left=${left},top=${top}`
+  //   );
+
+  //   // Listen for the callback
+  //   const checkPopup = setInterval(() => {
+  //     try {
+  //       if (!popup || popup.closed) {
+  //         clearInterval(checkPopup);
+  //         setSocialLoading((prev) => ({ ...prev, google: false }));
+  //         return;
+  //       }
+
+  //       // Check if redirected to our callback URL
+  //       if (popup.location.href.includes(redirectUri)) {
+  //         clearInterval(checkPopup);
+  //         const hash = popup.location.hash.substring(1);
+  //         const params = new URLSearchParams(hash);
+  //         const idToken = params.get("id_token");
+  //         popup.close();
+
+  //         if (idToken) {
+  //           processGoogleResponse(idToken);
+  //         } else {
+  //           toast.error("Google login failed. Please try again.");
+  //           setSocialLoading((prev) => ({ ...prev, google: false }));
+  //         }
+  //       }
+  //     } catch (e) {
+  //       // Cross-origin error - popup is on Google's domain, keep waiting
+  //     }
+  //   }, 500);
+
+  //   // Timeout after 2 minutes
+  //   setTimeout(() => {
+  //     clearInterval(checkPopup);
+  //     if (popup && !popup.closed) popup.close();
+  //     setSocialLoading((prev) => ({ ...prev, google: false }));
+  //   }, 120000);
+  // };
+  // At the top of SignInForm component, add this useEffect for message listener
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Verify the message is from our domain
+      if (event.origin !== window.location.origin) return;
+
+      if (event.data.type === "GOOGLE_AUTH_SUCCESS" && event.data.idToken) {
+        processGoogleResponse(event.data.idToken);
+      } else if (event.data.type === "GOOGLE_AUTH_ERROR") {
+        toast.error(event.data.error || "Google login failed");
+        setSocialLoading((prev) => ({ ...prev, google: false }));
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [processGoogleResponse]);
+
+  // Replace the entire handleGoogleClick function with this:
   const handleGoogleClick = () => {
     setSocialLoading((prev) => ({ ...prev, google: true }));
 
@@ -172,9 +249,9 @@ export const SignInForm = () => {
     const scope = "openid email profile";
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
       redirectUri
-    )}&response_type=token id_token&scope=${encodeURIComponent(
+    )}&response_type=id_token&scope=${encodeURIComponent(
       scope
-    )}&nonce=${Date.now()}`;
+    )}&nonce=${Date.now()}&prompt=select_account`;
 
     const width = 500;
     const height = 600;
@@ -184,43 +261,41 @@ export const SignInForm = () => {
     const popup = window.open(
       authUrl,
       "Google Sign In",
-      `width=${width},height=${height},left=${left},top=${top}`
+      `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`
     );
 
-    // Listen for the callback
-    const checkPopup = setInterval(() => {
-      try {
-        if (!popup || popup.closed) {
-          clearInterval(checkPopup);
-          setSocialLoading((prev) => ({ ...prev, google: false }));
-          return;
-        }
+    if (!popup) {
+      toast.error("Popup blocked. Please allow popups for this site.");
+      setSocialLoading((prev) => ({ ...prev, google: false }));
+      return;
+    }
 
-        // Check if redirected to our callback URL
-        if (popup.location.href.includes(redirectUri)) {
-          clearInterval(checkPopup);
-          const hash = popup.location.hash.substring(1);
-          const params = new URLSearchParams(hash);
-          const idToken = params.get("id_token");
-          popup.close();
-
-          if (idToken) {
-            processGoogleResponse(idToken);
-          } else {
-            toast.error("Google login failed. Please try again.");
-            setSocialLoading((prev) => ({ ...prev, google: false }));
-          }
-        }
-      } catch (e) {
-        // Cross-origin error - popup is on Google's domain, keep waiting
+    // Monitor popup for closure
+    const popupCheckInterval = setInterval(() => {
+      if (!popup || popup.closed) {
+        clearInterval(popupCheckInterval);
+        // Only reset loading if we haven't received a success message
+        setTimeout(() => {
+          setSocialLoading((prev) => {
+            // Only reset if still loading (meaning no success message received)
+            if (prev.google) {
+              toast.info("Sign-in cancelled");
+              return { ...prev, google: false };
+            }
+            return prev;
+          });
+        }, 500);
       }
     }, 500);
 
     // Timeout after 2 minutes
     setTimeout(() => {
-      clearInterval(checkPopup);
-      if (popup && !popup.closed) popup.close();
-      setSocialLoading((prev) => ({ ...prev, google: false }));
+      clearInterval(popupCheckInterval);
+      if (popup && !popup.closed) {
+        popup.close();
+        setSocialLoading((prev) => ({ ...prev, google: false }));
+        toast.error("Sign-in timeout. Please try again.");
+      }
     }, 120000);
   };
 
