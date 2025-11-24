@@ -14,39 +14,6 @@ import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProduc
 import { useSelector } from "react-redux";
 import { searchFilter } from "../../../components/utils/searchFilter";
 
-const DebugAuthState = () => {
-  const authState = useSelector((state) => state.usersauth);
-  const { userInfo } = authState;
-
-  return (
-    <div
-      style={{
-        padding: "20px",
-        background: "#f0f0f0",
-        margin: "20px",
-        borderRadius: "8px",
-        fontFamily: "monospace",
-      }}>
-      <h3>🐛 Debug Auth State</h3>
-      <div>
-        <strong>Full Auth State:</strong>
-        <pre>{JSON.stringify(authState, null, 2)}</pre>
-      </div>
-      <div>
-        <strong>userInfo:</strong>
-        <pre>{JSON.stringify(userInfo, null, 2)}</pre>
-      </div>
-      <div>
-        <strong>userInfo?.email:</strong> {userInfo?.email || "UNDEFINED"}
-      </div>
-      <div>
-        <strong>localStorage userInfo:</strong>
-        <pre>{localStorage.getItem("userInfo")}</pre>
-      </div>
-    </div>
-  );
-};
-
 const UserTransactionHistory = () => {
   return (
     <div className="contestPage" style={{ "background-color": "#F9F9FB" }}>

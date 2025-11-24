@@ -70,8 +70,9 @@ import PrivateRoute from "./components/PrivateRoute";
 import InitiateProductEscrowForm from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/InitiateProductEscrowForm";
 import ProductTransactionSummaryPage from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ProductTransactionSummaryPage";
 import ConfirmEscrowProductDetails from "./pages/TRANSACTION_PAGES/unused_pages/ConfirmEscrowProductDetails";
+import VerifyPayment from "./pages/DASHBOARDS/USER_DASHBOARD/Transactions/VerifyPayment";
 import SellerProductTransactionSummary from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SellerProductTransactionSummary";
-import ShippingDetailsForm from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsForm";
+import FillShippingDetailsPage from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsForm";
 import ShippingDetailsSummary from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsSummary";
 import UserSettledTransactions from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserSettledTransactions";
 import SellerConfirmationEscrowAgreement from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SellerConfirmationEscrowAgreement";
@@ -79,10 +80,11 @@ import ShippingDetailsHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTIO
 import SettledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SettledTransactionHistory";
 import TransactionInProgressHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/TransactionInProgressHistory";
 import ProductsDisputeHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ProductsDisputeHistory";
+// disputes
 import DisputesInProgressHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/DisputesInProgressHistory";
 import ResolvedDisputesHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ResolvedDisputesHistory";
 import BuyerResolveTransactionDisputeForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/BuyerResolveTransactionDisputeForm";
-import InitiateProductDisputesForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/InitiateProductDisputesForm";
+import InitiateDisputePage from "./pages/DISPUTE_PAGES/InitiateDisputePage";
 import CancelledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/CancelledTransactionHistory";
 
 function App() {
@@ -126,10 +128,9 @@ function App() {
             />
             <Route
               path="transaction-history/confirm-escrow-product-transaction/shipping-details-form/:transaction_id"
-              element={<ShippingDetailsForm />}
+              element={<FillShippingDetailsPage />}
             />
 
-            {/* http://localhost:3000/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-details-form/43a38896-a0a8-4334-8d0a-f7da90e8b43a */}
             <Route
               path="transaction-history/confirm-escrow-product-transaction/shipping-details-form/shipping-details-summary/:transaction_id"
               element={<ShippingDetailsSummary />}
@@ -154,6 +155,12 @@ function App() {
               path="transaction-history/confirm-escrow-product-transaction/transactions-in-progress-history"
               element={<TransactionInProgressHistory />}
             />
+
+            {/* Payment Routes */}
+            <Route
+              path="/userdashboard/verifyPayment"
+              element={<VerifyPayment />}
+            />
             {/* <Route
                 path="confirm-escrow-product-transaction/:transaction_id"
                 element={<ProductTransactionSummaryPage />}
@@ -171,7 +178,7 @@ function App() {
             />
             <Route
               path="disputes/initiate-dispute/:transaction_id"
-              element={<InitiateProductDisputesForm />}
+              element={<InitiateDisputePage />}
             />
             <Route
               path="disputes/resolve-dispute/:transaction_id"

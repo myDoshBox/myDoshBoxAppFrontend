@@ -24,8 +24,7 @@ const UserDashboardPage = () => {
       style={{
         backgroundColor: "rgb(249, 249, 251)",
         minHeight: "100vh",
-      }}
-    >
+      }}>
       <div className="row">
         <div className="col-lg-9 col-12 ms-lg-auto">
           <UserDashboardNavbar />

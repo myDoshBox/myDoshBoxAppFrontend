@@ -4,10 +4,12 @@ import storage from "redux-persist/lib/storage";
 import thunk from "redux-thunk";
 import usersAuthReducer from "./slices/userSlices/allUsersAuthSlice";
 import escrowProductReducer from "./slices/escrowProductSlices/escrowProductContentSlice";
+import paymentReducer from "./slices/paymentSlices/paymentSlice";
 // import { usersAPISlice } from "./slices/userSlices/usersAPISlice";
 import { usersAPISlice } from "./slices/userSlices/allUsersAPISlice";
 import { escrowProductsAPISlice } from "./slices/escrowProductSlices/escrowProductsAPISlice";
 import { disputeAPISlice } from "./slices/disputeSlices/disputeAPISlice";
+import { paymentAPISlice } from "./slices/paymentSlices/paymentAPISlice";
 import disputeReducer from "./slices/disputeSlices/disputeContentSlice";
 
 const reducers = combineReducers({
@@ -22,6 +24,10 @@ const reducers = combineReducers({
   // disputes
   disputeInfo: disputeReducer,
   [disputeAPISlice.reducerPath]: disputeAPISlice.reducer,
+
+  // payment
+  payment: paymentReducer,
+  [paymentAPISlice.reducerPath]: paymentAPISlice.reducer,
 });
 
 const persistConfig = {
@@ -57,7 +63,8 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(usersAPISlice.middleware)
       .concat(escrowProductsAPISlice.middleware)
-      .concat(disputeAPISlice.middleware),
+      .concat(disputeAPISlice.middleware)
+      .concat(paymentAPISlice.middleware),
 
   devTools: true,
 });
