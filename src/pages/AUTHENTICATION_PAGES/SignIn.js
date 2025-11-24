@@ -226,7 +226,6 @@ export const SignInForm = () => {
   // At the top of SignInForm component, add this useEffect for message listener
   useEffect(() => {
     const handleMessage = (event) => {
-      // Verify the message is from our domain
       if (event.origin !== window.location.origin) return;
 
       if (event.data.type === "GOOGLE_AUTH_SUCCESS" && event.data.idToken) {

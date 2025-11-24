@@ -918,6 +918,7 @@ export const RecentTransactionTable = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const navigate = useNavigate();
+  console.log(selectedTransaction, "selectedTransaction");
 
   const {
     data: allDisputes,
@@ -1653,8 +1654,7 @@ export const RecentTransactionTable = () => {
                       </div>
                     </div>
                     {/* Shipping Details Button - For Vendor after payment verification */}
-                    {selectedTransaction?.transaction_status ===
-                      "payment_verified" &&
+                    {selectedTransaction?.verified_payment_status &&
                       userEmail === selectedTransaction?.vendor_email &&
                       !selectedTransaction?.shipping_submitted && (
                         <Link
