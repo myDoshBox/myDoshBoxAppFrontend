@@ -20,16 +20,15 @@ import { RecentTransactionTable } from "../../TRANSACTION_PAGES/PRODUCT_TRANSACT
 const UserDashboardPage = () => {
   return (
     <div
-      className="container-fluid "
+      className="container-fluid px-0"
       style={{
-        backgroundColor: "rgb(249, 249, 251)",
+        backgroundColor: "#F9F9FB",
         minHeight: "100vh",
       }}>
-      <div className="row">
-        <div className="col-lg-9 col-12 ms-lg-auto">
+      <div className="row g-0">
+        <div className="col-12">
           <UserDashboardNavbar />
-
-          <div className="dashboard-content">
+          <div className="px-3 px-lg-4 py-2">
             <UserDashboard />
           </div>
         </div>

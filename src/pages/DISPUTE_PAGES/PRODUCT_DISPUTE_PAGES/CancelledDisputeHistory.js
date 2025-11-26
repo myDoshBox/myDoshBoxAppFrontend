@@ -1,9 +1,8 @@
 import React from "react";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-import { RecentTransactionTable } from "./UserTransactionHistory";
-import { TRANSACTION_FILTERS } from "./TransactionFilter";
+import { RecentDisputeTable, DISPUTE_FILTERS } from "./ProductsDisputeHistory";
 
-function CancelledTransactionHistory() {
+function CancelledDisputesHistory() {
   return (
     <div
       className="container-fluid px-0"
@@ -12,8 +11,8 @@ function CancelledTransactionHistory() {
         <div className="col-12">
           <UserDashboardNavbar />
           <div className="px-3 px-lg-4 py-2">
-            <RecentTransactionTable
-              customFilter={TRANSACTION_FILTERS.CANCELLED}
+            <RecentDisputeTable
+              customFilter={DISPUTE_FILTERS.CANCELLED}
               showHeaderActions={false}
             />
           </div>
@@ -23,4 +22,4 @@ function CancelledTransactionHistory() {
   );
 }
 
-export default CancelledTransactionHistory;
+export default CancelledDisputesHistory;

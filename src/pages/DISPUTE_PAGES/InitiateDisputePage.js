@@ -11,11 +11,17 @@ const InitiateDisputePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const transaction = location.state?.transaction;
-  const userEmail = transaction.buyer_email;
-  const vendorEmail = transaction.vendor_email;
-  console.log(transaction, "transaction");
-  console.log(transaction.buyer_email, "transaction.buyer_email");
-  console.log(transaction.vendor_email, "transaction.vendor_email");
+
+  // Get current user from Redux store
+  const { userInfo } = useSelector((state) => state.usersauth);
+  const currentUserEmail =
+    userInfo?.user?.email || userInfo?.email || userInfo?.organization_email;
+
+  console.log("🔍 Debug Info:");
+  console.log("Current User Email:", currentUserEmail);
+  console.log("Transaction Buyer Email:", transaction?.buyer_email);
+  console.log("Transaction Vendor Email:", transaction?.vendor_email);
+  console.log("Full Transaction:", transaction);
 
   const [initiateDispute, { isLoading }] = useInitiateDisputeMutation();
 
@@ -71,11 +77,13 @@ const InitiateDisputePage = () => {
           image: product.image || "",
         })) || [];
 
+      // ✅ FIXED: Use current user's email as user_email
+      // The backend will correctly determine dispute_raised_by based on this
       const response = await initiateDispute({
-        user_email: userEmail,
-        buyer_email: userEmail, // Backend requires both user_email and buyer_email
+        user_email: currentUserEmail, // ✅ This is the key fix
+        buyer_email: transaction?.buyer_email,
         vendor_name: transaction?.vendor_name,
-        vendor_email: vendorEmail,
+        vendor_email: transaction?.vendor_email,
         vendor_phone_number: transaction?.vendor_phone_number,
         disputed_products: disputedProducts,
         transaction_id,
@@ -125,11 +133,17 @@ const InitiateDisputePage = () => {
     );
   };
 
+  // Determine user role for display
+  const isBuyer = currentUserEmail === transaction?.buyer_email;
+  const isSeller = currentUserEmail === transaction?.vendor_email;
+  const userRole = isBuyer ? "Buyer" : isSeller ? "Seller" : "Unknown";
+
   return (
-    <div className="contestPage" style={{ backgroundColor: "#F9F9FB" }}>
-      <div className="row">
-        <div className="col-lg-3 col-sm-12"></div>
-        <div className="col-lg-9 col-sm-12">
+    <div
+      className="container-fluid px-0"
+      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}>
+      <div className="row g-0">
+        <div className="col-12">
           <UserDashboardNavbar />
 
           <div className="mt-5 px-3 px-md-4">
@@ -154,6 +168,9 @@ const InitiateDisputePage = () => {
                   <p className="text-muted mb-0">
                     Transaction ID:{" "}
                     <code style={{ color: "#006747EB" }}>{transaction_id}</code>
+                  </p>
+                  <p className="text-muted">
+                    You are raising this dispute as: <strong>{userRole}</strong>
                   </p>
                 </div>
 
@@ -215,6 +232,36 @@ const InitiateDisputePage = () => {
                               month: "long",
                               day: "numeric",
                             })}
+                          </span>
+                        </div>
+                        <div className="col-md-6">
+                          <small
+                            className="text-muted d-block mb-1 fw-bold"
+                            style={{ fontSize: "0.75rem" }}>
+                            Buyer Email
+                          </small>
+                          <span style={{ fontSize: "0.875rem" }}>
+                            {transaction?.buyer_email}
+                            {isBuyer && (
+                              <Badge bg="primary" className="ms-2">
+                                You
+                              </Badge>
+                            )}
+                          </span>
+                        </div>
+                        <div className="col-md-6">
+                          <small
+                            className="text-muted d-block mb-1 fw-bold"
+                            style={{ fontSize: "0.75rem" }}>
+                            Vendor Email
+                          </small>
+                          <span style={{ fontSize: "0.875rem" }}>
+                            {transaction?.vendor_email}
+                            {isSeller && (
+                              <Badge bg="info" className="ms-2">
+                                You
+                              </Badge>
+                            )}
                           </span>
                         </div>
                       </div>
@@ -291,7 +338,7 @@ const InitiateDisputePage = () => {
                           name="dispute_description"
                           value={formData.dispute_description}
                           onChange={handleChange}
-                          placeholder="Please describe the issue in detail. Include any relevant information such as:&#10;- What went wrong?&#10;- When did you notice the issue?&#10;- Any communication with the vendor?&#10;- Steps you've taken to resolve this&#10;&#10;Be as specific as possible to help us understand your situation better."
+                          placeholder="Please describe the issue in detail. Include any relevant information such as:&#10;- What went wrong?&#10;- When did you notice the issue?&#10;- Any communication with the other party?&#10;- Steps you've taken to resolve this&#10;&#10;Be as specific as possible to help us understand your situation better."
                           required
                           disabled={isLoading}
                           style={{
@@ -353,7 +400,13 @@ const InitiateDisputePage = () => {
                                 False disputes may result in account suspension
                               </li>
                               <li>
-                                Try resolving with the vendor before escalating
+                                Try resolving with the other party before
+                                escalating
+                              </li>
+                              <li>
+                                <strong>
+                                  You are raising this as: {userRole}
+                                </strong>
                               </li>
                             </ul>
                           </div>
@@ -396,7 +449,7 @@ const InitiateDisputePage = () => {
                           ) : (
                             <>
                               <i className="bi bi-flag-fill me-2"></i>
-                              Submit Dispute
+                              Submit Dispute as {userRole}
                             </>
                           )}
                         </Button>

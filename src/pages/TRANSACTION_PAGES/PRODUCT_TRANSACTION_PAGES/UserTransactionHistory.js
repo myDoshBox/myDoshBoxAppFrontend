@@ -736,144 +736,23 @@ import { useSellerConfirmsTransactionMutation } from "../../../redux/slices/escr
 import { useInitiatePaymentMutation } from "../../../redux/slices/paymentSlices/paymentAPISlice";
 import { useSelector } from "react-redux";
 
-// ========================================
-// HELPER FUNCTIONS - CONSISTENT BADGE SYSTEM
-// ========================================
-
-const getStatusBadge = (status) => {
-  const statusConfig = {
-    processing: {
-      variant: "secondary",
-      bg: "#6c757d",
-      text: "Processing",
-    },
-    awaiting_payment: {
-      variant: "warning",
-      bg: "#ffc107",
-      text: "Awaiting Payment",
-    },
-    payment_verified: {
-      variant: "info",
-      bg: "#0dcaf0",
-      text: "Payment Verified",
-    },
-    awaiting_shipping: {
-      variant: "warning",
-      bg: "#ffc107",
-      text: "Awaiting Shipping",
-    },
-    in_transit: {
-      variant: "primary",
-      bg: "#0d6efd",
-      text: "In Transit",
-    },
-    completed: {
-      variant: "success",
-      bg: "#198754",
-      text: "Completed",
-    },
-    cancelled: {
-      variant: "danger",
-      bg: "#dc3545",
-      text: "Cancelled",
-    },
-    inDispute: {
-      variant: "danger",
-      bg: "#dc3545",
-      text: "In Dispute",
-    },
-  };
-
-  const config = statusConfig[status] || {
-    variant: "secondary",
-    bg: "#6c757d",
-    text: status || "Unknown",
-  };
-
-  return (
-    <Badge
-      bg={config.variant}
-      style={{
-        fontSize: "0.75rem",
-        fontWeight: "500",
-        padding: "4px 8px",
-      }}>
-      {config.text}
-    </Badge>
-  );
-};
-
-const getPaymentStatus = (transaction) => {
-  if (transaction?.verified_payment_status) {
-    return (
-      <Badge
-        bg="success"
-        style={{
-          fontSize: "0.75rem",
-          fontWeight: "500",
-          padding: "4px 8px",
-        }}>
-        Paid
-      </Badge>
-    );
-  }
-  if (transaction?.transaction_status === "awaiting_payment") {
-    return (
-      <Badge
-        bg="warning"
-        style={{
-          fontSize: "0.75rem",
-          fontWeight: "500",
-          padding: "4px 8px",
-        }}>
-        Pending
-      </Badge>
-    );
-  }
-  return (
-    <Badge
-      bg="secondary"
-      style={{
-        fontSize: "0.75rem",
-        fontWeight: "500",
-        padding: "4px 8px",
-      }}>
-      Not Initiated
-    </Badge>
-  );
-};
-
-// Helper to determine actual status display
-const getDisplayStatus = (transaction) => {
-  // If payment was verified but shipping not submitted
-  if (
-    transaction?.transaction_status === "payment_verified" &&
-    !transaction?.shipping_submitted
-  ) {
-    return "awaiting_shipping";
-  }
-
-  // If transaction is in dispute
-  if (transaction?.dispute_status === "active") {
-    return "inDispute";
-  }
-
-  // Default case
-  return transaction?.transaction_status;
-};
-
-// ========================================
-// MAIN COMPONENT
-// ========================================
+import {
+  TRANSACTION_FILTERS,
+  getStatusBadge,
+  getPaymentStatus,
+  getDisplayStatus,
+  shouldShowPayButton,
+} from "./TransactionFilter";
 
 const UserTransactionHistory = () => {
   return (
-    <div className="contestPage" style={{ backgroundColor: "#F9F9FB" }}>
-      <div className="row">
-        <div className="col-lg-3 col-sm-12"></div>
-        <div className="col-lg-9 col-sm-12">
+    <div
+      className="container-fluid px-0"
+      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}>
+      <div className="row g-0">
+        <div className="col-12">
           <UserDashboardNavbar />
-          <div className="mt-5 center-card">
+          <div className="px-3 px-lg-4 py-2">
             <RecentTransactionTable />
           </div>
         </div>
@@ -883,10 +762,66 @@ const UserTransactionHistory = () => {
 };
 
 // ========================================
+// EMPTY STATE COMPONENT
+// ========================================
+
+const EmptyTransactionState = ({
+  message,
+  description,
+  showCreateButton = true,
+}) => (
+  <div className="text-center py-5">
+    <div
+      className="mb-4"
+      style={{
+        width: "120px",
+        height: "120px",
+        margin: "0 auto",
+        backgroundColor: "#f8f9fa",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+      <i
+        className="bi bi-inbox"
+        style={{ fontSize: "3.5rem", color: "#006747EB" }}></i>
+    </div>
+    <h5 className="fw-bold mb-2" style={{ color: "#1a1a1a" }}>
+      {message}
+    </h5>
+    <p className="text-muted mb-4" style={{ fontSize: "0.95rem" }}>
+      {description}
+    </p>
+    {showCreateButton && (
+      <Link
+        to="/userdashboard/initiate-escrow"
+        className="text-decoration-none">
+        <Button
+          size="lg"
+          className="border-0"
+          style={{
+            backgroundColor: "#006747EB",
+            fontSize: "1rem",
+            fontWeight: "600",
+            padding: "12px 32px",
+          }}>
+          <i className="bi bi-plus-circle me-2"></i>
+          Create Your First Transaction
+        </Button>
+      </Link>
+    )}
+  </div>
+);
+
+// ========================================
 // TRANSACTION TABLE COMPONENT
 // ========================================
 
-export const RecentTransactionTable = () => {
+export const RecentTransactionTable = ({
+  customFilter = TRANSACTION_FILTERS.ALL,
+  showHeaderActions = true,
+}) => {
   const { userInfo } = useSelector((state) => state.usersauth);
   const userEmail =
     userInfo?.user?.email ||
@@ -918,7 +853,6 @@ export const RecentTransactionTable = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const navigate = useNavigate();
-  console.log(selectedTransaction, "selectedTransaction");
 
   const {
     data: allDisputes,
@@ -928,9 +862,22 @@ export const RecentTransactionTable = () => {
     skip: !userEmail,
   });
 
+  // Apply custom filter to transactions
+  const filteredTransactions = customFilter.filterFunction(
+    transactions?.transactions || []
+  );
   const currentDispute = allDisputes?.fetchDisputeDetails?.find(
     (d) => d.transaction_id === selectedTransaction?.transaction_id
   );
+
+  // Update totalPages when filtered transactions change
+  useEffect(() => {
+    const filteredTotalPages = Math.ceil(
+      filteredTransactions.length / itemsPerPage
+    );
+    setTotalPages(filteredTotalPages);
+    setCurrentPage(1); // Reset to page 1 when filter changes
+  }, [filteredTransactions.length, itemsPerPage]);
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) setCurrentPage(page);
@@ -1039,20 +986,10 @@ export const RecentTransactionTable = () => {
   };
 
   const getSlicedData = () => {
-    if (!transactions?.transactions?.length) return [];
+    if (!filteredTransactions.length) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return transactions?.transactions?.slice(
-      startIndex,
-      startIndex + itemsPerPage
-    );
-  };
-
-  const shouldShowPayButton = (transaction) => {
-    return (
-      transaction?.transaction_status === "awaiting_payment" &&
-      transaction?.buyer_email === userEmail &&
-      !transaction?.verified_payment_status
-    );
+    const endIndex = startIndex + itemsPerPage;
+    return filteredTransactions.slice(startIndex, endIndex);
   };
 
   return (
@@ -1060,34 +997,36 @@ export const RecentTransactionTable = () => {
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <h3 className="fs-5 m-0 fw-bold" style={{ color: "#1a1a1a" }}>
-          All Transactions
+          {customFilter.title}
         </h3>
-        <div className="d-flex gap-2 flex-wrap">
-          <Link to="../initiate-escrow" className="text-decoration-none">
+        {showHeaderActions && (
+          <div className="d-flex gap-2 flex-wrap">
+            <Link to="../initiate-escrow" className="text-decoration-none">
+              <Button
+                className="border-0 rounded-1 text-white"
+                style={{
+                  backgroundColor: "#006747EB",
+                  fontSize: "0.875rem",
+                  padding: "8px 16px",
+                }}>
+                <i className="bi bi-plus-circle me-2"></i>
+                Create Transaction
+              </Button>
+            </Link>
             <Button
-              className="border-0 rounded-1 text-white"
+              variant="outline-success"
+              className="rounded-1"
               style={{
-                backgroundColor: "#006747EB",
                 fontSize: "0.875rem",
                 padding: "8px 16px",
+                borderColor: "#006747EB",
+                color: "#006747EB",
               }}>
-              <i className="bi bi-plus-circle me-2"></i>
-              Create Transaction
+              <i className="bi bi-download me-2"></i>
+              Download Slip
             </Button>
-          </Link>
-          <Button
-            variant="outline-success"
-            className="rounded-1"
-            style={{
-              fontSize: "0.875rem",
-              padding: "8px 16px",
-              borderColor: "#006747EB",
-              color: "#006747EB",
-            }}>
-            <i className="bi bi-download me-2"></i>
-            Download Slip
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Loading State */}
@@ -1095,43 +1034,54 @@ export const RecentTransactionTable = () => {
         <div className="text-center py-5">
           <div
             className="spinner-border"
-            style={{ color: "#006747EB" }}
+            style={{ color: "#006747EB", width: "3rem", height: "3rem" }}
             role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="mt-3 text-muted">Loading transactions...</p>
+          <p className="mt-3 text-muted" style={{ fontSize: "0.95rem" }}>
+            Loading transactions...
+          </p>
         </div>
       )}
 
-      {/* Error State */}
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          <i className="bi bi-exclamation-triangle me-2"></i>
-          Failed to load transactions. Please try again.
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && !error && getSlicedData()?.length === 0 && (
+      {/* Error State - Only show if there's a network error, not empty data */}
+      {error && error.status !== 404 && (
         <div className="text-center py-5">
           <i
-            className="bi bi-inbox"
-            style={{ fontSize: "3rem", color: "#6c757d" }}></i>
-          <p className="mt-3 text-muted">No transactions found</p>
-          <Link to="../initiate-escrow">
-            <Button
-              style={{ backgroundColor: "#006747EB" }}
-              className="border-0">
-              Create Your First Transaction
-            </Button>
-          </Link>
+            className="bi bi-exclamation-triangle text-danger"
+            style={{ fontSize: "3rem" }}></i>
+          <p
+            className="mt-3 text-danger fw-semibold"
+            style={{ fontSize: "1rem" }}>
+            Failed to load transactions
+          </p>
+          <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
+            {error?.data?.message ||
+              "Please check your connection and try again"}
+          </p>
+          <Button
+            variant="outline-success"
+            onClick={() => refetch()}
+            style={{ fontSize: "0.875rem" }}>
+            <i className="bi bi-arrow-clockwise me-2"></i>
+            Retry
+          </Button>
         </div>
+      )}
+
+      {/* Empty State - Show when no transactions exist */}
+      {!isLoading && filteredTransactions.length === 0 && (
+        <EmptyTransactionState
+          message={customFilter.emptyMessage}
+          description={customFilter.emptyDescription}
+          showCreateButton={customFilter.showCreateButton}
+        />
       )}
 
       {/* Transaction Table */}
-      {!isLoading && !error && getSlicedData()?.length > 0 && (
+      {!isLoading && !error && filteredTransactions.length > 0 && (
         <>
-          <div className="table-responsive">
+          <div className="table-responsive" style={{ overflowX: "auto" }}>
             <table className="table table-hover align-middle">
               <thead
                 style={{
@@ -1187,7 +1137,12 @@ export const RecentTransactionTable = () => {
                   <th
                     className="text-center"
                     style={{ fontSize: "0.875rem", fontWeight: "600" }}>
-                    Status
+                    Tran. Status
+                  </th>
+                  <th
+                    className="text-center"
+                    style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                    Dispute Status
                   </th>
                   <th
                     className="text-center"
@@ -1260,10 +1215,13 @@ export const RecentTransactionTable = () => {
                             variant="outline-primary"
                             size="sm"
                             onClick={() => handleShowMore(history)}
-                            style={{ fontSize: "0.75rem", padding: "4px 8px" }}>
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "4px 8px",
+                            }}>
                             View
                           </Button>
-                          {shouldShowPayButton(history) && (
+                          {shouldShowPayButton(history, userEmail) && (
                             <Button
                               variant="success"
                               size="sm"
@@ -1338,7 +1296,10 @@ export const RecentTransactionTable = () => {
                       </td>
                       <td
                         className="text-center fw-semibold"
-                        style={{ fontSize: "0.875rem", color: "#006747EB" }}>
+                        style={{
+                          fontSize: "0.875rem",
+                          color: "#006747EB",
+                        }}>
                         ₦{history?.transaction_total?.toLocaleString() || "N/A"}
                       </td>
                       <td className="text-center">
@@ -1346,6 +1307,9 @@ export const RecentTransactionTable = () => {
                       </td>
                       <td className="text-center">
                         {getStatusBadge(getDisplayStatus(history))}
+                      </td>
+                      <td className="text-center">
+                        {getStatusBadge(history?.dispute_status)}
                       </td>
                       <td className="text-center">
                         <div className="d-flex gap-2 justify-content-center flex-wrap">
@@ -1359,7 +1323,7 @@ export const RecentTransactionTable = () => {
                             }}>
                             View Details
                           </Button>
-                          {shouldShowPayButton(history) && (
+                          {shouldShowPayButton(history, userEmail) && (
                             <Button
                               size="sm"
                               onClick={() => handleInitiatePayment(history)}
@@ -1385,7 +1349,7 @@ export const RecentTransactionTable = () => {
           {/* Pagination */}
           <div className="mt-4">
             <PaginationBar
-              data={transactions?.transactions || []}
+              data={filteredTransactions}
               currentPage={currentPage}
               handlePageChange={handlePageChange}
               itemsPerPage={itemsPerPage}
@@ -1761,33 +1725,33 @@ export const RecentTransactionTable = () => {
                           Cancel Transaction
                         </Button>
                       )}
-                      {userEmail === selectedTransaction?.vendor_email && (
-                        <>
-                          <Button
-                            variant="outline-success"
-                            size="sm"
-                            onClick={() => setShowVendorConfirmModal(true)}
-                            style={{ fontSize: "0.875rem" }}>
-                            <i className="bi bi-check-circle me-1"></i>
-                            Confirm Transaction
-                          </Button>
-                          <Button
-                            variant="outline-warning"
-                            size="sm"
-                            onClick={() =>
-                              handleRaiseDispute(selectedTransaction)
-                            }
-                            style={{ fontSize: "0.875rem" }}>
-                            <i className="bi bi-flag me-1"></i>
-                            Raise Dispute
-                          </Button>
-                        </>
-                      )}
+                      {userEmail === selectedTransaction?.vendor_email &&
+                        selectedTransaction?.dispute_status === "none" && (
+                          <>
+                            <Button
+                              variant="outline-success"
+                              size="sm"
+                              onClick={() => setShowVendorConfirmModal(true)}
+                              style={{ fontSize: "0.875rem" }}>
+                              <i className="bi bi-check-circle me-1"></i>
+                              Confirm Transaction
+                            </Button>
+                            <Button
+                              variant="outline-warning"
+                              size="sm"
+                              onClick={() =>
+                                handleRaiseDispute(selectedTransaction)
+                              }
+                              style={{ fontSize: "0.875rem" }}>
+                              <i className="bi bi-flag me-1"></i>
+                              Raise Dispute
+                            </Button>
+                          </>
+                        )}
                     </div>
                   )}
-
                 {/* Payment Button */}
-                {shouldShowPayButton(selectedTransaction) && (
+                {shouldShowPayButton(selectedTransaction, userEmail) && (
                   <Button
                     size="lg"
                     onClick={() => handleInitiatePayment(selectedTransaction)}
@@ -1804,40 +1768,54 @@ export const RecentTransactionTable = () => {
                   </Button>
                 )}
 
-                {/* Dispute Actions */}
-                {selectedTransaction?.transaction_status === "inDispute" && (
-                  <div className="d-flex gap-2 flex-wrap">
-                    {userEmail === selectedTransaction?.buyer_email && (
-                      <>
+                {/* Dispute Alert - Transaction in Dispute */}
+                {["In_Dispute", "processing", "resolving"].includes(
+                  selectedTransaction?.dispute_status
+                ) && (
+                  <div className="mt-4">
+                    <div
+                      className="alert d-flex align-items-center justify-content-between p-2 mb-0"
+                      // style={{
+                      //   backgroundColor: "#fff3cd",
+                      //   border: "2px solid #ffc107",
+                      //   borderRadius: "4px",
+                      // }}
+                    >
+                      <div className="d-flex align-items-center gap-3">
+                        <i
+                          className="bi bi-exclamation-triangle-fill"
+                          style={{ fontSize: "2rem", color: "#856404" }}></i>
+                        <div>
+                          <h6
+                            className="mb-1 fw-bold"
+                            style={{ color: "#856404" }}>
+                            Transaction Currently in Dispute
+                          </h6>
+                          <p className="mb-0 small text-muted">
+                            This transaction has an active dispute! View to
+                            resolve
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      {" "}
+                      <Link
+                        to={`/userdashboard/disputes/dispute-details/${selectedTransaction?.transaction_id}`}
+                        className="text-decoration-none">
                         <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => setConfirmCancel(true)}
-                          style={{ fontSize: "0.875rem" }}>
-                          Cancel Transaction
+                          variant="warning"
+                          className="fw-semibold"
+                          style={{
+                            fontSize: "0.875rem",
+                            padding: "8px 20px",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <i className="bi bi-arrow-right-circle me-2"></i>
+                          View Dispute Details
                         </Button>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={() =>
-                            handleResolveConflict(selectedTransaction)
-                          }
-                          style={{ fontSize: "0.875rem" }}>
-                          Resolve Dispute
-                        </Button>
-                      </>
-                    )}
-                    {userEmail === selectedTransaction?.vendor_email && (
-                      <Button
-                        variant="outline-warning"
-                        size="sm"
-                        onClick={() =>
-                          toast.info("Mediator has been involved!")
-                        }
-                        style={{ fontSize: "0.875rem" }}>
-                        Involve Mediator
-                      </Button>
-                    )}
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>

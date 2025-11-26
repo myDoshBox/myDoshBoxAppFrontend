@@ -83,7 +83,10 @@ import ProductsDisputeHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/
 // disputes
 import DisputesInProgressHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/DisputesInProgressHistory";
 import ResolvedDisputesHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ResolvedDisputesHistory";
+import CancelledDisputesHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/CancelledDisputeHistory";
 import BuyerResolveTransactionDisputeForm from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/BuyerResolveTransactionDisputeForm";
+
+import DisputeDetailsPage from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/DisputeDetailsPage";
 import InitiateDisputePage from "./pages/DISPUTE_PAGES/InitiateDisputePage";
 import CancelledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/CancelledTransactionHistory";
 
@@ -139,10 +142,7 @@ function App() {
               path="transaction-history/confirm-escrow-product-transaction/shipping-details-form/shipping-details-summary/:transaction_id/agreement"
               element={<SellerConfirmationEscrowAgreement />}
             />
-            {/* <Route
-              path="transaction-history/confirm-escrow-product-transaction/shipping-history"
-              element={<SellerShippingHistory />}
-            /> */}
+
             <Route
               path="transaction-history/confirm-escrow-product-transaction/shipping-history"
               element={<ShippingDetailsHistory />}
@@ -171,6 +171,14 @@ function App() {
             <Route
               path="disputes/completed-disputes"
               element={<ResolvedDisputesHistory />}
+            />
+            <Route
+              path="disputes/cancelled-disputes"
+              element={<CancelledDisputesHistory />}
+            />
+            <Route
+              path="disputes/dispute-details/:transaction_id"
+              element={<DisputeDetailsPage />}
             />
             <Route
               path="disputes/disputes-in-progress"

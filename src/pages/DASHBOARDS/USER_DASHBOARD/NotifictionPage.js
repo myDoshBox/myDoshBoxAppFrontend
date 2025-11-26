@@ -12,16 +12,15 @@ import {
 } from "../../../components/IconComponent/NavigationAndViewIcon";
 import { Collapse } from "react-bootstrap";
 
-
 const NotifictionPage = () => {
   return (
-    <div className="container-fluid bg-light min-vh-100 px-0">
+    <div className="container-fluid px-0">
       <div className="row gx-0">
         {/* Sidebar */}
         <div className="col-lg-3 d-none d-lg-block bg-white border-end" />
 
         {/* Main Content */}
-        <div className="col-12 col-lg-9">
+        <div className="col-12">
           <UserDashboardNavbar />
 
           <div className="container-fluid px-3 px-md-4 mt-4">
@@ -46,7 +45,10 @@ const Notification = () => {
           {/* Notification List */}
           <div className="mt-3">
             {usersData.notificationData.map((notificationData) => (
-              <NotificationCard key={notificationData.id} {...notificationData} />
+              <NotificationCard
+                key={notificationData.id}
+                {...notificationData}
+              />
             ))}
           </div>
         </div>
@@ -54,11 +56,6 @@ const Notification = () => {
     </div>
   );
 };
-
-
-
-
-
 
 // const NotifictionPage = () => {
 //   return (

@@ -14,6 +14,7 @@ export const useTokenRefresh = () => {
   const refreshTimerRef = useRef(null);
   const isRefreshingRef = useRef(false);
   const lastRefreshAttemptRef = useRef(0);
+  const lastCheckTimeRef = useRef(0);
   const mountedRef = useRef(true);
 
   // Clear timer helper
@@ -105,8 +106,8 @@ export const useTokenRefresh = () => {
         const now = Date.now();
         const timeUntilExpiry = expiresAt - now;
 
-        // Refresh 2 minutes before expiry for safety
-        const bufferTime = 2 * 60 * 1000;
+        // Refresh 3 minutes before expiry for safety
+        const bufferTime = 3 * 60 * 1000;
         const refreshTime = Math.max(0, timeUntilExpiry - bufferTime);
 
         if (timeUntilExpiry <= 0) {
@@ -163,10 +164,17 @@ export const useTokenRefresh = () => {
       return;
     }
 
+    // Prevent rapid successive checks (throttle to every 2 seconds)
+    const now = Date.now();
+    if (now - lastCheckTimeRef.current < 2000) {
+      console.log("⏱️ Check throttled, too soon since last check");
+      return;
+    }
+    lastCheckTimeRef.current = now;
+
     try {
       const decoded = jwtDecode(currentToken);
       const expiresAt = decoded.exp * 1000;
-      const now = Date.now();
       const timeUntilExpiry = expiresAt - now;
 
       const minutes = Math.floor(timeUntilExpiry / 60000);
@@ -184,10 +192,10 @@ export const useTokenRefresh = () => {
         return;
       }
 
-      // If token expires within 3 minutes, refresh immediately
-      if (timeUntilExpiry < 3 * 60 * 1000) {
+      // If token expires within 5 minutes, refresh immediately
+      if (timeUntilExpiry < 5 * 60 * 1000) {
         console.log(
-          "⚠️ Token expiring soon (< 3 min), refreshing immediately..."
+          "⚠️ Token expiring soon (< 5 min), refreshing immediately..."
         );
         const newToken = await performRefresh();
         if (newToken && mountedRef.current) {
@@ -195,7 +203,14 @@ export const useTokenRefresh = () => {
         }
       } else {
         // Token is still valid, schedule refresh for later
-        scheduleNextRefresh(currentToken);
+        // Only schedule if there's no existing timer
+        if (!refreshTimerRef.current) {
+          scheduleNextRefresh(currentToken);
+        } else {
+          console.log(
+            "⏰ Refresh already scheduled, skipping duplicate schedule"
+          );
+        }
       }
     } catch (error) {
       console.error("❌ Error checking token:", error);
@@ -225,7 +240,12 @@ export const useTokenRefresh = () => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && mountedRef.current) {
         console.log("👁️ Tab became visible, checking token status...");
-        checkAndRefreshToken();
+        // Only check if there's no active timer
+        if (!refreshTimerRef.current) {
+          checkAndRefreshToken();
+        } else {
+          console.log("⏰ Timer already active, skipping check");
+        }
       }
     };
 
@@ -237,24 +257,14 @@ export const useTokenRefresh = () => {
       }
     };
 
-    // Handle page focus
-    const handleFocus = () => {
-      if (mountedRef.current) {
-        console.log("🎯 Window focused, checking token status...");
-        checkAndRefreshToken();
-      }
-    };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("online", handleOnline);
-    window.addEventListener("focus", handleFocus);
 
     return () => {
       mountedRef.current = false;
       clearRefreshTimer();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);
-      window.removeEventListener("focus", handleFocus);
     };
   }, [userInfo?.token, checkAndRefreshToken, clearRefreshTimer]);
 
