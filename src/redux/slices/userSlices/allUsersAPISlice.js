@@ -400,12 +400,15 @@ export const usersAPISlice = createApi({
       }),
     }),
 
+    // ✅ UPDATED: Accept optional body for fallback
     refreshToken: builder.mutation({
-      query: () => ({
+      query: (body) => ({
         url: "individual/refresh-token",
         method: "POST",
         credentials: "include",
-        // ✅ No body needed - cookies will be sent automatically
+        // If body provided (has refreshToken), send it as fallback
+        // Otherwise, cookies will be used automatically
+        ...(body && { body }),
       }),
     }),
 

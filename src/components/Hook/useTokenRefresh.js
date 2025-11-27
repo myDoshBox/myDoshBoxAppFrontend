@@ -270,7 +270,6 @@
 
 //   return null;
 // };
-
 import { useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRefreshTokenMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
@@ -314,8 +313,19 @@ export const useTokenRefresh = () => {
     try {
       console.log("🔄 Refreshing token via RTK Query...");
 
-      // ✅ Call without any body - cookies will be sent automatically
-      const response = await refreshToken().unwrap();
+      // ✅ DUAL APPROACH: Try cookies first, send body as fallback
+      const refreshTokenValue = userInfo?.refreshToken;
+
+      console.log("📤 Refresh attempt:", {
+        hasCookies: true, // Cookies sent automatically via credentials: include
+        hasBodyFallback: !!refreshTokenValue,
+        tokenLength: refreshTokenValue?.length || 0,
+      });
+
+      // Send refresh token in body as fallback (in case cookies are blocked)
+      const response = await refreshToken(
+        refreshTokenValue ? { refreshToken: refreshTokenValue } : undefined
+      ).unwrap();
 
       if (!mountedRef.current) {
         console.log("⚠️ Component unmounted, skipping state update");
@@ -347,6 +357,7 @@ export const useTokenRefresh = () => {
         error,
         status: error?.status,
         data: error?.data,
+        message: error?.data?.message || error?.message,
       });
 
       if (!mountedRef.current) {
@@ -373,7 +384,7 @@ export const useTokenRefresh = () => {
     } finally {
       isRefreshingRef.current = false;
     }
-  }, [refreshToken, dispatch]);
+  }, [refreshToken, dispatch, userInfo]);
 
   const scheduleNextRefresh = useCallback(
     (token) => {
