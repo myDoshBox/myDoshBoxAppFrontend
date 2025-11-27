@@ -735,6 +735,7 @@ import { useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices
 import { useSellerConfirmsTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
 import { useInitiatePaymentMutation } from "../../../redux/slices/paymentSlices/paymentAPISlice";
 import { useSelector } from "react-redux";
+import NextStepsSection from "./NextStepsSection";
 
 import {
   TRANSACTION_FILTERS,
@@ -842,6 +843,7 @@ export const RecentTransactionTable = ({
   const [buyerConfirmsProduct] = useBuyerConfirmsProductMutation();
   const [sellerConfirmsTransaction] = useSellerConfirmsTransactionMutation();
   const [initiatePayment] = useInitiatePaymentMutation();
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -1377,6 +1379,13 @@ export const RecentTransactionTable = ({
         <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
           {selectedTransaction ? (
             <>
+              {/* Nest Step starts */}
+              <NextStepsSection
+                transaction={selectedTransaction}
+                userEmail={userEmail}
+              />
+
+              {/* Nest Step end */}
               <Accordion defaultActiveKey="0" flush>
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>
@@ -1773,14 +1782,7 @@ export const RecentTransactionTable = ({
                   selectedTransaction?.dispute_status
                 ) && (
                   <div className="mt-4">
-                    <div
-                      className="alert d-flex align-items-center justify-content-between p-2 mb-0"
-                      // style={{
-                      //   backgroundColor: "#fff3cd",
-                      //   border: "2px solid #ffc107",
-                      //   borderRadius: "4px",
-                      // }}
-                    >
+                    <div className="alert d-flex align-items-center justify-content-between p-2 mb-0">
                       <div className="d-flex align-items-center gap-3">
                         <i
                           className="bi bi-exclamation-triangle-fill"
@@ -1841,87 +1843,176 @@ export const RecentTransactionTable = ({
       {/* Payment Modal */}
       <Modal
         show={showPaymentModal}
-        onHide={() => setShowPaymentModal(false)}
-        centered>
-        <Modal.Header closeButton style={{ borderBottom: "2px solid #e5e7eb" }}>
-          <Modal.Title style={{ fontSize: "1.25rem", fontWeight: "700" }}>
+        onHide={() => {
+          setShowPaymentModal(false);
+          setAcceptedTerms(false);
+        }}
+        centered
+        size="lg">
+        <Modal.Header
+          closeButton
+          className="border-0 pb-2"
+          style={{ backgroundColor: "#f8f9fa" }}>
+          <Modal.Title className="d-flex align-items-center gap-2 w-100">
             <i
-              className="bi bi-credit-card me-2"
-              style={{ color: "#006747EB" }}></i>
-            Proceed to Payment
+              className="bi bi-credit-card-2-front"
+              style={{ color: "#006747EB", fontSize: "1.5rem" }}></i>
+            <span
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: "700",
+                color: "#1a1a1a",
+              }}>
+              Complete Payment
+            </span>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="text-center py-4">
-          <div className="mb-4">
-            <h5
-              className="mb-4"
-              style={{ fontWeight: "600", color: "#1a1a1a" }}>
-              Transaction Summary
-            </h5>
-            <div
-              className="mb-3 p-3 rounded"
-              style={{ backgroundColor: "#f8f9fa" }}>
-              <small
-                className="text-muted d-block mb-2"
-                style={{ fontSize: "0.75rem" }}>
-                Transaction ID
-              </small>
-              <code
-                style={{
-                  fontSize: "0.875rem",
-                  color: "#006747EB",
-                  backgroundColor: "transparent",
-                }}>
-                {selectedTransaction?.transaction_id}
-              </code>
-            </div>
-            <div className="mb-4">
-              <small
-                className="text-muted d-block mb-2"
-                style={{ fontSize: "0.75rem" }}>
-                Amount to Pay
-              </small>
-              <div
-                className="fw-bold"
-                style={{
-                  fontSize: "2.5rem",
-                  color: "#006747EB",
-                  lineHeight: "1",
-                }}>
-                ₦{selectedTransaction?.transaction_total?.toLocaleString()}
+
+        <Modal.Body className="p-3 p-sm-4">
+          {/* Transaction Summary Card */}
+          <div
+            className="mb-4 p-3 p-sm-4 rounded-3"
+            style={{
+              backgroundColor: "#f8f9fa",
+              border: "2px solid #e5e7eb",
+            }}>
+            <h6
+              className="text-muted mb-3"
+              style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+              PAYMENT DETAILS
+            </h6>
+
+            <div className="row g-2 g-sm-3 mb-3">
+              <div className="col-6">
+                <small
+                  className="text-muted d-block mb-1"
+                  style={{ fontSize: "0.75rem" }}>
+                  Vendor
+                </small>
+                <span style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                  {selectedTransaction?.vendor_name}
+                </span>
+              </div>
+              <div className="col-6">
+                <small
+                  className="text-muted d-block mb-1"
+                  style={{ fontSize: "0.75rem" }}>
+                  Items
+                </small>
+                <span style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                  {selectedTransaction?.products?.length || 0} Product(s)
+                </span>
               </div>
             </div>
-            <div
-              className="alert alert-info border-0"
-              style={{ backgroundColor: "#e7f5f1" }}>
-              <small style={{ color: "#006747EB" }}>
-                <i className="bi bi-shield-check me-2"></i>
-                You will be redirected to Paystack to complete your payment
-                securely
-              </small>
+
+            {/* Amount Breakdown */}
+            <div className="border-top pt-3 mt-3">
+              <div className="d-flex justify-content-between mb-3"></div>
+              <div
+                className="d-flex justify-content-between align-items-center p-2 p-sm-3 rounded-3"
+                style={{ backgroundColor: "#d1e7dd" }}>
+                <span
+                  style={{
+                    fontSize: "0.9rem",
+                    fontWeight: "700",
+                    color: "#0f5132",
+                  }}>
+                  Total Amount
+                </span>
+                <span
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "700",
+                    color: "#006747EB",
+                  }}>
+                  ₦{selectedTransaction?.transaction_total?.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Terms & Conditions Checkbox */}
+          <div
+            className="p-2 p-sm-3 rounded-3 mb-3"
+            style={{
+              backgroundColor: "#fff3cd",
+              border: "1px solid #ffc107",
+            }}>
+            <div className="form-check d-flex align-items-start gap-2">
+              <input
+                type="checkbox"
+                className="form-check-input mt-1"
+                id="accept-terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                style={{
+                  cursor: "pointer",
+                  width: "18px",
+                  height: "18px",
+                  flexShrink: 0,
+                }}
+              />
+              <label
+                htmlFor="accept-terms"
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#856404",
+                  cursor: "pointer",
+                  lineHeight: "1.5",
+                }}>
+                I have read and agree to the{" "}
+                <Link
+                  to="/escrow-agreement"
+                  target="_blank"
+                  style={{
+                    color: "#006747EB",
+                    fontWeight: "600",
+                    textDecoration: "underline",
+                  }}
+                  onClick={(e) => e.stopPropagation()}>
+                  Escrow Agreement Terms
+                </Link>{" "}
+                and understand that my payment will be held securely until
+                delivery is confirmed.
+              </label>
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer style={{ borderTop: "2px solid #e5e7eb" }}>
-          <Button
-            variant="outline-secondary"
-            onClick={() => setShowPaymentModal(false)}
-            style={{ fontSize: "0.875rem", padding: "8px 20px" }}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleProceedToPaystack}
-            className="border-0"
-            style={{
-              backgroundColor: "#006747EB",
-              fontSize: "0.875rem",
-              padding: "8px 24px",
-              fontWeight: "600",
-            }}>
-            <i className="bi bi-arrow-right-circle me-2"></i>
-            Proceed to Paystack
-          </Button>
+
+        <Modal.Footer className="border-0 pt-0 px-3 px-sm-4 pb-3 pb-sm-4">
+          <div className="gap-2 w-100 flex-column flex-sm-row">
+            <Button
+              onClick={handleProceedToPaystack}
+              disabled={!acceptedTerms}
+              className="border-0 flex-fill order-1 order-sm-2"
+              style={{
+                backgroundColor: acceptedTerms ? "#006747EB" : "#94a3b8",
+                fontSize: "0.9rem",
+                padding: "12px 24px",
+                fontWeight: "600",
+                cursor: acceptedTerms ? "pointer" : "not-allowed",
+                opacity: acceptedTerms ? 1 : 0.7,
+              }}>
+              <i className="bi bi-arrow-right-circle me-2"></i>
+              Proceed to Paystack
+            </Button>
+          </div>
         </Modal.Footer>
+        {/* Security Notice */}
+        <div className="alert d-flex align-items-start gap-2 gap-sm-3 mb-4 p-2 p-sm-3">
+          <i
+            className="bi bi-shield-check mt-1"
+            style={{
+              color: "#006747EB",
+              fontSize: "1.25rem",
+              flexShrink: 0,
+            }}></i>
+          <div>
+            <small style={{ fontSize: "0.8rem", color: "#0f5132" }}>
+              You'll be redirected to Paystack
+            </small>
+          </div>
+        </div>
       </Modal>
 
       {/* Vendor Confirmation Modal */}

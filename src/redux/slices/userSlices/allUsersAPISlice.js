@@ -204,7 +204,7 @@ import backendURL from "./../../../components/utils/config";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${backendURL}/auth`,
-  credentials: "include", // ✅ This sends cookies
+  credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     if (!headers.has("Content-Type")) {
       headers.set("Content-Type", "application/json");
