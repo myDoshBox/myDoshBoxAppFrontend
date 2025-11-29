@@ -3,10 +3,11 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import thunk from "redux-thunk";
 import usersAuthReducer from "./slices/userSlices/allUsersAuthSlice";
+import profileAuthReducer from "./slices/profileSlice/profileAuthslice";
 import escrowProductReducer from "./slices/escrowProductSlices/escrowProductContentSlice";
 import paymentReducer from "./slices/paymentSlices/paymentSlice";
-// import { usersAPISlice } from "./slices/userSlices/usersAPISlice";
 import { usersAPISlice } from "./slices/userSlices/allUsersAPISlice";
+import { profileAPISlice } from "./slices/profileSlice/profileAPISlice";
 import { escrowProductsAPISlice } from "./slices/escrowProductSlices/escrowProductsAPISlice";
 import { disputeAPISlice } from "./slices/disputeSlices/disputeAPISlice";
 import { paymentAPISlice } from "./slices/paymentSlices/paymentAPISlice";
@@ -15,7 +16,9 @@ import disputeReducer from "./slices/disputeSlices/disputeContentSlice";
 const reducers = combineReducers({
   // users
   usersauth: usersAuthReducer,
+  profileAuth: profileAuthReducer,
   [usersAPISlice.reducerPath]: usersAPISlice.reducer,
+  [profileAPISlice.reducerPath]: profileAPISlice.reducer,
 
   // products
   escrowProductInfo: escrowProductReducer,
@@ -62,6 +65,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(usersAPISlice.middleware)
+      .concat(profileAPISlice.middleware)
       .concat(escrowProductsAPISlice.middleware)
       .concat(disputeAPISlice.middleware)
       .concat(paymentAPISlice.middleware),

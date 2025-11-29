@@ -18,16 +18,6 @@ const escrowDisputeInfoSlice = createSlice({
   },
 });
 
-// const shippingInfoSlice = createSlice({
-//   name: "shippingInfo",
-//   initialState,
-//   reducers: {
-//     setShippingInfo: (state, action) => {
-//       state.shippingInfo = action.payload;
-//     },
-//   },
-// });
-
 export const { setDisputeInfo } = escrowDisputeInfoSlice.actions;
 
 export default escrowDisputeInfoSlice.reducer;

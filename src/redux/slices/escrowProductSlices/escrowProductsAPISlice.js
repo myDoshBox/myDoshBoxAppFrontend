@@ -37,10 +37,8 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     if (refreshResult?.data) {
       api.dispatch(setCredentials(refreshResult.data));
 
-      // Retry the original query with new token
       result = await baseQuery(args, api, extraOptions);
     } else {
-      // Refresh failed, log the user out - use imported function
       api.dispatch(logout());
       window.location.href = "/signin";
     }
@@ -60,6 +58,17 @@ export const escrowProductsAPISlice = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Escrow Products"],
+    }),
+
+    // NEW: Edit Escrow Product Transaction
+    editEscrowProductTransaction: builder.mutation({
+      query: ({ transaction_id, ...data }) => ({
+        url: `edit-escrow-product-transaction/${transaction_id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Escrow Products"],
     }),
 
     verifyEscrowProductTransactionPayment: builder.mutation({
@@ -75,14 +84,11 @@ export const escrowProductsAPISlice = createApi({
         url: `get-single-escrow-product-transaction/${transactionId}`,
         method: "GET",
       }),
+      providesTags: (result, error, transactionId) => [
+        { type: "Escrow Products", id: transactionId },
+      ],
     }),
 
-    // fetchAllTransactions: builder.query({
-    //   query: (buyerEmail) => ({
-    //     url: `get-all-escrow-product-transaction/${buyerEmail}`,
-    //     method: "GET",
-    //   }),
-    // }),
     fetchAllTransactions: builder.query({
       query: (buyerEmail) => {
         console.log("📧 BuyerEmail in API call:", buyerEmail);
@@ -100,6 +106,7 @@ export const escrowProductsAPISlice = createApi({
           method: "GET",
         };
       },
+      providesTags: ["Escrow Products"],
     }),
 
     sellerFillOutShippingDetails: builder.mutation({
@@ -108,6 +115,7 @@ export const escrowProductsAPISlice = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Escrow Products"],
     }),
 
     cancelTransaction: builder.mutation({
@@ -115,6 +123,7 @@ export const escrowProductsAPISlice = createApi({
         url: `cancel-transaction/${transaction_id}`,
         method: "PUT",
       }),
+      invalidatesTags: ["Escrow Products"],
     }),
 
     sellerConfirmsTransaction: builder.mutation({
@@ -139,20 +148,14 @@ export const escrowProductsAPISlice = createApi({
         method: "PUT",
         body: { transaction_id },
       }),
+      invalidatesTags: ["Escrow Products"],
     }),
-    transformResponse: (response) => {
-      console.log("API Response:", response);
-      return response;
-    },
-    transformErrorResponse: (response) => {
-      console.error("API Error:", response);
-      return response;
-    },
   }),
 });
 
 export const {
   useInitiateEscrowProductTransactionMutation,
+  useEditEscrowProductTransactionMutation,
   useVerifyEscrowProductTransactionPaymentMutation,
   useBuyerConfirmsProductMutation,
   useSellerConfirmsTransactionMutation,

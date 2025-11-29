@@ -21,11 +21,9 @@ import UserDashboardPage from "./pages/DASHBOARDS/USER_DASHBOARD/UserDashboardPa
 import NotifictionPage from "./pages/DASHBOARDS/USER_DASHBOARD/NotifictionPage";
 // import FAQs from "./pages/GENERAL_PAGES/FAQs";
 import UserDisputeHistory from "./pages/DASHBOARDS/USER_DASHBOARD/UserDisputesHistory";
-import UserSettingsPage, {
-  ReportIssuesformPage,
-  UpdateBankDetailsPage,
-  UpdateProfilePage,
-} from "./pages/DASHBOARDS/USER_DASHBOARD/UserSettingsPage";
+import UserSettingsPage from "./pages/DASHBOARDS/USER_DASHBOARD/profile/UserSettingsPage"; // UpdateBankDetailsPage, // ReportIssuesformPage,
+import UpdateProfilePage from "./pages/DASHBOARDS/USER_DASHBOARD/profile/UserUpdateProfile";
+import UpdateBankDetailsPage from "./pages/DASHBOARDS/USER_DASHBOARD/profile/UserUpdateBankDetails";
 import UserTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserTransactionHistory";
 import NeutralsSideNav from "./components/NavbarComponents/NeutralsSideNav";
 // import AdminSideNav from "./components/NavbarComponents/AdminSideNav";
@@ -77,6 +75,7 @@ import ShippingDetailsSummary from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTIO
 import UserSettledTransactions from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/UserSettledTransactions";
 import SellerConfirmationEscrowAgreement from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SellerConfirmationEscrowAgreement";
 import ShippingDetailsHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsHistory";
+import ShippingDetailsPage from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/ShippingDetailsPage";
 import SettledTransactionHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/SettledTransactionHistory";
 import TransactionInProgressHistory from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/TransactionInProgressHistory";
 import ProductsDisputeHistory from "./pages/DISPUTE_PAGES/PRODUCT_DISPUTE_PAGES/ProductsDisputeHistory";
@@ -130,7 +129,7 @@ function App() {
               element={<SellerProductTransactionSummary />}
             />
             <Route
-              path="transaction-history/confirm-escrow-product-transaction/shipping-details-form/:transaction_id"
+              path="transaction-history/shipping-details/:transaction_id"
               element={<FillShippingDetailsPage />}
             />
 
@@ -146,6 +145,10 @@ function App() {
             <Route
               path="transaction-history/confirm-escrow-product-transaction/shipping-history"
               element={<ShippingDetailsHistory />}
+            />
+            <Route
+              path="transaction-history/shipping-details-page/:shippingId"
+              element={<ShippingDetailsPage />}
             />
             <Route
               path="transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
@@ -194,9 +197,17 @@ function App() {
             />
 
             <Route path="notification" element={<NotifictionPage />} />
-            <Route path="updateprofile" element={<UpdateProfilePage />} />
-            <Route path="updatebank" element={<UpdateBankDetailsPage />} />
-            <Route path="reportissues" element={<ReportIssuesformPage />} />
+
+            {/* Profile routes??????????????????? */}
+            <Route
+              path="settings/user/updateprofile"
+              element={<UpdateProfilePage />}
+            />
+            <Route
+              path="settings/user/UpdateBank"
+              element={<UpdateBankDetailsPage />}
+            />
+            {/* Profile routes??????????????????? */}
             <Route
               path="initiate-escrow"
               element={<InitiateProductEscrowForm />}

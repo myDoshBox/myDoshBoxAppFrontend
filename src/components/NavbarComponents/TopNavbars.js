@@ -21,6 +21,7 @@ import { logout } from "../../redux/slices/userSlices/allUsersAuthSlice";
 
 export const GuestNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const disappearEl = useRef(null);
@@ -139,6 +140,10 @@ export const UserDashboardNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { profileInfo } = useSelector((state) => state.profileAuth);
+  const profileImage = profileInfo.image;
+
+  console.log(profileImage, "profileImage");
 
   const userEmail = userInfo?.email || userInfo?.organization_email || "";
   const userPhone = userInfo?.phone_number || userInfo?.contact_number || "";
@@ -191,7 +196,7 @@ export const UserDashboardNavbar = () => {
                 />
               ) : (
                 <img
-                  src={image}
+                  src={profileImage}
                   alt="User"
                   className="rounded-circle"
                   style={{ width: "35px", height: "35px", objectFit: "cover" }}

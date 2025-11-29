@@ -36,12 +36,12 @@
 // };
 
 // export const RecentTransactionTable = () => {
-//   const { userInfo } = useSelector((state) => state.usersauth);
-//   const userEmail =
-//     userInfo?.user?.email ||
-//     userInfo?.email ||
-//     userInfo?.organization_email ||
-//     userInfo?.userInfo?.email;
+// const { userInfo } = useSelector((state) => state.usersauth);
+// const userEmail =
+//   userInfo?.user?.email ||
+//   userInfo?.email ||
+//   userInfo?.organization_email ||
+//   userInfo?.userInfo?.email;
 
 //   const {
 //     data: transactions,
@@ -855,6 +855,7 @@ export const RecentTransactionTable = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const navigate = useNavigate();
+  console.log(selectedTransaction, "selectedTransaction");
 
   const {
     data: allDisputes,
@@ -992,6 +993,12 @@ export const RecentTransactionTable = ({
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredTransactions.slice(startIndex, endIndex);
+  };
+
+  const handleEdit = () => {
+    navigate(
+      `/userdashboard/initiate-escrow?transaction_id=${selectedTransaction.transaction_id}`
+    );
   };
 
   return (
@@ -1646,6 +1653,24 @@ export const RecentTransactionTable = ({
                           </Button>
                         </Link>
                       )}
+                    {/* View Shipping Details - Visible to Buyer & Vendor if Shipping is Submitted */}
+                    {/* View Shipping Details — visible to both Buyer & Vendor once shipping is submitted */}
+                    {selectedTransaction?.shipping_submitted && (
+                      <div className="d-flex justify-content-between align-items-center mb-3 p-3 border rounded shadow-sm bg-light">
+                        <div className="d-flex align-items-center">
+                          <i className="bi bi-truck fs-4 me-2 text-primary"></i>
+                          <h6 className="mb-0 fw-bold">Shipping Details</h6>
+                        </div>
+
+                        <Link
+                          to={`shipping-details-page/${selectedTransaction?.shipping?._id}`}
+                          className="text-decoration-none">
+                          <span className="btn btn-outline-primary btn-sm">
+                            View Shipping Details
+                          </span>
+                        </Link>
+                      </div>
+                    )}
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -1724,41 +1749,70 @@ export const RecentTransactionTable = ({
                   !selectedTransaction?.seller_confirmed &&
                   selectedTransaction?.transaction_status === "processing" && (
                     <div className="d-flex gap-2 flex-wrap">
+                      {/* Buyer Cancel Transaction */}
                       {userEmail === selectedTransaction?.buyer_email && (
                         <Button
                           variant="outline-danger"
                           size="sm"
                           onClick={() => setConfirmCancel(true)}
-                          style={{ fontSize: "0.875rem" }}>
-                          <i className="bi bi-x-circle me-1"></i>
+                          className="cancel-btn">
+                          <i className="bi bi-trash me-1"></i>
                           Cancel Transaction
                         </Button>
                       )}
-                      {userEmail === selectedTransaction?.vendor_email &&
-                        selectedTransaction?.dispute_status === "none" && (
-                          <>
-                            <Button
-                              variant="outline-success"
-                              size="sm"
-                              onClick={() => setShowVendorConfirmModal(true)}
-                              style={{ fontSize: "0.875rem" }}>
-                              <i className="bi bi-check-circle me-1"></i>
-                              Confirm Transaction
-                            </Button>
+
+                      {/* Buyer Edit Transaction */}
+                      {userEmail === selectedTransaction?.buyer_email &&
+                        !selectedTransaction?.seller_confirmed &&
+                        !selectedTransaction?.verified_payment_status && (
+                          <Button
+                            onClick={handleEdit}
+                            variant="outline-primary"
+                            size="sm"
+                            className="edit-btn">
+                            <i className="bi bi-pencil-square me-1"></i>
+                            Edit Transaction
+                          </Button>
+                        )}
+
+                      {/* Vendor Actions */}
+                      {userEmail === selectedTransaction?.vendor_email && (
+                        <>
+                          <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => setShowVendorConfirmModal(true)}
+                            style={{
+                              fontSize: "0.875rem",
+                              backgroundColor: "#198754",
+                              borderColor: "#198754",
+                            }}>
+                            <i className="bi bi-check-lg me-1"></i>
+                            Confirm Transaction
+                          </Button>
+                          {["resolved", "none"].includes(
+                            selectedTransaction?.dispute_status
+                          ) && (
                             <Button
                               variant="outline-warning"
                               size="sm"
                               onClick={() =>
                                 handleRaiseDispute(selectedTransaction)
                               }
-                              style={{ fontSize: "0.875rem" }}>
-                              <i className="bi bi-flag me-1"></i>
+                              style={{
+                                fontSize: "0.875rem",
+                                borderColor: "#ffc107",
+                                color: "#856404",
+                              }}>
+                              <i className="bi bi-shield-exclamation me-1"></i>
                               Raise Dispute
                             </Button>
-                          </>
-                        )}
+                          )}
+                        </>
+                      )}
                     </div>
                   )}
+
                 {/* Payment Button */}
                 {shouldShowPayButton(selectedTransaction, userEmail) && (
                   <Button
@@ -1770,8 +1824,9 @@ export const RecentTransactionTable = ({
                       fontSize: "1rem",
                       fontWeight: "600",
                       padding: "12px",
+                      boxShadow: "0 2px 4px rgba(0, 103, 71, 0.3)",
                     }}>
-                    <i className="bi bi-credit-card me-2"></i>
+                    <i className="bi bi-credit-card-2-front me-2"></i>
                     Proceed to Payment - ₦
                     {selectedTransaction?.transaction_total?.toLocaleString()}
                   </Button>
@@ -1782,10 +1837,15 @@ export const RecentTransactionTable = ({
                   selectedTransaction?.dispute_status
                 ) && (
                   <div className="mt-4">
-                    <div className="alert d-flex align-items-center justify-content-between p-2 mb-0">
+                    <div
+                      className="alert d-flex align-items-center justify-content-between p-3 mb-0 border-warning"
+                      style={{
+                        backgroundColor: "#fff3cd",
+                        border: "1px solid #ffc107",
+                      }}>
                       <div className="d-flex align-items-center gap-3">
                         <i
-                          className="bi bi-exclamation-triangle-fill"
+                          className="bi bi-exclamation-octagon-fill"
                           style={{ fontSize: "2rem", color: "#856404" }}></i>
                         <div>
                           <h6
@@ -1801,17 +1861,18 @@ export const RecentTransactionTable = ({
                       </div>
                     </div>
                     <div className="mt-3">
-                      {" "}
                       <Link
                         to={`/userdashboard/disputes/dispute-details/${selectedTransaction?.transaction_id}`}
                         className="text-decoration-none">
                         <Button
                           variant="warning"
-                          className="fw-semibold"
+                          className="fw-semibold border-0"
                           style={{
                             fontSize: "0.875rem",
                             padding: "8px 20px",
                             whiteSpace: "nowrap",
+                            backgroundColor: "#ffc107",
+                            color: "#856404",
                           }}>
                           <i className="bi bi-arrow-right-circle me-2"></i>
                           View Dispute Details
