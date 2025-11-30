@@ -141,7 +141,7 @@ export const UserDashboardNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { profileInfo } = useSelector((state) => state.profileAuth);
-  const profileImage = profileInfo.image;
+  const profileImage = profileInfo?.image;
 
   console.log(profileImage, "profileImage");
 
