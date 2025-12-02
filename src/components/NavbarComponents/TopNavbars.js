@@ -13,26 +13,60 @@ import { Link, Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import {
-  HomePageSignUpBtn,
-  SignUpButton,
-} from "../ButtonsComponent/AuthenticationButtons";
+import { HomePageSignUpBtn } from "../ButtonsComponent/AuthenticationButtons";
 import { logout } from "../../redux/slices/userSlices/allUsersAuthSlice";
+import { clearProfileInfo } from "../../redux/slices/profileSlice/profileAuthslice";
+import { useLogoutMutation } from "../../redux/slices/userSlices/allUsersAPISlice";
+import { usersAPISlice } from "../../redux/slices/userSlices/allUsersAPISlice";
+import { profileAPISlice } from "../../redux/slices/profileSlice/profileAPISlice";
+import { escrowProductsAPISlice } from "../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
+import { disputeAPISlice } from "../../redux/slices/disputeSlices/disputeAPISlice";
+import { paymentAPISlice } from "../../redux/slices/paymentSlices/paymentAPISlice";
+import { persistor } from "../../redux/store";
 
 export const GuestNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const disappearEl = useRef(null);
+  const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const handleDisappear = () => {
-    disappearEl.style.display = "none";
+    if (disappearEl.current) {
+      disappearEl.current.style.display = "none";
+    }
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      // 1. Call API logout
+      await logoutApi().unwrap();
+    } catch (error) {
+      console.error("Logout API error:", error);
+      // Continue with logout even if API fails
+    } finally {
+      // 2. Reset all RTK Query caches
+      dispatch(usersAPISlice.util.resetApiState());
+      dispatch(profileAPISlice.util.resetApiState());
+      dispatch(escrowProductsAPISlice.util.resetApiState());
+      dispatch(disputeAPISlice.util.resetApiState());
+      dispatch(paymentAPISlice.util.resetApiState());
+
+      dispatch(clearProfileInfo());
+
+      dispatch(logout());
+
+      await persistor.purge();
+
+      localStorage.clear();
+      sessionStorage.clear();
+
+      navigate("/", { replace: true });
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
   };
 
   return (
@@ -63,31 +97,31 @@ export const GuestNavbar = () => {
             <Link
               to="/"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}>
+              onClick={handleDisappear}>
               Home
             </Link>
             <Link
               to="/aboutus"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}>
+              onClick={handleDisappear}>
               About Us
             </Link>
             <Link
               to="/pricingpage"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}>
+              onClick={handleDisappear}>
               Pricing
             </Link>
             <Link
               to="/faqs"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}>
+              onClick={handleDisappear}>
               FAQs
             </Link>
             <Link
               to="/contactus"
               className="nav-link nav-links"
-              onClick={() => handleDisappear}>
+              onClick={handleDisappear}>
               Contact Us
             </Link>
 
@@ -97,13 +131,14 @@ export const GuestNavbar = () => {
                 <Link
                   to="/userdashboard"
                   className="nav-link nav-links"
-                  onClick={() => handleDisappear}>
+                  onClick={handleDisappear}>
                   Dashboard
                 </Link>
                 <button
                   onClick={handleLogout}
+                  disabled={isLoggingOut}
                   className="nav-links nav-btn btn btn-outline-success ms-2">
-                  Logout
+                  {isLoggingOut ? "Logging out..." : "Logout"}
                 </button>
               </>
             ) : (
@@ -111,13 +146,13 @@ export const GuestNavbar = () => {
                 <Link
                   to="/signin"
                   className="nav-link nav-links"
-                  onClick={() => handleDisappear}>
+                  onClick={handleDisappear}>
                   Sign In
                 </Link>
                 <Link
                   to="/signup"
                   className="nav-links nav-btn"
-                  onClick={() => handleDisappear}>
+                  onClick={handleDisappear}>
                   <HomePageSignUpBtn />
                 </Link>
               </>
@@ -141,10 +176,9 @@ export const UserDashboardNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { profileInfo } = useSelector((state) => state.profileAuth);
+  const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
+
   const profileImage = profileInfo?.image;
-
-  console.log(profileImage, "profileImage");
-
   const userEmail = userInfo?.email || userInfo?.organization_email || "";
   const userPhone = userInfo?.phone_number || userInfo?.contact_number || "";
   const userImage =
@@ -152,14 +186,50 @@ export const UserDashboardNavbar = () => {
       ? userInfo.picture
       : null;
 
-  const logoutHandler = () => {
-    dispatch(logout());
-    navigate("/");
+  const getProfileImage = () => {
+    // Priority order: userImage > profileImage > defaultImage
+    if (userImage) return userImage;
+    if (profileImage) return profileImage;
+    return image; // default fallback image
   };
 
-  //  const truncateText = (text, maxLength = 25) => {
-  //   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-  // };
+  const logoutHandler = async () => {
+    try {
+      // 1. Call API logout
+      await logoutApi().unwrap();
+    } catch (error) {
+      console.error("Logout API error:", error);
+      // Continue with logout even if API fails
+    } finally {
+      // 2. Reset all RTK Query caches
+      dispatch(usersAPISlice.util.resetApiState());
+      dispatch(profileAPISlice.util.resetApiState());
+      dispatch(escrowProductsAPISlice.util.resetApiState());
+      dispatch(disputeAPISlice.util.resetApiState());
+      dispatch(paymentAPISlice.util.resetApiState());
+
+      // 3. Clear profile info
+      dispatch(clearProfileInfo());
+
+      // 4. Dispatch logout (this triggers store reset via rootReducer)
+      dispatch(logout());
+
+      // 5. Purge redux-persist cache
+      await persistor.purge();
+
+      // 6. Clear all storage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // 7. Navigate to home
+      navigate("/", { replace: true });
+
+      // 8. Reload page to ensure clean slate
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
+  };
 
   return (
     <Container fluid className="mt-5">
@@ -186,22 +256,20 @@ export const UserDashboardNavbar = () => {
               variant="light"
               className="d-flex align-items-center gap-2 border"
               id="user-dropdown">
-              {userImage ? (
-                <img
-                  src={userImage}
-                  alt="User"
-                  className="rounded-circle"
-                  style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                  onError={(e) => (e.currentTarget.src = image)} // fallback if broken
-                />
-              ) : (
-                <img
-                  src={profileImage}
-                  alt="User"
-                  className="rounded-circle"
-                  style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                />
-              )}
+              <img
+                src={getProfileImage()}
+                alt="User"
+                className="rounded-circle"
+                style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                onError={(e) => {
+                  // If the current image fails, try the next fallback
+                  if (e.target.src === userImage && profileImage) {
+                    e.target.src = profileImage;
+                  } else if (e.target.src === profileImage) {
+                    e.target.src = image; // final fallback
+                  }
+                }}
+              />
 
               <span className="d-none d-sm-inline fw-semibold">
                 {truncateEmailAfter17(userEmail)}
@@ -218,7 +286,9 @@ export const UserDashboardNavbar = () => {
               </Dropdown.ItemText>
               <Dropdown.Divider />
               <Dropdown.Item href="settings">Account Settings</Dropdown.Item>
-              <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
+              <Dropdown.Item onClick={logoutHandler} disabled={isLoggingOut}>
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Col>
@@ -226,54 +296,3 @@ export const UserDashboardNavbar = () => {
     </Container>
   );
 };
-
-// export const UserDashboardNavbar = () => {
-//   // console.count("UserDashboardNavbar: ");
-
-//   const { userInfo } = useSelector((state) => state.usersauth);
-//   // console.log(userInfo?.user?.email);
-//   // console.log(userInfo?.user?.phone_number);
-//   // console.log(userInfo?.status);
-//   return (
-//     <Container>
-//       <Nav className="justify-content-end userDashboardNav position-sticky top-0 end-0">
-//         <Nav.Item className=" mx-md-5 mt-2">
-//           <Form className="searchField">
-//             <Form.Control
-//               type="text"
-//               placeholder="search"
-//               className="search border-1 rounded-4 "
-//             />
-//           </Form>
-//         </Nav.Item>
-//         <Nav.Item className="d-flex ms-md-5">
-//           <div>
-
-//             {userInfo ? (
-//               <>
-//                 <span
-//                   className="d-block text-end"
-//                   title={userInfo?.status}
-//                   id="email"
-//                 >
-//                   {userInfo?.user?.email || userInfo?.user?.organization_email}
-//                   {/* <Link to={}></Link> */}
-//                 </span>
-
-//                 <span className="d-block text-end">
-//                   {userInfo?.user?.phone_number ||
-//                     userInfo?.user?.contact_number}
-//                 </span>
-//               </>
-//             ) : (
-//               <p>None</p>
-//             )}
-//           </div>
-//           <div className="mt-1 ms-2">
-//             <img src={image} alt="" />
-//           </div>
-//         </Nav.Item>
-//       </Nav>
-//     </Container>
-//   );
-// };

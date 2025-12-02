@@ -1,19 +1,19 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import thunk from "redux-thunk";
 import usersAuthReducer from "./slices/userSlices/allUsersAuthSlice";
 import profileAuthReducer from "./slices/profileSlice/profileAuthslice";
 import escrowProductReducer from "./slices/escrowProductSlices/escrowProductContentSlice";
 import paymentReducer from "./slices/paymentSlices/paymentSlice";
+import disputeReducer from "./slices/disputeSlices/disputeContentSlice";
 import { usersAPISlice } from "./slices/userSlices/allUsersAPISlice";
 import { profileAPISlice } from "./slices/profileSlice/profileAPISlice";
 import { escrowProductsAPISlice } from "./slices/escrowProductSlices/escrowProductsAPISlice";
 import { disputeAPISlice } from "./slices/disputeSlices/disputeAPISlice";
 import { paymentAPISlice } from "./slices/paymentSlices/paymentAPISlice";
-import disputeReducer from "./slices/disputeSlices/disputeContentSlice";
 
-const reducers = combineReducers({
+// Combine all reducers
+const appReducer = combineReducers({
   // users
   usersauth: usersAuthReducer,
   profileAuth: profileAuthReducer,
@@ -33,43 +33,52 @@ const reducers = combineReducers({
   [paymentAPISlice.reducerPath]: paymentAPISlice.reducer,
 });
 
+// Root reducer that handles logout action
+const rootReducer = (state, action) => {
+  if (action.type === "auth/logout") {
+    // Reset all state to undefined (forces reinitialize with initialState)
+    state = undefined;
+
+    // Clear persisted storage
+    storage.removeItem("persist:root");
+
+    // Clear localStorage userInfo
+    localStorage.removeItem("userInfo");
+  }
+
+  return appReducer(state, action);
+};
+
+// Persist config
 const persistConfig = {
   key: "root",
   storage,
-  // blacklist: ['',]
-  // whitelist: ['']
+  // Optionally blacklist RTK Query cache to prevent stale data
+  blacklist: [
+    usersAPISlice.reducerPath,
+    profileAPISlice.reducerPath,
+    escrowProductsAPISlice.reducerPath,
+    disputeAPISlice.reducerPath,
+    paymentAPISlice.reducerPath,
+  ],
 };
 
-const persistedReducer = persistReducer(persistConfig, reducers);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// export const store = configureStore({
-//   reducer: persistedReducer,
-//   middleware: [thunk],
-//   devTools:
-//     process.env.REACT_APP_ENV !== "development" ||
-//     process.env.REACT_APP_ENV !== "production",
-// });
-
+// Configure store
 export const store = configureStore({
-  // reducer: {
-  //   // users
-  //   usersauth: usersAuthReducer,
-  //   // users: usersAPISlice.reducer,
-  //   [usersAPISlice.reducerPath]: usersAPISlice.reducer,
-
-  //   // products
-  //   // escrowProducts: escrowProductsAPISlice.reducer,
-  //   [escrowProductsAPISlice.reducerPath]: escrowProductsAPISlice.reducer,
-  // },
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+      },
+    })
       .concat(usersAPISlice.middleware)
       .concat(profileAPISlice.middleware)
       .concat(escrowProductsAPISlice.middleware)
       .concat(disputeAPISlice.middleware)
       .concat(paymentAPISlice.middleware),
-
   devTools: true,
 });
 

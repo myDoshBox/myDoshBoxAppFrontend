@@ -55,6 +55,7 @@ export const UserUpdateProfile = () => {
   /**
    * Update form data when profile is fetched
    */
+  // Update the useEffect to handle image properly
   useEffect(() => {
     if (profileData?.data?.profile) {
       const profile = profileData.data.profile;
@@ -65,9 +66,21 @@ export const UserUpdateProfile = () => {
         name: profile.name || "",
       });
 
-      setCurrentImage(profile.image);
+      // IMPORTANT: Set currentImage from the profile data
+      if (profile.image) {
+        setCurrentImage(profile.image);
+        console.log("Setting current image:", profile.image);
+      }
     }
   }, [profileData, dispatch]);
+
+  // Also update when profileInfo changes in Redux
+  useEffect(() => {
+    if (profileInfo?.image && !currentImage) {
+      setCurrentImage(profileInfo.image);
+      console.log("Setting image from Redux store:", profileInfo.image);
+    }
+  }, [profileInfo, currentImage]);
 
   /**
    * Handle errors from RTK Query

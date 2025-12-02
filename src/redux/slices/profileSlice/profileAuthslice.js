@@ -1,5 +1,6 @@
-// profileAuthSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { profileAPISlice } from "./profileAPISlice";
+import { logout } from "../userSlices/allUsersAuthSlice";
 
 const initialState = {
   profileInfo: null,
@@ -26,6 +27,41 @@ const profileAuthSlice = createSlice({
         state.profileInfo[field] = value;
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      profileAPISlice.endpoints.getProfile.matchFulfilled,
+      (state, action) => {
+        state.profileInfo = action.payload.data.profile;
+      }
+    );
+
+    builder.addMatcher(
+      profileAPISlice.endpoints.updateProfile.matchFulfilled,
+      (state, action) => {
+        if (action.payload.data.profile) {
+          state.profileInfo = action.payload.data.profile;
+        }
+      }
+    );
+
+    builder.addMatcher(
+      profileAPISlice.endpoints.uploadProfileImage.matchFulfilled,
+      (state, action) => {
+        if (action.payload.data.profile) {
+          state.profileInfo = action.payload.data.profile;
+        }
+      }
+    );
+
+    // Clear profile state on logout
+    builder.addMatcher(
+      (action) => action.type === logout.type,
+      (state) => {
+        state.profileInfo = null;
+        state.bankDetails = null;
+      }
+    );
   },
 });
 

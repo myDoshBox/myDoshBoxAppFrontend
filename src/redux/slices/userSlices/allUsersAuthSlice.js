@@ -31,6 +31,7 @@ const usersAuthSlice = createSlice({
     },
     logout: (state) => {
       state.userInfo = null;
+      // Clear localStorage
       localStorage.removeItem("userInfo");
     },
   },
