@@ -1053,7 +1053,8 @@ const getStatusBadge = (status) => {
         fontSize: "0.75rem",
         fontWeight: "500",
         padding: "4px 8px",
-      }}>
+      }}
+    >
       {config.text}
     </Badge>
   );
@@ -1067,7 +1068,8 @@ const ShippingDetailsHistory = () => {
   return (
     <div
       className="container-fluid px-0"
-      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}>
+      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}
+    >
       <div className="row g-0">
         <div className="col-12">
           <UserDashboardNavbar />
@@ -1137,7 +1139,7 @@ export const RecentTransactionTable = () => {
       toast.info("Confirming product receipt...", { autoClose: 2000 });
 
       await buyerConfirmProduct(
-        selectedShipping?.product?.transaction_id
+        selectedShipping?.product?.transaction_id,
       ).unwrap();
 
       toast.success("Product confirmed successfully!");
@@ -1145,7 +1147,7 @@ export const RecentTransactionTable = () => {
       setSelectedShipping(null);
       refetch();
       navigate(
-        "/userdashboard/transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
+        "/userdashboard/transaction-history/confirm-escrow-product-transaction/settled-transactions-history",
       );
     } catch (error) {
       toast.error(error?.data?.message || "Failed to confirm product");
@@ -1183,7 +1185,8 @@ export const RecentTransactionTable = () => {
                 backgroundColor: "#f8f9fa",
                 padding: "2px 6px",
                 borderRadius: "3px",
-              }}>
+              }}
+            >
               {shipping?.product?.transaction_id}
             </code>
           </div>
@@ -1194,7 +1197,8 @@ export const RecentTransactionTable = () => {
           <div className="d-flex align-items-center mb-1">
             <i
               className="bi bi-calendar me-2 text-muted"
-              style={{ fontSize: "0.8rem" }}></i>
+              style={{ fontSize: "0.8rem" }}
+            ></i>
             <small className="text-muted">Delivery Date:</small>
           </div>
           <div style={{ fontSize: "0.875rem", fontWeight: "500" }}>
@@ -1208,13 +1212,15 @@ export const RecentTransactionTable = () => {
 
         <div className="d-flex gap-2">
           <Link
-            to={`/userdashboard/shipping-details/${shipping?._id}`}
-            className="text-decoration-none flex-fill">
+            to={`/userdashboard/transaction-history/shipping-details-page/${shipping?._id}`}
+            className="text-decoration-none flex-fill"
+          >
             <Button
               variant="outline-primary"
               size="sm"
               className="w-100"
-              style={{ fontSize: "0.75rem" }}>
+              style={{ fontSize: "0.75rem" }}
+            >
               <i className="bi bi-eye me-1"></i>
               View Details
             </Button>
@@ -1227,7 +1233,8 @@ export const RecentTransactionTable = () => {
               style={{
                 fontSize: "0.75rem",
                 backgroundColor: "#006747EB",
-              }}>
+              }}
+            >
               <i className="bi bi-check-circle me-1"></i>
               Verify
             </Button>
@@ -1252,7 +1259,8 @@ export const RecentTransactionTable = () => {
                 backgroundColor: "#006747EB",
                 fontSize: "0.875rem",
                 padding: "8px 16px",
-              }}>
+              }}
+            >
               <i className="bi bi-plus-circle me-2"></i>
               Create Transaction
             </Button>
@@ -1265,7 +1273,8 @@ export const RecentTransactionTable = () => {
               padding: "8px 16px",
               borderColor: "#006747EB",
               color: "#006747EB",
-            }}>
+            }}
+          >
             <i className="bi bi-download me-2"></i>
             Download Slip
           </Button>
@@ -1278,7 +1287,8 @@ export const RecentTransactionTable = () => {
           <div
             className="spinner-border"
             style={{ color: "#006747EB", width: "3rem", height: "3rem" }}
-            role="status">
+            role="status"
+          >
             <span className="visually-hidden">Loading...</span>
           </div>
           <p className="mt-3 text-muted" style={{ fontSize: "0.95rem" }}>
@@ -1292,10 +1302,12 @@ export const RecentTransactionTable = () => {
         <div className="text-center py-5">
           <i
             className="bi bi-exclamation-triangle text-danger"
-            style={{ fontSize: "3rem" }}></i>
+            style={{ fontSize: "3rem" }}
+          ></i>
           <p
             className="mt-3 text-danger fw-semibold"
-            style={{ fontSize: "1rem" }}>
+            style={{ fontSize: "1rem" }}
+          >
             Failed to load shipping details
           </p>
           <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
@@ -1305,7 +1317,8 @@ export const RecentTransactionTable = () => {
           <Button
             variant="outline-success"
             onClick={() => refetch()}
-            style={{ fontSize: "0.875rem" }}>
+            style={{ fontSize: "0.875rem" }}
+          >
             <i className="bi bi-arrow-clockwise me-2"></i>
             Retry
           </Button>
@@ -1326,10 +1339,12 @@ export const RecentTransactionTable = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-            }}>
+            }}
+          >
             <i
               className="bi bi-box-seam"
-              style={{ fontSize: "3.5rem", color: "#006747EB" }}></i>
+              style={{ fontSize: "3.5rem", color: "#006747EB" }}
+            ></i>
           </div>
           <h5 className="fw-bold mb-2" style={{ color: "#1a1a1a" }}>
             No Shipping Details Found
@@ -1347,7 +1362,8 @@ export const RecentTransactionTable = () => {
                 fontSize: "1rem",
                 fontWeight: "600",
                 padding: "12px 32px",
-              }}>
+              }}
+            >
               <i className="bi bi-plus-circle me-2"></i>
               Create Your First Transaction
             </Button>
@@ -1373,13 +1389,15 @@ export const RecentTransactionTable = () => {
                 overflowX: "auto",
                 scrollbarWidth: "thin",
                 scrollbarColor: "#006747EB #f8f9fa",
-              }}>
+              }}
+            >
               <table
                 className="table table-hover align-middle mb-0"
                 style={{
                   minWidth: "768px",
                   marginBottom: 0,
-                }}>
+                }}
+              >
                 <thead
                   style={{
                     backgroundColor: "#f8f9fa",
@@ -1387,7 +1405,8 @@ export const RecentTransactionTable = () => {
                     position: "sticky",
                     top: 0,
                     zIndex: 1,
-                  }}>
+                  }}
+                >
                   <tr>
                     <th
                       style={{
@@ -1395,7 +1414,8 @@ export const RecentTransactionTable = () => {
                         fontWeight: "600",
                         whiteSpace: "nowrap",
                         minWidth: "120px",
-                      }}>
+                      }}
+                    >
                       Transaction ID
                     </th>
                     <th
@@ -1405,7 +1425,8 @@ export const RecentTransactionTable = () => {
                         fontWeight: "600",
                         whiteSpace: "nowrap",
                         minWidth: "150px",
-                      }}>
+                      }}
+                    >
                       Shipping Company
                     </th>
                     <th
@@ -1415,7 +1436,8 @@ export const RecentTransactionTable = () => {
                         fontWeight: "600",
                         whiteSpace: "nowrap",
                         minWidth: "120px",
-                      }}>
+                      }}
+                    >
                       Delivery Date
                     </th>
                     <th
@@ -1425,7 +1447,8 @@ export const RecentTransactionTable = () => {
                         fontWeight: "600",
                         whiteSpace: "nowrap",
                         minWidth: "100px",
-                      }}>
+                      }}
+                    >
                       Status
                     </th>
                     <th
@@ -1435,7 +1458,8 @@ export const RecentTransactionTable = () => {
                         fontWeight: "600",
                         whiteSpace: "nowrap",
                         minWidth: "150px",
-                      }}>
+                      }}
+                    >
                       Actions
                     </th>
                   </tr>
@@ -1444,7 +1468,8 @@ export const RecentTransactionTable = () => {
                   {getSlicedData()?.map((shipping) => (
                     <tr
                       key={shipping._id}
-                      style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      style={{ borderBottom: "1px solid #f0f0f0" }}
+                    >
                       <td className="py-3" style={{ minWidth: "120px" }}>
                         <code
                           style={{
@@ -1459,7 +1484,8 @@ export const RecentTransactionTable = () => {
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
                           }}
-                          title={shipping?.product?.transaction_id}>
+                          title={shipping?.product?.transaction_id}
+                        >
                           {shipping?.product?.transaction_id?.slice(0, 12)}...
                         </code>
                       </td>
@@ -1469,7 +1495,8 @@ export const RecentTransactionTable = () => {
                           fontSize: "0.875rem",
                           whiteSpace: "nowrap",
                           minWidth: "150px",
-                        }}>
+                        }}
+                      >
                         <i className="bi bi-truck me-2 text-primary"></i>
                         {shipping?.shipping_company}
                       </td>
@@ -1479,14 +1506,15 @@ export const RecentTransactionTable = () => {
                           fontSize: "0.875rem",
                           whiteSpace: "nowrap",
                           minWidth: "120px",
-                        }}>
+                        }}
+                      >
                         {new Date(shipping?.delivery_date).toLocaleDateString(
                           "en-US",
                           {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
-                          }
+                          },
                         )}
                       </td>
                       <td className="text-center" style={{ minWidth: "100px" }}>
@@ -1496,7 +1524,8 @@ export const RecentTransactionTable = () => {
                         <div className="d-flex gap-2 justify-content-center flex-nowrap">
                           <Link
                             to={`/userdashboard/transaction-history/shipping-details-page/${shipping?._id}`}
-                            className="text-decoration-none">
+                            className="text-decoration-none"
+                          >
                             <Button
                               variant="outline-primary"
                               size="sm"
@@ -1505,7 +1534,8 @@ export const RecentTransactionTable = () => {
                                 padding: "6px 12px",
                                 whiteSpace: "nowrap",
                                 minWidth: "100px",
-                              }}>
+                              }}
+                            >
                               <i className="bi bi-eye me-1"></i>
                               View Details
                             </Button>
@@ -1521,7 +1551,8 @@ export const RecentTransactionTable = () => {
                                 backgroundColor: "#006747EB",
                                 whiteSpace: "nowrap",
                                 minWidth: "110px",
-                              }}>
+                              }}
+                            >
                               <i className="bi bi-check-circle me-1"></i>
                               Verify Product
                             </Button>
@@ -1555,7 +1586,8 @@ export const RecentTransactionTable = () => {
           <Modal.Title style={{ fontSize: "1.125rem", fontWeight: "600" }}>
             <i
               className="bi bi-check-circle me-2"
-              style={{ color: "#006747EB" }}></i>
+              style={{ color: "#006747EB" }}
+            ></i>
             Verify Product Receipt
           </Modal.Title>
         </Modal.Header>
@@ -1563,7 +1595,8 @@ export const RecentTransactionTable = () => {
           <div className="text-center py-3">
             <i
               className="bi bi-box-seam"
-              style={{ fontSize: "3rem", color: "#006747EB" }}></i>
+              style={{ fontSize: "3rem", color: "#006747EB" }}
+            ></i>
             <p className="mt-3 mb-2" style={{ fontSize: "1rem" }}>
               Are you satisfied with your order?
             </p>
@@ -1578,7 +1611,8 @@ export const RecentTransactionTable = () => {
             to={`/userdashboard/disputes/initiate-dispute/${selectedShipping?.product?.transaction_id}`}
             state={{ transaction: selectedShipping?.product }}
             className="btn btn-outline-danger"
-            style={{ fontSize: "0.875rem", padding: "8px 20px" }}>
+            style={{ fontSize: "0.875rem", padding: "8px 20px" }}
+          >
             <i className="bi bi-flag me-1"></i>
             No, Open Dispute
           </Link>
@@ -1590,7 +1624,8 @@ export const RecentTransactionTable = () => {
               fontSize: "0.875rem",
               fontWeight: "600",
               padding: "8px 20px",
-            }}>
+            }}
+          >
             <i className="bi bi-check-circle me-1"></i>
             Yes, I'm Satisfied
           </Button>
