@@ -25,10 +25,10 @@ const InitiateCard = () => {
   return (
     <div className="row mt-5 container">
       <div className="col-md-6 col-sm-12">
-        <UserDashboardCardsTwo text={`BUYING`} icon={<BuyingIcon />} />
+        <UserDashboardCardsTwo value={`BUYING`} icon={<BuyingIcon />} />
       </div>
       <div className="col-md-6 col-sm-12">
-        <UserDashboardCardsTwo text={`SELLING`} icon={<SellingIcon />} />
+        <UserDashboardCardsTwo value={`SELLING`} icon={<SellingIcon />} />
       </div>
     </div>
   );

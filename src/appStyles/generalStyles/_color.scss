@@ -2,7 +2,7 @@ $pryColor: #006747;
 $pryColorVariant: #e5f0ed;
 $secColor: hsl(0, 0%, 100%);
 $GrayTextColor: #bdbdbd;
-
+$FooterColor: #b9f1df16;
 
 // Button Color
 $buttonColor: #4d957e;
@@ -50,7 +50,10 @@ $userUpdateFormBorderStyle: 2px solid rgba(0, 103, 71, 0.3);
 $pryColor7: rgba(0, 103, 71, 0.7);
 $LogoutBtnColor: rgba(255, 0, 0, 0.7);
 
-
 .placeholderTextColor {
   color: rgba(75, 68, 83, 0.5);
 }
+
+// NavBar & hero Section color
+$NavBarColor: rgba(0, 103, 71, 0.06);
+$HeroColor: rgba(0, 103, 71, 0.06);

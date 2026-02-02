@@ -1,12 +1,15 @@
 import React from "react";
-import AboutHero from "../../images/AboutUs Image/AboutHero.png";
-import mission from "../../images/AboutUs Image/mission.png";
-import Vision from "../../images/AboutUs Image/vision.png";
+import Abouthero from "../../images/AboutUs Image/Abouthero.svg";
+import mission from "../../images/AboutUs Image/mission.svg";
+import Vision from "../../images/AboutUs Image/vision.svg";
 import {
   CoreValueCard,
   TeamsCard,
 } from "../../components/CardComponents/AboutUsCards";
 import aboutusData from "../../data/aboutusData.json";
+
+import { ReadMore } from "../../components/ButtonsComponent/NavigationAndViewButtons";
+import cardimg from "../../images/Homepage Img/cardimg.svg";
 
 const AboutUs = () => {
   return (
@@ -14,6 +17,7 @@ const AboutUs = () => {
       <HeroSection />
       <VisionMission />
       <CoreValueSection />
+      <ProcessFlow />
       <TeamsSection />
     </div>
   );
@@ -25,7 +29,7 @@ const HeroSection = () => {
       <div className="row mb-5">
         <div className="col-md-6 col-sm-12 col-lg-7 align-self-center">
           <h2 className="text-success fw-bold ">
-            We're a team of creators & innovatorsx
+            We're a team of creators & innovators
           </h2>
           <p className="fw-light col-10">
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quaerat
@@ -33,7 +37,7 @@ const HeroSection = () => {
           </p>
         </div>
         <div className="col-md-6 col-sm-12 col-lg-5">
-          <img src={AboutHero} className="img-fluid" alt="" />
+          <img src={Abouthero} className="img-fluid" alt="" />
         </div>
       </div>
     </section>
@@ -55,6 +59,9 @@ const VisionMission = () => {
 
       {/*  Mission section Starts */}
       <div className="row mt-5 pt-5 container pb-5">
+        <div className="col-sm-12 col-md-6 col-lg-5">
+          <img src={mission} alt="" />
+        </div>
         <div className="col-sm-12 col-md-6 col-lg-6 align-self-center text-sm-center text-xs-center text-md-start text-lg-start">
           <h4 className="fw-bold mb-2">Mission</h4>
           <p className=" fs-light">
@@ -63,14 +70,11 @@ const VisionMission = () => {
             adipisicing elit. Explicabo non, esse cum minus ab iure.
           </p>
         </div>
-        <div className="col-sm-12 col-md-6 col-lg-5">
-          <img src={mission} alt="" />
-        </div>
       </div>
       {/* Mission section Ends */}
       {/* Vision section Starts */}
       <div className="row mt-3 mx-auto container">
-        <div className="col-sm-12 col-md-6 col-lg-4 d-none d-md-block d-lg-block d-xl-block d-xxl-block text-xs-center">
+        <div className="col-sm-12 col-md-6 col-lg-4 text-xs-center d-block d-sm-block d-md-none mb-3">
           <img src={Vision} alt="" />
         </div>
         <div className="col-sm-12 col-md-6 col-lg-6 align-self-center text-sm-center text-md-start text-lg-start text-xs-center">
@@ -82,7 +86,7 @@ const VisionMission = () => {
           </p>
         </div>
         {/* Sm image Appear */}
-        <div className="col-sm-12 col-md-6 col-lg-4 d-block d-sm-block d-md-none">
+        <div className="col-sm-12 col-md-6 col-lg-4 d-none d-md-block d-lg-block d-xl-block d-xxl-block ">
           <img src={Vision} alt="" />
         </div>
         {/* Sm image Appear */}
@@ -97,7 +101,11 @@ const CoreValueSection = () => {
     <section className="container pt-5 pb-5">
       <div>
         <div>
-          <h3 className="text-center fw-bold pb-3">Core Values</h3>
+          <h3 className="fw-bold mb-2">Core Values</h3>
+          <p class="text-break fw-lighter">
+            We reduce fraud between online buyers and sellers by providing a
+            safe platform for them to transact without fear of being duped..
+          </p>
         </div>
 
         <div className="container d-flex justify-content-between">
@@ -112,6 +120,67 @@ const CoreValueSection = () => {
           </div>
         </div>
       </div>
+    </section>
+  );
+};
+
+const ProcessFlow = () => {
+  return (
+    <section>
+      {/* visible on  Medium and large screen sectin Starts */}
+      <div className="overflow-hidden pt-5 mt-5 d-none d-md-block d-lg-block d-xxl-block d-xl-block">
+        <div className="row gx-0 bgColor">
+          <div className="col-lg-6 col-md-6 col-sm-12 align-self-center mx-auto container">
+            <h3 className="mb-2 text-white text-nowrap">
+              We Like to make it easy
+            </h3>
+            <p className=" mb-3 text-white text-break text-wrap fw-lighter">
+              Every month, we shine a spotlight on one saver, asking them
+              questions about their savings culture and how the product is
+              specifically helping them shape how they spend and save
+            </p>
+
+            <span>
+              <ReadMore />
+            </span>
+          </div>
+          <div className="col-lg-6 col-md-6 col-sm-12">
+            <img
+              src={cardimg}
+              class="img-fluid object-fit-none"
+              alt="..."
+            ></img>
+          </div>
+        </div>
+      </div>
+      {/* visible on  Medium and large screen section Ends */}
+
+      {/* visible on Small screen section Starts*/}
+      <div className="overflow-hidden d-lg-none d-xl-none d-xxxl-none d-md-none d-block">
+        <div className="row gy-0 gx-0">
+          <div className="col-sm-12">
+            <img
+              src={cardimg}
+              class="object-fit-none h-100 object-fit-scale object-fit-cover"
+              alt="..."
+            ></img>
+          </div>
+          <div className="col-sm-12 p-5 align-self-center mx-auto bgColor h-100">
+            <h3 className="mb-4 text-white h3">We Like to make it easy</h3>
+            <p className=" mb-4 text-white text-break">
+              Every month, we shine a spotlight on one saver, asking them
+              questions about their savings culture and how the product is
+              specifically helping them shape how they spend and save for future
+              responsibilities. Lorem ipsum dolor sit amet consectetur
+            </p>
+
+            <span>
+              <ReadMore />
+            </span>
+          </div>
+        </div>
+      </div>
+      {/* visible on Small screen section Ends */}
     </section>
   );
 };

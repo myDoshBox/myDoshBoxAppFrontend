@@ -10,8 +10,8 @@
 .refunded,
 .resolved,
 .unresolved {
-  padding-block:.1rem;
-  padding-inline: .7rem;
+  padding-block: 0.1rem;
+  padding-inline: 0.7rem;
   white-space: nowrap;
 }
 
@@ -27,6 +27,31 @@
   @include notificationFont;
   color: $canceledTextColor;
   background-color: $canceledBgColor;
+}
+
+.cancel {
+  @include notificationFont;
+  color: $canceledTextColor;
+}
+.complete {
+  @include notificationFont;
+  color: $pryColor;
+}
+
+.pending {
+  @include notificationFont;
+  color: $canceledTextColor;
+}
+.viewMore {
+  @include notificationFont;
+  color: #3469f9;
+  border: 1px solid #adcafe;
+  border-radius: 5px;
+}
+
+.approved {
+  @include notificationFont;
+  color: $pendingConfirmationTextColor;
 }
 
 .refunded {
@@ -69,6 +94,8 @@
   .dispute,
   .pending-confirmation,
   .pending-payment,
+  .pending,
+  .approved,
   .refunded,
   .resolved,
   .unresolved {

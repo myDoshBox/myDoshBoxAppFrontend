@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 
@@ -265,7 +264,7 @@ export const UpdateBankDetails = () => {
   return (
     <Form
       onSubmit={handleSubmit}
-      className="bg-white rounded-3 shadow card p-4 px-lg-5 py-lg-3"
+      className="border-0 bg-white rounded-3 shadow card p-4 px-lg-5 py-lg-3"
     >
       <Form.Group className="mb-3 AccountNum" controlId="AccountNum">
         <Form.Label className="mb-0">Account Number</Form.Label>

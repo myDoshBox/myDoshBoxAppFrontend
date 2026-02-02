@@ -1,14 +1,16 @@
 import { Button } from "react-bootstrap";
+// import { useCreateOrganizationGoogleMutation } from "../../redux/slices/apiSlice";
 
 //SignUpButton
 export const SignUpButton = () => {
   return (
-    <Button
+    <button
       className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
       style={{ width: "210px" }}
+      type="submit"
     >
       Sign Up
-    </Button>
+    </button>
   );
 };
 // HomePageSignUpBtn;
@@ -26,8 +28,8 @@ export const HomePageSignUpBtn = () => {
 export const SignInButton = () => {
   return (
     <Button
-      className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
-      style={{ width: "210px" }}
+      type="submit"
+      className="all-btn border-0 mt-3 GeneralBtnStyle1 text-white w-100 w-sm-75 w-md-50 w-lg-50 mx-auto"
     >
       Sign In
     </Button>
@@ -39,7 +41,7 @@ export const GuestNavSignInButton = () => {
   return <Button className="all-btn border-0 mb-5">Sign In</Button>;
 };
 //GoogleSignUpButton
-export const GoogleSignUpButton = () => {
+export const GoogleIndividualSignUpButton = () => {
   return (
     <Button className="btn btn-outline-success bg-light text-dark">
       <svg
@@ -66,14 +68,25 @@ export const GoogleSignUpButton = () => {
           fill="#1976D2"
         />
       </svg>
-      <span className="ms-2">Sign Up With Google</span>
+      <span className="ms-2">Continue with Google</span>
     </Button>
   );
 };
 //GoogleSignInButton
-export const GoogleSignInButton = () => {
+export const GoogleOrganizationSignUpButton = () => {
+  // let [createAuth] = useCreateOrganizationGoogleMutation();
   return (
-    <Button className="btn btn-outline-success bg-light text-dark">
+    <Button
+      type="button"
+      className="btn btn-outline-success bg-light text-dark"
+      // onClick={async () => {
+      //   await createAuth()
+      //     .then((res) => {
+      //       console.log(res);
+      //     })
+      //     .catch((err) => console.log(err));
+      // }}
+    >
       <svg
         width="28"
         height="28"
@@ -98,20 +111,7 @@ export const GoogleSignInButton = () => {
           fill="#1976D2"
         />
       </svg>
-      <span className="ms-2">Sign Up With Google</span>
+      <span className="ms-2">Continue with Google</span>
     </Button>
   );
 };
-//SignUpIndividual
-// export const SignUpIndividual = () => {
-//   return <Button className=" SignUpGroup mt-3">As an Individual</Button>;
-// };
-// //SignUpOrganization
-// export const SignUpOrganization = () => {
-//   return <Button className=" SignUpGroup mt-3">As an Organization</Button>;
-// };
-// //GetStarted
-// export const GetStarted = () => {
-//   return <Button className=" border-0 getStarted mt-3"> Get Started</Button>;
-// };
-//SidebarLogoutButton

@@ -71,6 +71,14 @@ picture {
     scroll-behavior: auto !important;
   }
 }
+.border-style-0 {
+  border-style: none !important;
+}
+
+.no-table-border-width {
+  border-bottom-width: 0 !important;
+}
+
 h1 {
   font-family: "Roboto", sans-serif;
   font-size: 3rem !important;
@@ -182,6 +190,10 @@ div {
     font-size: 0.8rem !important;
   }
 }
+.fs-sm {
+  font-size: 0.75rem !important;
+}
+
 @media screen and (min-width: 992px) {
   .InitiateEscrow {
     width: 75% !important;
@@ -192,6 +204,20 @@ div {
     width: 50% !important;
   }
 }
+@media screen and (min-width: 768px) {
+  .border-md-style-1 {
+    border-style: solid !important;
+  }
+  .fw-md-normal {
+    font-weight: 400 !important;
+  }
+  .lightTextColor-md {
+    color: #757575 !important;
+  }
+  .border-md-bottom {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+  }
+}
 .all-btn:hover {
   background-color: #006747 !important;
 }
@@ -200,6 +226,25 @@ div {
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
   background-color: #4d957e !important;
+}
+
+.openConflitBtnStyle {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  background-color: #ffc306 !important;
+  color: #006747 !important;
+}
+
+.ongoingConflitBtnStyle {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  background-color: #1fd431 !important;
+}
+
+.closeConflitBtnStyle {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  background-color: #d82027 !important;
 }
 
 .CloseBtnStyle {
@@ -312,9 +357,23 @@ div {
   color: inherit !important;
 }
 
-.switch-charts-btn:hover, .switch-charts-btn:focus {
+.switch-charts-btn:hover,
+.switch-charts-btn:focus {
   text-decoration: underline;
   opacity: 0.8;
+}
+
+.viewBtn:hover,
+.viewBtn:focus {
+  border-color: currentColor !important;
+  font-weight: bold;
+}
+
+.pagination-btn:hover,
+.pagination-btn:focus {
+  background-color: #006747 !important;
+  color: hsl(0deg, 0%, 100%) !important;
+  font-weight: unset !important;
 }
 
 .teamValueStyle {
@@ -351,6 +410,39 @@ div {
   max-width: 46.875rem;
   padding: 1.25rem;
   font-size: 0.875rem !important;
+}
+
+.iconStyle {
+  display: block;
+  line-height: 45px;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #006747;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1.3rem;
+  border-radius: 50% !important;
+}
+
+.OpenConflictLineStyling {
+  position: absolute;
+  background-color: #ffc306;
+  height: 3px;
+  width: 15.7rem;
+}
+
+.OngoingConflictLineStyling {
+  position: absolute;
+  background-color: #1fd431;
+  height: 3px;
+  width: 15.7rem;
+}
+
+.CloseConflictLineStyling {
+  position: absolute;
+  background-color: #d82027;
+  height: 3px;
+  width: 15.7rem;
 }
 
 .FAQs .faqs-header {
@@ -390,6 +482,104 @@ div {
   color: white;
 }
 
+.initiating-escrow .nav-pills .nav-link.active {
+  border-radius: 3px !important;
+  background: rgba(0, 103, 71, 0.92) !important;
+  border: 1px solid rgba(0, 103, 71, 0.92) !important;
+  display: flex;
+  width: 11rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+.initiating-escrow .nav-pills .nav-link.active svg path {
+  fill: white !important;
+}
+.initiating-escrow .nav-pills .nav-link {
+  border-radius: 3px !important;
+  border: 1px solid #4d957e !important;
+  display: flex;
+  width: 11rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  background-color: white !important;
+  font-weight: 400 !important;
+  color: rgba(0, 103, 71, 0.92);
+}
+.initiating-escrow .nav-pills .nav-link svg path {
+  fill: rgba(0, 103, 71, 0.92) !important;
+}
+
+.box {
+  background-color: transparent;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10% !important;
+  padding-bottom: 1.25rem !important;
+  width: 100%;
+}
+
+.box .group-wrapper {
+  border: 0px none;
+  position: relative;
+}
+
+.box .group {
+  height: 78px;
+  width: 197px;
+}
+
+.box .div {
+  height: 24px;
+  left: 0;
+  position: absolute;
+  top: 26px;
+  width: 117px;
+}
+
+.box .vector {
+  height: 24px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 23px;
+}
+
+.box .text-wrapper {
+  color: rgba(0, 103, 71, 0.9215686275);
+  font-weight: 500;
+  left: 26px;
+  position: absolute;
+  white-space: nowrap;
+  width: 89px;
+}
+
+.box .overlap-group-wrapper {
+  left: 117px;
+  position: absolute;
+}
+
+.box .overlap-group {
+  background-color: rgba(0, 103, 71, 0.9215686275);
+  border-radius: 40px/39px;
+  height: 78px;
+  position: relative;
+  width: 80px;
+}
+
+.box .text-wrapper-2 {
+  color: #ffffff;
+  font-size: 2.5rem !important;
+  font-weight: 600;
+  left: 28px;
+  line-height: 60px;
+  position: absolute;
+  top: 9px;
+}
+
 .signUp-bg {
   background-color: #006747;
   background-size: auto;
@@ -408,6 +598,24 @@ div {
   transform: translateX(-1rem);
 }
 
+.new-escrow {
+  width: 90%;
+  border-radius: 2px;
+  background: rgba(0, 103, 71, 0.13);
+  display: flex;
+  padding: 2.1875rem 1.125rem 2.1875rem 1.25rem;
+  align-items: center;
+  gap: -5.25rem;
+}
+.new-escrow .small-head {
+  border-bottom: 1px solid #2e2a40;
+  font-size: 19px !important;
+  padding-bottom: 10px;
+}
+.new-escrow h3 {
+  font-size: 1.4375rem !important;
+}
+
 @media screen and (max-width: 991px) {
   .signUp-bg {
     height: 100% !important;
@@ -420,6 +628,30 @@ div {
 }
 .Targets .apexcharts-datalabel-value {
   font-size: 2rem !important;
+}
+
+.disputing-party {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.respondent {
+  z-index: 100;
+  transform: translateX(-30%);
+}
+
+.cardBgColor {
+  background-color: rgba(210, 205, 205, 0.2274509804) !important;
+}
+.cardBgColor:hover {
+  background-color: rgba(181, 178, 178, 0.262745098) !important;
+}
+.cardBgColor .cardNumberbg {
+  background-color: #ebe1fc !important;
+  font-size: large;
+}
+.cardBgColor .textColor {
+  color: #9a6af2 !important;
 }
 
 textarea:focus,
@@ -623,13 +855,17 @@ input[type=color]:focus,
 
 .offcanvas-lg,
 .big-side-nav {
-  background-color: #006747 !important;
+  background-color: #fff !important;
   color: hsl(0deg, 0%, 100%) !important;
   height: 100vh;
 }
 .offcanvas-lg span,
 .big-side-nav span {
   letter-spacing: 1.3px !important;
+}
+
+.offcanvas-sm {
+  background-color: #fff !important;
 }
 
 .big-side-nav {
@@ -645,17 +881,65 @@ input[type=color]:focus,
 
 .active-link {
   text-decoration: none;
-  border: 1px solid white;
-  border-radius: 8px 8px 8px 0;
-  padding: 5px;
-  color: #006747 !important;
-  background-color: white;
+  border-radius: 4px 4px;
+  padding: 15px 43px;
+  color: #fff !important;
+  background-color: #006747;
+}
+.active-link .fill {
+  fill: white !important;
+}
+.active-link .fill path {
+  fill: white !important;
+}
+.active-link svg {
+  margin-right: 10px;
+}
+.active-link svg path {
+  stroke: white;
+}
+
+.inactive-link {
+  text-decoration: none;
+  color: #757575 !important;
+}
+.inactive-link svg {
+  margin-right: 10px;
+}
+
+.active-linkSm {
+  text-decoration: none;
+  border-radius: 4px 4px;
+  padding: 7px 14px;
+  background-color: #006747;
+  width: 70px;
+  height: 40px;
+  font-size: 20px;
+}
+.active-linkSm .fill {
+  fill: white !important;
+}
+.active-linkSm .fill path {
+  fill: white !important;
+}
+.active-linkSm svg path {
+  stroke: white;
+}
+
+.inactive-linkSm svg {
+  transform: translateX(10px) !important;
+}
+
+.smlogo {
+  width: 25px;
+  margin-left: 20px;
 }
 
 .SideNavDropdown button {
   background-color: unset !important;
   border: none !important;
   padding: 0 !important;
+  color: #757575 !important;
 }
 
 .SideNavDropdown button::after {
@@ -710,6 +994,53 @@ input[type=color]:focus,
   letter-spacing: 0rem;
   color: rgb(255, 0, 0);
   background-color: rgba(255, 0, 0, 0.1);
+}
+
+.cancel {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #4b4453;
+  line-height: 1.5rem;
+  letter-spacing: 0rem;
+  color: rgb(255, 0, 0);
+}
+
+.complete {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #4b4453;
+  line-height: 1.5rem;
+  letter-spacing: 0rem;
+  color: #006747;
+}
+
+.pending {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #4b4453;
+  line-height: 1.5rem;
+  letter-spacing: 0rem;
+  color: rgb(255, 0, 0);
+}
+
+.viewMore {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #4b4453;
+  line-height: 1.5rem;
+  letter-spacing: 0rem;
+  color: #3469f9;
+  border: 1px solid #adcafe;
+  border-radius: 5px;
+}
+
+.approved {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #4b4453;
+  line-height: 1.5rem;
+  letter-spacing: 0rem;
+  color: rgb(0, 103, 4);
 }
 
 .refunded {
@@ -773,6 +1104,8 @@ input[type=color]:focus,
 .dispute,
 .pending-confirmation,
 .pending-payment,
+.pending,
+.approved,
 .refunded,
 .resolved,
 .unresolved {
@@ -780,11 +1113,11 @@ input[type=color]:focus,
   }
 }
 .FooterBgColor {
-  background-color: #006747;
+  background-color: rgba(185, 241, 223, 0.0862745098);
 }
 .FooterBgColor nav ul li a {
   text-decoration: none;
-  color: rgba(220, 215, 215, 0.821);
+  color: rgba(220, 215, 215, 0.178);
 }
 
 .BgColor {
@@ -849,5 +1182,59 @@ input[type=color]:focus,
 .all-conflicts-table tbody tr td {
     font-size: 0.75rem !important;
   }
+}
+.carousel {
+  display: flex;
+  align-items: center;
+}
+
+.carousel-image {
+  position: relative;
+  width: 450px;
+  height: 250px;
+  border-radius: 5px;
+}
+
+.carousel-button {
+  position: absolute;
+  padding: 10px;
+  font-size: 18px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.carousel-button.next {
+  transform: translateX(370px);
+}
+
+.heroColor {
+  background-color: rgba(0, 103, 71, 0.06);
+}
+
+.BgColor {
+  background-color: rgba(189, 250, 181, 0.033) !important;
+}
+.BgColor .cardBgColor {
+  background-color: rgba(210, 205, 205, 0.2274509804) !important;
+}
+.BgColor .cardBgColor:hover {
+  background-color: rgba(181, 178, 178, 0.262745098) !important;
+}
+.BgColor .cardBgColor .cardNumberbg {
+  background-color: #ebe1fc !important;
+  font-size: large;
+}
+.BgColor .cardBgColor .textColor {
+  color: #9a6af2 !important;
+}
+
+.bgColor {
+  background-color: #006747;
+}
+
+.bgColorSection {
+  background-color: rgba(0, 103, 71, 0.1);
 }
 /*# sourceMappingURL=style.css.map */

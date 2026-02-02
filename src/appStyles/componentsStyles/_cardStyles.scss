@@ -36,6 +36,37 @@
   font-size: 0.875rem !important;
 }
 
+.iconStyle {
+  display: block;
+  line-height: 45px;
+  width: 50px;
+  height: 50px;
+  border: 1px solid $pryColor;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1.3rem;
+  border-radius: 50% !important;
+}
+
+.OpenConflictLineStyling {
+  position: absolute;
+  background-color: #ffc306;
+  height: 3px;
+  width: 15.7rem;
+}
+.OngoingConflictLineStyling {
+  position: absolute;
+  background-color: #1fd431;
+  height: 3px;
+  width: 15.7rem;
+}
+.CloseConflictLineStyling {
+  position: absolute;
+  background-color: #d82027;
+  height: 3px;
+  width: 15.7rem;
+}
+
 // FAQ Styles
 .FAQs {
   .faqs-header {
@@ -83,6 +114,110 @@
     color: white;
   }
 }
+.initiating-escrow {
+  .nav-pills .nav-link.active {
+    border-radius: 3px !important;
+    background: rgba(0, 103, 71, 0.92) !important;
+    border: 1px solid rgba(0, 103, 71, 0.92) !important ;
+    display: flex;
+    width: 11rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+    svg {
+      path {
+        fill: white !important;
+      }
+    }
+  }
+
+  .nav-pills .nav-link {
+    border-radius: 3px !important;
+    border: 1px solid $buttonColor !important ;
+    display: flex;
+    width: 11rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+    background-color: white !important;
+    font-weight: 400 !important;
+    color: rgba(0, 103, 71, 0.92);
+    svg {
+      path {
+        fill: rgba(0, 103, 71, 0.92) !important;
+      }
+    }
+  }
+}
+
+.box {
+  background-color: transparent;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10% !important;
+  padding-bottom: 1.25rem !important;
+  width: 100%;
+}
+
+.box .group-wrapper {
+  border: 0px none;
+  position: relative;
+}
+
+.box .group {
+  height: 78px;
+  width: 197px;
+}
+
+.box .div {
+  height: 24px;
+  left: 0;
+  position: absolute;
+  top: 26px;
+  width: 117px;
+}
+
+.box .vector {
+  height: 24px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 23px;
+}
+
+.box .text-wrapper {
+  color: #006747eb;
+  font-weight: 500;
+  left: 26px;
+  position: absolute;
+  white-space: nowrap;
+  width: 89px;
+}
+
+.box .overlap-group-wrapper {
+  left: 117px;
+  position: absolute;
+}
+
+.box .overlap-group {
+  background-color: #006747eb;
+  border-radius: 40px/39px;
+  height: 78px;
+  position: relative;
+  width: 80px;
+}
+
+.box .text-wrapper-2 {
+  color: #ffffff;
+  font-size: 2.5rem !important;
+  font-weight: 600;
+  left: 28px;
+  line-height: 60px;
+  position: absolute;
+  top: 9px;
+}
 .signUp-bg {
   background-color: $pryColor;
   background-size: auto;
@@ -99,6 +234,24 @@
   transform: translateX(-1rem);
 }
 
+.new-escrow {
+  width: 90%;
+  border-radius: 2px;
+  background: rgba(0, 103, 71, 0.13);
+  display: flex;
+  padding: 2.1875rem 1.125rem 2.1875rem 1.25rem;
+  align-items: center;
+  gap: -5.25rem;
+  .small-head {
+    border-bottom: 1px solid #2e2a40;
+    font-size: 19px !important;
+    padding-bottom: 10px;
+  }
+  h3 {
+    font-size: 1.4375rem !important;
+  }
+}
+
 @media screen and (max-width: 991px) {
   .signUp-bg {
     height: 100% !important;
@@ -113,7 +266,6 @@
 @media screen and (max-width: 1200px) {
 }
 
-
 // admin charts
 .Targets .apexcharts-datalabel-value {
   font-size: 2rem !important;
@@ -121,3 +273,27 @@
 // .Targets .apexcharts-datalabel-label {
 //   font-size: .8rem !important;
 // }
+
+.disputing-party {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.respondent {
+  z-index: 100;
+  transform: translateX(-30%);
+}
+// Core Value Cards
+.cardBgColor {
+  background-color: #d2cdcd3a !important;
+  &:hover {
+    background-color: #b5b2b243 !important;
+  }
+  .cardNumberbg {
+    background-color: #ebe1fc !important;
+    font-size: large;
+  }
+  .textColor {
+    color: #9a6af2 !important;
+  }
+}

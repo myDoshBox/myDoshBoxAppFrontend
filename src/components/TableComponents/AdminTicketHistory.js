@@ -3,11 +3,12 @@ import AdminTicketDetails from "../../data/TicketData.json";
 import { PaginationBar } from "../PaginationComponent";
 import { Link } from "react-router-dom";
 import { ViewMoreButton } from "../ButtonsComponent/NavigationAndViewButtons";
+import { useState } from "react";
 
 export const TicketHistoryTable = () => {
   return (
     <>
-      <div className="border-0 rounded shadow container p-4">
+      <div className="border-0 rounded shadow p-4">
         <table className="table transaction-table">
           <thead>
             <tr className="text-center">

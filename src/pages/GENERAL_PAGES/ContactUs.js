@@ -6,7 +6,7 @@ export const ContactUs = () => {
   return (
     <div className="ContactBorder border border-1 rounded w-75 mx-auto p-4">
       <div className="row p-3">
-        <div className="col-md-6 col-sm-12 mb-sm-4 mb-3">
+        <div className="col-md-6 col-sm-12 mb-sm-4 mb-3 align-center">
           <h4 className="fw-bold">Get in touch</h4>
           <p className="mutedFont">
             Lorem ipsum dolor sit amet consectetur adipiscing elit Ut et mass

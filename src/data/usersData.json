@@ -8,14 +8,21 @@
       "link": "View more"
     },
     {
-      "id": 1,
+      "id": 2,
       "image": "../../images/contactImgs/SampleUserImage.png",
       "title": "Opeyemi Andrewson",
       "description": "Hi, Buyer Opeyemi Andrewson has just confirmed delivery of the product 100Gb Laptop",
       "link": "View more"
     },
     {
-      "id": 1,
+      "id": 3,
+      "image": "../../images/contactImgs/SampleUserImage.png",
+      "title": "Opeyemi Andrewson",
+      "description": "Hi, Buyer Opeyemi Andrewson has just confirmed delivery of the product 100Gb Laptop",
+      "link": "View more"
+    },
+    {
+      "id": 4,
       "image": "../../images/contactImgs/SampleUserImage.png",
       "title": "Opeyemi Andrewson",
       "description": "Hi, Buyer Opeyemi Andrewson has just confirmed delivery of the product 100Gb Laptop",

@@ -1,0 +1,38 @@
+@use "../generalStyles/color" as *;
+
+.heroColor {
+  background-color: $HeroColor;
+}
+
+// Why Choose Us Section Starts
+.BgColor {
+  background-color: rgba(189, 250, 181, 0.033) !important;
+  .cardBgColor {
+    background-color: #d2cdcd3a !important;
+    &:hover {
+      background-color: #b5b2b243 !important;
+    }
+    .cardNumberbg {
+      background-color: #ebe1fc !important;
+      font-size: large;
+    }
+    .textColor {
+      color: #9a6af2 !important;
+    }
+  }
+}
+// Why Choose Us Section Ends
+
+// ProcessFlow Section Starts
+
+.bgColor {
+  background-color: $pryColor;
+}
+
+// ProcessFlow Section Ends
+
+// Our Features Sectin Starts
+.bgColorSection {
+  background-color: rgba(0, 103, 71, 0.1);
+}
+// Our Features Sectin Ends

@@ -25,51 +25,15 @@
   "WhyChooseUs": [
     {
       "id": 1,
-      "image": "../../images/contactImgs/email.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
+      "image": "01",
+      "title": "As A Seller",
+      "description": "Some quick example text to build on the card title and make up the bulk of the card's content."
     },
     {
       "id": 2,
-      "image": "../../images/contactImgs/calculator.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
-    },
-    {
-      "id": 3,
-      "image": "../../images/contactImgs/calendar.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
-    },
-    {
-      "id": 4,
-      "image": "../../images/contactImgs/calculator.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
-    },
-    {
-      "id": 5,
-      "image": "../../images/contactImgs/email.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
-    },
-    {
-      "id": 6,
-      "image": "../../images/contactImgs/calculator.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
-    },
-    {
-      "id": 7,
-      "image": "../../images/contactImgs/calendar.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
-    },
-    {
-      "id": 8,
-      "image": "../../images/contactImgs/calculator.png",
-      "title": "UNLIMITED EMAIL ADDRESSES",
-      "description": "Lorem ipsum consectetur dolor elit Ut et massa consectetur"
+      "numbers": "03",
+      "title": "As A Seller",
+      "description": " Some quick example text to build on the card title and make up the bulk of the card's content."
     }
   ]
 }

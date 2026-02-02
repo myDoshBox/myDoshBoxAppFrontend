@@ -2,13 +2,17 @@ import React from "react";
 
 // CoreValueCard
 export const CoreValueCard = (props) => {
-  const { title, subtitle, description } = props;
+  const { title, number, description, numbers } = props;
   return (
-    <div className="card">
-      <div className="card-body GreenBackgroundColor rounded-1 p-4">
-        <h5 className="card-title text-white fw-bold">{title}</h5>
-        <h6 className="card-subtitle mb-2 text-white">{subtitle}</h6>
-        <p className="card-text text-white">{description}</p>
+    <div class="cardBgColor border-1 ">
+      <div class="card-body p-5 mt-2">
+        <span className="cardNumberbg p-3 rounded-2 textColor fw-bolder float-right ">
+          {number}
+        </span>
+        <div className="mt-4">
+          <h5 class="card-title mb-2 text-body-secondary">{title}</h5>
+          <p class="card-text">{description}</p>
+        </div>
       </div>
     </div>
   );

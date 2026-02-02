@@ -1,148 +1,423 @@
 {
   "conflicts": [
     {
-      "date_issued": "2022-01-01",
-      "ticket_id": "123456",
-      "user_id": "789",
-      "complaint_type": "dispute over goods received",
-      "status": "closed",
-      "status_category": "closed"
+      "date_issued": "14 Aug 2020",
+      "email": "alex.wilson@gmail.com",
+      "name": "Alex Wilson",
+      "complaint_type": "shipping delay",
+      "ticket_id": "ghi567",
+      "time": "9:30am",
+      "status": "pending",
+      "percent_complete": 40,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "My package is experiencing a delay in shipping, and I would like an update on its status."
     },
+
     {
-      "date_issued": "2022-01-03",
-      "ticket_id": "234567",
-      "user_id": "456",
-      "complaint_type": "payment issue",
-      "status": "closed",
-      "status_category": "closed"
-    },
-    {
-      "date_issued": "2022-01-05",
-      "ticket_id": "345678",
-      "user_id": "012",
-      "complaint_type": "delayed delivery",
-      "status": "closed",
-      "status_category": "closed"
-    },
-    {
-      "date_issued": "2022-01-06",
-      "ticket_id": "456789",
-      "user_id": "234",
-      "complaint_type": "dispute over goods received",
+      "date_issued": "27 Sep 2020",
+      "email": "ava.thompson@gmail.com",
+      "name": "Ava Thompson",
+      "complaint_type": "defective product",
+      "ticket_id": "jkl678",
+      "time": "4:15pm",
       "status": "resolved",
-      "status_category": "closed"
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The product I received is defective and does not function properly. I would like a replacement or a refund."
     },
+
     {
-      "date_issued": "2022-01-07",
-      "ticket_id": "567890",
-      "user_id": "345",
-      "complaint_type": "payment issue",
-      "status": "pending",
-      "status_category": "ongoing"
+      "date_issued": "5 Oct 2020",
+      "email": "william.brown@gmail.com",
+      "name": "William Brown",
+      "complaint_type": "wrong item",
+      "ticket_id": "mno789",
+      "time": "11:00am",
+      "status": "closed",
+      "percent_complete": 75,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I received the wrong item in my order. I want to return it and receive the correct item."
     },
+
     {
-      "date_issued": "2022-01-08",
-      "ticket_id": "678901",
-      "user_id": "456",
-      "complaint_type": "unauthorized transaction",
+      "date_issued": "12 Nov 2020",
+      "email": "mia.jackson@gmail.com",
+      "name": "Mia Jackson",
+      "complaint_type": "billing discrepancy",
+      "ticket_id": "pqr890",
+      "time": "2:30pm",
+      "status": "open",
+      "percent_complete": 20,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "There is a discrepancy in my billing statement. I have been charged for items I did not purchase."
+    },
+
+    {
+      "date_issued": "24 Dec 2020",
+      "email": "ethan.thomas@gmail.com",
+      "name": "Ethan Thomas",
+      "complaint_type": "delivery not received",
+      "ticket_id": "345abc",
+      "time": "3:45pm",
       "status": "resolved",
-      "status_category": "closed"
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I have not received my package, even though it shows as delivered. I would like assistance in locating it."
     },
+
     {
-      "date_issued": "2022-01-09",
-      "ticket_id": "789012",
-      "user_id": "567",
-      "complaint_type": "delayed delivery",
-      "status": "pending",
-      "status_category": "ongoing"
+      "date_issued": "7 Jan 2021",
+      "email": "olivia.johnson@gmail.com",
+      "name": "Olivia Johnson",
+      "complaint_type": "incorrect pricing",
+      "ticket_id": "uvw123",
+      "time": "1:45pm",
+      "status": "open",
+      "percent_complete": 30,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The price of the item I purchased is different from what was advertised. I would like a refund of the price difference."
     },
+
     {
-      "date_issued": "2022-01-10",
-      "ticket_id": "890123",
-      "user_id": "678",
-      "complaint_type": "dispute over goods received",
+      "date_issued": "19 Feb 2021",
+      "email": "noah.harris@gmail.com",
+      "name": "Noah Harris",
+      "complaint_type": "missing parts",
+      "ticket_id": "xyz234",
+      "time": "10:30am",
       "status": "resolved",
-      "status_category": "closed"
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The product I received is missing some essential parts. I would like to receive the missing parts or a replacement."
     },
+
     {
-      "date_issued": "2022-01-11",
-      "ticket_id": "901234",
-      "user_id": "789",
-      "complaint_type": "unauthorized transaction",
+      "date_issued": "2 Mar 2021",
+      "email": "sophia.martin@gmail.com",
+      "name": "Sophia Martin",
+      "complaint_type": "poor packaging",
+      "ticket_id": "456def",
+      "time": "9:15am",
+      "status": "closed",
+      "percent_complete": 90,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The product I received was poorly packaged and arrived damaged. I would like a replacement or a refund."
+    },
+
+    {
+      "date_issued": "15 Apr 2021",
+      "email": "liam.lewis@gmail.com",
+      "name": "Liam Lewis",
+      "complaint_type": "delayed refund",
+      "ticket_id": "abc345",
+      "time": "4:00pm",
       "status": "open",
-      "status_category": "open"
+      "percent_complete": 60,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I returned an item and have not received my refund yet. I would like to know the status of my refund."
     },
+
     {
-      "date_issued": "2022-01-12",
-      "ticket_id": "012345",
-      "user_id": "456",
-      "complaint_type": "payment issue",
+      "date_issued": "28 May 2021",
+      "email": "sophie.young@gmail.com",
+      "name": "Sophie Young",
+      "complaint_type": "incorrect size",
+      "ticket_id": "def456",
+      "time": "2:00pm",
+      "status": "pending",
+      "percent_complete": 50,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The size of the clothing item I received does not match the size I ordered. I would like to exchange it for the correct size."
+    },
+
+    {
+      "date_issued": "10 Jun 2021",
+      "email": "jack.miller@gmail.com",
+      "name": "Jack Miller",
+      "complaint_type": "poor customer service",
+      "ticket_id": "ghi567",
+      "time": "11:30am",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I had a poor experience with the customer service team. I would like my issue to be addressed and improved training for the staff."
+    },
+
+    {
+      "date_issued": "23 Jul 2021",
+      "email": "harper.lewis@gmail.com",
+      "name": "Harper Lewis",
+      "complaint_type": "wrong color",
+      "ticket_id": "jkl678",
+      "time": "3:45pm",
+      "status": "closed",
+      "percent_complete": 80,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The color of the item I received is different from what I ordered. I would like to exchange it for the correct color."
+    },
+
+    {
+      "date_issued": "6 Aug 2021",
+      "email": "logan.wilson@gmail.com",
+      "name": "Logan Wilson",
+      "complaint_type": "shipping charge error",
+      "ticket_id": "mno789",
+      "time": "9:00am",
       "status": "open",
-      "status_category": "open"
+      "percent_complete": 40,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I was charged an incorrect amount for shipping. I would like a refund of the excess amount."
     },
+
     {
-      "date_issued": "2022-01-13",
-      "ticket_id": "123456",
-      "user_id": "012",
-      "complaint_type": "dispute over goods received",
+      "date_issued": "19 Sep 2021",
+      "email": "lucy.harris@gmail.com",
+      "name": "Lucy Harris",
+      "complaint_type": "wrong specifications",
+      "ticket_id": "pqr890",
+      "time": "1:15pm",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The specifications of the product I received are different from what was advertised. I would like to return it for a refund."
+    },
+
+    {
+      "date_issued": "3 Oct 2021",
+      "email": "henry.martin@gmail.com",
+      "name": "Henry Martin",
+      "complaint_type": "delivery address error",
+      "ticket_id": "345abc",
+      "time": "12:30pm",
+      "status": "pending",
+      "percent_complete": 70,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The delivery address on my order is incorrect. I would like to update it to the correct address."
+    },
+
+    {
+      "date_issued": "16 Nov 2021",
+      "email": "victoria.lee@gmail.com",
+      "name": "Victoria Lee",
+      "complaint_type": "late delivery",
+      "ticket_id": "uvw123",
+      "time": "10:45am",
+      "status": "closed",
+      "percent_complete": 85,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "My package is significantly delayed in delivery. I would like an update on its status and an estimated delivery date."
+    },
+
+    {
+      "date_issued": "29 Dec 2021",
+      "email": "isaac.thompson@gmail.com",
+      "name": "Isaac Thompson",
+      "complaint_type": "product incompatibility",
+      "ticket_id": "456def",
+      "time": "2:15pm",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The product I purchased is not compatible with my existing devices. I would like to return it for a refund or exchange."
+    },
+
+    {
+      "date_issued": "12 Feb 2022",
+      "email": "amelia.hall@gmail.com",
+      "name": "Amelia Hall",
+      "complaint_type": "missing accessories",
+      "ticket_id": "abc345",
+      "time": "3:30pm",
       "status": "open",
-      "status_category": "open"
+      "percent_complete": 20,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The product I received is missing some essential accessories. I would like to receive the missing accessories or a replacement."
     },
+
     {
-      "date_issued": "2022-01-14",
-      "ticket_id": "234567",
-      "user_id": "234",
-      "complaint_type": "delayed delivery",
+      "date_issued": "27 Mar 2022",
+      "email": "daniel.smith@gmail.com",
+      "name": "Daniel Smith",
+      "complaint_type": "delayed response",
+      "ticket_id": "def456",
+      "time": "11:45am",
+      "status": "pending",
+      "percent_complete": 60,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I have not received a response to my inquiry for an extended period. I would like a prompt resolution to my issue."
+    },
+
+    {
+      "date_issued": "9 May 2022",
+      "email": "mia.davis@gmail.com",
+      "name": "Mia Davis",
+      "complaint_type": "wrong quantity",
+      "ticket_id": "jkl678",
+      "time": "1:30pm",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The quantity of the items I received is different from what I ordered. I would like the correct quantity or a refund."
+    },
+
+    {
+      "date_issued": "22 Jun 2022",
+      "email": "jacob.brown@gmail.com",
+      "name": "Jacob Brown",
+      "complaint_type": "poor communication",
+      "ticket_id": "mno789",
+      "time": "9:45am",
+      "status": "closed",
+      "percent_complete": 95,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The communication from the customer service team regarding my issue has been inadequate. I would like improved communication and updates."
+    },
+
+    {
+      "date_issued": "5 Aug 2022",
+      "email": "emily.clark@gmail.com",
+      "name": "Emily Clark",
+      "complaint_type": "unauthorized charges",
+      "ticket_id": "pqr890",
+      "time": "4:15pm",
       "status": "open",
-      "status_category": "open"
+      "percent_complete": 40,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "There are unauthorized charges on my credit card statement. I would like to dispute and resolve these charges."
     },
+
     {
-      "date_issued": "2022-01-15",
-      "ticket_id": "345678",
-      "user_id": "345",
-      "complaint_type": "quality issue",
+      "date_issued": "19 Sep 2022",
+      "email": "ryan.hughes@gmail.com",
+      "name": "Ryan Hughes",
+      "complaint_type": "wrong measurements",
+      "ticket_id": "345abc",
+      "time": "2:30pm",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The measurements of the item I received are different from what was provided. I would like to return it for a refund or exchange."
+    },
+
+    {
+      "date_issued": "3 Nov 2022",
+      "email": "amelia.green@gmail.com",
+      "name": "Amelia Green",
+      "complaint_type": "package tampering",
+      "ticket_id": "uvw123",
+      "time": "11:00am",
+      "status": "closed",
+      "percent_complete": 80,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The package I received has been tampered with. Some items are missing or damaged. I would like to report the incident and receive replacements."
+    },
+
+    {
+      "date_issued": "18 Dec 2022",
+      "email": "david.jones@gmail.com",
+      "name": "David Jones",
+      "complaint_type": "product malfunction",
+      "ticket_id": "xyz234",
+      "time": "12:45pm",
+      "status": "pending",
+      "percent_complete": 70,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The product I purchased is not functioning as expected. I would like assistance in troubleshooting or a replacement."
+    },
+
+    {
+      "date_issued": "1 Feb 2023",
+      "email": "madison.hall@gmail.com",
+      "name": "Madison Hall",
+      "complaint_type": "poor quality",
+      "ticket_id": "456def",
+      "time": "3:00pm",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The quality of the product I received is below my expectations. I would like to return it for a refund or exchange."
+    },
+
+    {
+      "date_issued": "15 Mar 2023",
+      "email": "james.lee@gmail.com",
+      "name": "James Lee",
+      "complaint_type": "wrong material",
+      "ticket_id": "abc345",
+      "time": "10:15am",
       "status": "open",
-      "status_category": "open"
+      "percent_complete": 20,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "The material of the item I received is different from what was advertised. I would like to return it for a refund or exchange."
     },
+
     {
-      "date_issued": "2022-01-16",
-      "ticket_id": "456789",
-      "user_id": "456",
-      "complaint_type": "payment issue",
-      "status": "pending",
-      "status_category": "ongoing"
+      "date_issued": "28 Apr 2023",
+      "email": "ava.scott@gmail.com",
+      "name": "Ava Scott",
+      "complaint_type": "incomplete order",
+      "ticket_id": "def456",
+      "time": "9:30am",
+      "status": "closed",
+      "percent_complete": 90,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "My order is missing some items. I would like to receive the missing items or a refund for them."
     },
+
     {
-      "date_issued": "2022-01-17",
-      "ticket_id": "567890",
-      "user_id": "567",
-      "complaint_type": "dispute over goods received",
-      "status": "pending",
-      "status_category": "ongoing"
+      "date_issued": "11 Jun 2023",
+      "email": "oliver.hughes@gmail.com",
+      "name": "Oliver Hughes",
+      "complaint_type": "billing discrepancy",
+      "ticket_id": "jkl678",
+      "time": "2:45pm",
+      "status": "open",
+      "percent_complete": 40,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "There is a discrepancy in my billing statement. I would like to resolve and clarify the charges."
     },
+
     {
-      "date_issued": "2022-01-18",
-      "ticket_id": "678901",
-      "user_id": "678",
-      "complaint_type": "delayed delivery",
-      "status": "pending",
-      "status_category": "ongoing"
-    },
-    {
-      "date_issued": "2022-01-19",
-      "ticket_id": "789012",
-      "user_id": "789",
-      "complaint_type": "unauthorized transaction",
-      "status": "pending",
-      "status_category": "ongoing"
-    },
-    {
-      "date_issued": "2022-01-20",
-      "ticket_id": "890123",
-      "user_id": "012",
-      "complaint_type": "payment issue",
-      "status": "pending",
-      "status_category": "ongoing"
+      "date_issued": "24 Jul 2023",
+      "email": "scarlett.martin@gmail.com",
+      "name": "Scarlett Martin",
+      "complaint_type": "wrong product",
+      "ticket_id": "mno789",
+      "time": "4:30pm",
+      "status": "resolved",
+      "percent_complete": 100,
+      "complainant_img": "../../images/profile.png",
+      "respondent_img": "../../images/transact_person.png",
+      "details": "I received a different product than what I ordered. I would like to return it for the correct product or a refund."
     }
   ]
 }

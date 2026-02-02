@@ -37,7 +37,7 @@ export const InstagramIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
       width="18"
       height="18"
-      fill="#FFFFFF"
+      fill="#000000"
       class="bi bi-instagram"
       viewBox="0 0 16 16"
     >
@@ -51,9 +51,9 @@ export const TwitterIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      fill="#FFFFFF"
+      width="18"
+      height="18"
+      fill="#000000"
       class="bi bi-twitter"
       viewBox="0 0 16 16"
     >
@@ -67,9 +67,9 @@ export const FacebookIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      fill="#FFFFFF"
+      width="18"
+      height="18"
+      fill="#000000"
       class="bi bi-facebook"
       viewBox="0 0 16 16"
     >
@@ -86,7 +86,7 @@ export const LinkedinIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
       width="18"
       height="18"
-      fill="#FFFFFF"
+      fill="#000000"
       class="bi bi-linkedin"
       viewBox="0 0 16 16"
     >
@@ -101,9 +101,9 @@ export const WhatsAppIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      fill="#FFFFFF"
+      width="18"
+      height="18"
+      fill="#000000"
       class="bi bi-whatsapp"
       viewBox="0 0 16 16"
     >

@@ -35,6 +35,7 @@ export const ProceedButton = () => {
     <Button
       className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
       style={{ width: "120px" }}
+      type="submit"
     >
       PROCEED
     </Button>
@@ -42,11 +43,8 @@ export const ProceedButton = () => {
 };
 export const StartTransaction = () => {
   return (
-    <Button
-      className="all-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white"
-      style={{ width: "210px" }}
-    >
-      START A TRANSACTION
+    <Button className="p-3 mt-3 GeneralBtnStyle1 text-white  rounded-1   btn btn-success">
+      START A TRANSACTION<i class="bi bi-arrow-right ms-2"></i>
     </Button>
   );
 };

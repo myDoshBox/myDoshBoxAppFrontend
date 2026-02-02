@@ -3,19 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cloudinary/react": "^1.13.0",
+    "@cloudinary/url-gen": "^1.21.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.8",
+    "@reduxjs/toolkit": "^2.2.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "apexcharts": "^3.37.0",
+    "axios": "^1.6.9",
+    "firebase": "^10.12.2",
+    "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
+    "react-bootstrap-icons": "^1.11.6",
     "react-dom": "^18.2.0",
+    "react-feather": "^2.0.10",
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.1.0",
     "react-router-dom": "^6.4.0",
     "react-scripts": "^5.0.1",
+    "react-toastify": "^10.0.5",
+    "redux-persist": "^6.0.0",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
@@ -43,8 +55,9 @@
     ]
   },
   "devDependencies": {
-    "bootstrap": "^5.2.3",
+    "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.10.2",
-    "react-bootstrap": "^2.7.0"
+    "jest-axe": "^7.0.1",
+    "react-bootstrap": "^2.10.10"
   }
 }

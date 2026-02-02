@@ -12,7 +12,7 @@ export const OpenConflicts = () => {
             <UserDashboardNavbar />
           </div>
           <div className="center-card">
-            <AllConflictsTable conflictType="open" />
+            <AllConflictsTable conflictType="Open" />
           </div>
         </div>
       </div>
@@ -31,7 +31,7 @@ export const ClosedConflicts = () => {
             <UserDashboardNavbar />
           </div>
           <div className="center-card">
-            <AllConflictsTable conflictType="closed" />
+            <AllConflictsTable conflictType="Closed" />
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@ export const OngoingConflicts = () => {
             <UserDashboardNavbar />
           </div>
           <div className="center-card">
-            <AllConflictsTable conflictType="ongoing" />
+            <AllConflictsTable conflictType="Ongoing" />
           </div>
         </div>
       </div>

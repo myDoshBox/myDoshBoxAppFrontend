@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ScrollUpIcon } from "./IconComponent/NavigationAndViewIcon";
-import FooterLogo from "../images/FooterLogo.jpg";
+import Logo from "../images/Homepage Img/logo.png";
 import {
   InstagramIcon,
   LinkedinIcon,
@@ -11,6 +11,202 @@ import {
 } from "./IconComponent/SocialMediaIcons";
 import { SubscribeForm } from "../components/FormComponents.js/ContactForms";
 import { useRef } from "react";
+
+// const Footer = () => {
+// const disappearEl = useRef(null);
+
+// const handleDisappear = () => {
+//   disappearEl.style.display = "none";
+// };
+// const location = useLocation();
+// const [showFooter, setShowFooter] = useState(false);
+// useEffect(() => {
+//   const paths = ["/", "/aboutus", "/contactus", "/pricingpage", "/faqs"];
+//   if (paths.includes(location.pathname)) {
+//     setShowFooter(true);
+//   } else {
+//     setShowFooter(false);
+//   }
+// }, [location.pathname]);
+// return showFooter ? (
+
+//     <footer className="FooterBgColor mt-5 pb-5">
+//       {/* Back to Top  icon Starts */}
+//       <div className="d-flex justify-content-end pt-3 me-3">
+//         <a href="#BackTop">
+//           <ScrollUpIcon />
+//         </a>
+//       </div>
+//       {/* Back to Top  icon Ends */}
+//       <section className="p-5">
+//         <div className="row">
+//           <div className="col-sm-12 col-md-4 col-lg-3 ">
+//             {/* image section starts */}
+//             <img src={Logo} className="mb-3" alt="Logo" />
+//             {/* image section Ends */}
+//             <span className="pb-3">
+//               <div className="mb-3">
+//                 <i class="bi bi-telephone-plus-fill opacity-75 me-2"></i>+ (234)
+//                 9032166042
+//               </div>
+//               <div>
+//                 <i class="bi bi-envelope-fill opacity-75 me-2"></i>
+//                 Info@mydoshbox.com
+//               </div>
+//             </span>
+//             {/* Social media section Starts */}
+//             <div className="opacity-75 mt-3 hstack gap-2">
+//               <a href="" className="p-2">
+//                 <InstagramIcon />
+//               </a>
+//               <a href="" className="p-2">
+//                 <LinkedinIcon />
+//               </a>
+//               <a href="" className="p-2">
+//                 <FacebookIcon />
+//               </a>
+//               <a href="" className="p-2">
+//                 <TwitterIcon />
+//               </a>
+//               <a href="" className="p-2">
+//                 <WhatsAppIcon />
+//               </a>
+//             </div>
+//             {/* Social media section Ends */}
+//           </div>
+
+//           {/* Menu Section starts */}
+//           <div className="col-sm-12 col-md-8 col-lg-4  mx-auto">
+//             <div className="row">
+//               <div className="col">
+//                 <h5 className="text-black opacity-75">The Project</h5>
+//                 <span class="nav flex-column">
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to="/"
+//                     className="nav-item text-black opacity-75 p-2"
+//                   >
+//                     Home
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to="/aboutus"
+//                     className="text-black opacity-75 nav-item p-2"
+//                   >
+//                     About
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to=".."
+//                     className="text-black opacity-75 nav-item link p-2"
+//                   >
+//                     Service
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to="/pricingpage"
+//                     className="text-black opacity-75 nav-item p-2"
+//                   >
+//                     Pricing
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to="/contactus"
+//                     className="text-black opacity-75 p-2 nav-item"
+//                   >
+//                     Contact
+//                   </Link>
+//                 </span>
+//               </div>
+//               <div className="col g-3">
+//                 <h5 className="text-black opacity-75">Support</h5>
+//                 <ul class="nav flex-column ">
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to="/faqs"
+//                     className="text-black opacity-75 p-2
+//                   nav-item"
+//                   >
+//                     FAQ
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to=".."
+//                     className="text-black opacity-75 p-2 nav-item"
+//                   >
+//                     Terms of Use
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to=".."
+//                     className="text-black opacity-75 p-2 nav-item"
+//                   >
+//                     Private Policy
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to=".."
+//                     className="text-black opacity-75 p-2 nav-item"
+//                   >
+//                     Customer Care
+//                   </Link>
+
+//                   <Link
+//                     onClick={handleDisappear}
+//                     style={{ textDecoration: "none" }}
+//                     to="/contactus"
+//                     className="text-black opacity-75 p-2 nav-item"
+//                   >
+//                     Testimonial
+//                   </Link>
+//                 </ul>
+//               </div>
+//             </div>
+//           </div>
+//           {/* Menu Section Ends */}
+
+//           {/* Address section starts */}
+//           <div className="col-sm-12 col-md-12 col-lg-5">
+//             <div className="row">
+//               <h5 className="text-center text-black opacity-75 mb-2">
+//                 ADDRESS
+//               </h5>
+//               <span className="text-break opacity-75 mb-2 fw-lighter fs-6 ">
+//                 The 8thGear Space, 11b Colin Onabule Crescent, Diamond Estate
+//                 Off CMD Road (beside Secretariat/Magodo gate) Lagos Nigeria
+//               </span>
+//             </div>
+//             <div className="row">
+//               <span className="mt-3">
+//                 <SubscribeForm />
+//               </span>
+//               <div className="mt-3">
+//                 <h6 className="mb-3 text-black opacity-75">Connect With US</h6>
+//               </div>
+//             </div>
+//             {/* Address section Ends */}
+//           </div>
+//         </div>
+//       </section>
+//     </footer>
+//   ) : null;
+// };
 
 const Footer = () => {
   const disappearEl = useRef(null);
@@ -29,173 +225,198 @@ const Footer = () => {
     }
   }, [location.pathname]);
   return showFooter ? (
-    <footer className="FooterBgColor mt-5 pb-5">
-      {/* Back to Top  icon Starts */}
-      <div className="d-flex justify-content-end pt-3 me-3">
-        <a href="#BackTop">
-          <ScrollUpIcon />
-        </a>
-      </div>
-      {/* Back to Top  icon Ends */}
-      <section className="container-fluid w-75 mt-2">
-        <div className="row">
-          {/* image section starts */}
-          <div className="col-sm-12 col-md-6 col-lg-3 mx-auto">
-            <img src={FooterLogo} className="w-75" alt="Logo" />
-          </div>
-          {/* image section Ends */}
+    <footer className="FooterBgColor pt-5">
+      <section className="p-4 ms-5">
+        {/* Back to Top icon Starts */}
+        <div className="justify-content-end d-flex">
+          <a href="#BackTop">
+            <ScrollUpIcon />
+          </a>
+        </div>
+        {/* Back to Top  icon Ends */}
 
-          {/* Menu Section starts */}
-          <div className="d-flex col-sm-12 col-md-6 col-lg-4">
-            <div className="mb-5 mx-sm-auto">
-              <h6 className="text-white">The Project</h6>
-              <span class="nav flex-column">
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to="/"
-                  className="text-white opacity-75 nav-item text-white"
-                >
-                  Home
-                </Link>
+        {/* Newspaper Section Starts */}
+        <div></div>
+        <hr />
+        {/* Newspaper Section Ends */}
+        {/* Main menu Section Starts */}
+        <div className="row p-2">
+          {/* first Section Starts */}
+          <div className="col-lg-3 col-sm-12 col-md-6 mt-5">
+            <span className="">
+              <img src={Logo} alt="" />
+            </span>
+            <div className="p-2 mt-2">
+              <span className="">
+                <div className="mb-4">
+                  <i class="bi bi-telephone-plus-fill opacity-75 me-2"></i>+
+                  (234) 9032166042
+                </div>
 
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to="/aboutus"
-                  className="text-white opacity-75 nav-item"
-                >
-                  About
-                </Link>
-
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to=".."
-                  className="text-white opacity-75 nav-item link"
-                >
-                  Service
-                </Link>
-
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to="/pricingpage"
-                  className="text-white opacity-75 nav-item"
-                >
-                  Pricing
-                </Link>
+                <div>
+                  <i class="bi bi-envelope-fill opacity-75 me-2"></i>
+                  Info@mydoshbox.com
+                </div>
               </span>
             </div>
-            <div className="mb-5 mx-auto">
-              <h6 className="text-white">Support</h6>
-              <ul class="nav flex-column">
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to="/contactus"
-                  className="text-white opacity-75 nav-item"
-                >
-                  Contact
-                </Link>
+          </div>
+          {/* first Section Ends */}
+          {/* Second Section Starts */}
+          {/* Menu Section Starts */}
+          <div className="col-lg-4 col-sm-12 col-md-6 mt-5">
+            <div className="row">
+              <div className="col">
+                <h5 className="text-black opacity-75">The Project</h5>
+                <span class="nav flex-column">
+                  <Link
+                    onClick={handleDisappear}
+                    style={{ textDecoration: "none" }}
+                    to="/"
+                    className="nav-item text-black opacity-75 p-2"
+                  >
+                    Home
+                  </Link>
 
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to="/faqs"
-                  className="text-white opacity-75
-                  nav-item"
-                >
-                  FAQ
-                </Link>
+                  <Link
+                    onClick={handleDisappear}
+                    style={{ textDecoration: "none" }}
+                    to="/aboutus"
+                    className="text-black opacity-75 nav-item p-2"
+                  >
+                    About
+                  </Link>
 
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to=".."
-                  className="text-white opacity-75 nav-item"
-                >
-                  Terms of Use
-                </Link>
+                  <Link
+                    onClick={handleDisappear}
+                    style={{ textDecoration: "none" }}
+                    to=".."
+                    className="text-black opacity-75 nav-item link p-2"
+                  >
+                    Service
+                  </Link>
 
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to=".."
-                  className="text-white opacity-75 nav-item"
-                >
-                  Private Policy
-                </Link>
+                  <Link
+                    onClick={handleDisappear}
+                    style={{ textDecoration: "none" }}
+                    to="/pricingpage"
+                    className="text-black opacity-75 nav-item p-2"
+                  >
+                    Pricing
+                  </Link>
 
-                <Link
-                  onClick={handleDisappear}
-                  style={{ textDecoration: "none" }}
-                  to=".."
-                  className="text-white opacity-75 nav-item"
-                >
-                  Customer Care
-                </Link>
-              </ul>
+                  <Link
+                    onClick={handleDisappear}
+                    style={{ textDecoration: "none" }}
+                    to="/contactus"
+                    className="text-black opacity-75 p-2 nav-item"
+                  >
+                    Contact
+                  </Link>
+                </span>
+              </div>
+              <div className="col">
+                <span className="col">
+                  <h5 className="text-black opacity-75">Support</h5>
+                  <ul class="nav flex-column ">
+                    <Link
+                      onClick={handleDisappear}
+                      style={{ textDecoration: "none" }}
+                      to="/faqs"
+                      className="text-black opacity-75 p-2
+                   nav-item"
+                    >
+                      FAQ
+                    </Link>
+
+                    <Link
+                      onClick={handleDisappear}
+                      style={{ textDecoration: "none" }}
+                      to=".."
+                      className="text-black opacity-75 p-2 nav-item"
+                    >
+                      Terms of Use
+                    </Link>
+
+                    <Link
+                      onClick={handleDisappear}
+                      style={{ textDecoration: "none" }}
+                      to=".."
+                      className="text-black opacity-75 p-2 nav-item"
+                    >
+                      Private Policy
+                    </Link>
+
+                    <Link
+                      onClick={handleDisappear}
+                      style={{ textDecoration: "none" }}
+                      to=".."
+                      className="text-black opacity-75 p-2 nav-item"
+                    >
+                      Customer Care
+                    </Link>
+
+                    <Link
+                      onClick={handleDisappear}
+                      style={{ textDecoration: "none" }}
+                      to="/contactus"
+                      className="text-black opacity-75 p-2 nav-item"
+                    >
+                      Testimonial
+                    </Link>
+                  </ul>
+                </span>
+              </div>
             </div>
           </div>
           {/* Menu Section Ends */}
-
-          {/* Address section starts */}
-          <div className="col-sm-12 col-md-12 col-lg-5">
-            <div className="row">
-              <h6 className="text-center text-white">ADDRESS</h6>
-              <span className="text-break text-white fw-lighter fs-6 opacity-75">
+          {/* Second Section Ends */}
+          {/* Thrid Section Starts */}
+          {/* Address Section Starts */}
+          <div className="col-lg-5 col-sm-12 col-md-12 mt-5">
+            <div className="text-sm-center text-xs-center text-md-center text-lg-start">
+              <h5 className="text-black opacity-75 mb-2">ADDRESS</h5>
+              <p className="text-break opacity-75 mb-2 fw-lighter lh-lg ">
                 The 8thGear Space, 11b Colin Onabule Crescent, Diamond Estate
                 Off CMD Road (beside Secretariat/Magodo gate) Lagos Nigeria
-              </span>
+              </p>
             </div>
-            <div className="row">
-              <span className="mt-3">
-                <SubscribeForm />
-              </span>
-              <div className="mt-3">
-                <h6 className="mb-3 text-white">Connect With US</h6>
-                {/* Social Medial Icon Sectin Starts */}
-                <span className="mt-2 mb-5">
-                  <a
-                    href=""
-                    className="border border-white  rounded-circle p-2 me-2 "
-                  >
-                    <InstagramIcon />
-                  </a>
-                  <a
-                    href=""
-                    className="border border-white  rounded-circle p-2 me-2 "
-                  >
-                    <LinkedinIcon />
-                  </a>
-                  <a
-                    href=""
-                    className="border border-white  rounded-circle p-2 me-2"
-                  >
-                    <FacebookIcon />
-                  </a>
-                  <a
-                    href=""
-                    className="border border-white  rounded-circle p-2 me-2 "
-                  >
-                    <TwitterIcon />
-                  </a>
-                  <a
-                    href=""
-                    className="border border-white  rounded-circle p-2 me-2 "
-                  >
-                    <WhatsAppIcon />
-                  </a>
-                </span>
-                {/* Social Medial Icon Sectin Ends */}
+            {/* Social media section Starts */}
+            <div className="p-2 mt-3">
+              <h5>Connect with us</h5>
+              <div className="opacity-75 hstack gap-3">
+                <a href="" className="p-2">
+                  <InstagramIcon />
+                </a>
+
+                <a href="" className="p-2">
+                  <LinkedinIcon />
+                </a>
+
+                <a href="" className="p-2">
+                  <FacebookIcon />
+                </a>
+
+                <a href="" className="p-2">
+                  <TwitterIcon />
+                </a>
+
+                <a href="" className="p-2">
+                  <WhatsAppIcon />
+                </a>
               </div>
             </div>
-            {/* Address section Ends */}
+            {/* Social media section Ends */}
           </div>
+          {/* Address Section Ends */}
+          {/* Thrid Section Ends */}
+        </div>
+        {/* Main menu Section Ends */}
+        <div className="mt-5 text-center">
+          <p> &copy; Copyright 2023.All right reserved. </p>
         </div>
       </section>
     </footer>
   ) : null;
 };
+
 export default Footer;

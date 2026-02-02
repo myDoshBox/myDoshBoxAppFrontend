@@ -1,6 +1,11 @@
 import { CautionIcon } from "../IconComponent/UserdashboardIcons";
 import product from "../../images/productimage.jpg";
 import { Link } from "react-router-dom";
+import recentDisputeImage from "../../images/UserDashboardImage/People.png";
+import disputehistorydata from "../../data/dummyData/disputeshistorydata.json";
+import { Styling } from "../NotificationComponent/NotificationComponents";
+import { ViewMoreDisputeBtn } from "../ButtonsComponent/NavigationAndViewButtons";
+import { Button } from "react-bootstrap";
 // import { BackIcon } from "../../components/IconComponent/NavigationAndViewIcon";
 // import { RatingIcon } from "../../components/IconComponent/UserdashboardIcons";
 // import { Notifications } from "../../components/NotificationComponent/NotificationComponents";
@@ -10,9 +15,9 @@ import { Link } from "react-router-dom";
 // DashboardConflictCards (Buying,Selling,InitiateTransactionCards,SettledTransactionsCard, ConflictCards)
 export const DashboardConflictCards = ({ icon, text, value, link }) => {
   return (
-    <div class="col-md-4 mb-4 mb-lg-0">
+    <div className="col-md-4 mb-4 mb-lg-0">
       <Link to={link} className="text-decoration-none">
-        <div class="d-flex justify-content-center align-items-center px-0 py-4 shadow border-0 rounded-2 DashboardCard">
+        <div className="d-flex justify-content-center align-items-center px-0 py-4 shadow border-0 rounded-2 DashboardCard">
           {icon}
           <div>
             <p className="m-0 ms-2 opacity-50">{value}</p>
@@ -21,6 +26,79 @@ export const DashboardConflictCards = ({ icon, text, value, link }) => {
         </div>
       </Link>
     </div>
+  );
+};
+
+// RecentDispute
+export const RecentDispute = () => {
+  return (
+    <div className="card border-0 shadow-sm rounded-3">
+      <div className="card-body">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h6 className="mb-0">Recent Disputes</h6>
+          <Link to="./dispute" className="text-decoration-none">
+            <Button
+              size="sm"
+              className="rounded-1 px-3 py-1"
+              style={{ backgroundColor: "#006747EB", border: "none" }}
+            >
+              View More
+            </Button>
+          </Link>
+        </div>
+
+        <div className="d-flex flex-column gap-3">
+          {disputehistorydata.recent_dispute.map((miniDis) => (
+            <MiniRecentDispute {...miniDis} key={miniDis.id} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// export const RecentDispute = () => {
+//   return (
+//     <>
+//       <div className="card border-0 shadow mx-auto" style={{ width: "100%" }}>
+//         <div className="card-body">
+//           <div className="d-flex justify-content-between mt-3 mb-5">
+//             <h6 className="mt-2">Recent Disputes</h6>
+//             <Link to={"./dispute"}>
+//               <ViewMoreDisputeBtn />
+//             </Link>
+//           </div>
+//           {disputehistorydata.recent_dispute.map((miniDis) => {
+//             return <MiniRecentDispute {...miniDis} key={miniDis.id} />;
+//           })}
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
+
+export const MiniRecentDispute = ({
+  image,
+  name,
+  date,
+  status,
+  status_style,
+}) => {
+  return (
+    <>
+      <div className="d-flex justify-content-around align-item-center">
+        <div>
+          <img src={image} alt="" className="" />
+        </div>
+        <div>
+          <h6 className="card-title">{name}</h6>
+          <p className="card-subtitle mb-2 text-muted text-small">{date}</p>
+        </div>
+        <p className="card-text ms-5">
+          <Styling text={status} styles={status_style} />
+        </p>
+      </div>
+    </>
   );
 };
 
@@ -47,63 +125,71 @@ export const DashboardConflictCards = ({ icon, text, value, link }) => {
 export const TransactionDetails = ({
   heading,
   sub_text,
-  email,
-  id,
-  description,
-  quality,
-  price,
-  date,
-  total,
   alert,
   leftBtn,
   rightBtn,
+  vendor_phone_number,
+  buyer_email,
+  vendor_email,
+  transaction_type,
+  product_name,
+  // product_category: "",
+  product_quantity,
+  product_price,
+  transaction_total,
+  product_image,
+  product_description,
 }) => {
   return (
     <>
-      <div class="container row mx-auto">
+      <div className="container row mx-auto">
         <div className="col-md-12 col-sm-12">
           <header className="mt-3">
             <h4 className="text-center">{heading}</h4>
-            <p className="text-center text-muted fw-light">{sub_text}</p>
+            <p className="text-center text-muted fw-light">{buyer_email}</p>
           </header>
           <span className="mx-auto img-fluid">
             <img
-              src={product}
+              src={product_image}
               className="mx-auto"
               style={{ width: "100%" }}
               alt=""
             />
           </span>
 
-          <div class="card-body">
+          <div className="card-body">
             <div className="p-3 mt-3">
               <div className="d-flex justify-content-between">
-                <h5>Sellers Email</h5>
-                <p>{email}</p>
+                <h5>Product Name</h5>
+                <p>{product_name}</p>
               </div>
               <div className="d-flex justify-content-between">
-                <h5>Transaction id</h5>
-                <p>{id}</p>
+                <h5>Transaction Type</h5>
+                <p>{transaction_type}</p>
+              </div>
+              <div className="d-flex justify-content-between">
+                <h5>Product Price</h5>
+                <p>{product_price}</p>
+              </div>
+              <div className="d-flex justify-content-between">
+                <h5>Product Quantity</h5>
+                <p>{product_quantity}</p>
+              </div>
+              <div className="d-flex justify-content-between">
+                <h5>Seller's Phone</h5>
+                <p>{vendor_phone_number}</p>
+              </div>
+              <div className="d-flex justify-content-between">
+                <h5>Seller's Email</h5>
+                <p>{vendor_email}</p>
+              </div>
+              <div className="d-flex justify-content-between">
+                <h5>Transaction Total</h5>
+                <p>{transaction_total}</p>
               </div>
               <div className="d-flex justify-content-between">
                 <h5>Description</h5>
-                <p>{description}</p>
-              </div>
-              <div className="d-flex justify-content-between">
-                <h5>Quality</h5>
-                <p>{quality}</p>
-              </div>
-              <div className="d-flex justify-content-between">
-                <h5>Price</h5>
-                <p>{price}</p>
-              </div>
-              <div className="d-flex justify-content-between">
-                <h5>Delivery compilation Date</h5>
-                <p>{date}</p>
-              </div>
-              <div className="d-flex justify-content-between">
-                <h5>Total</h5>
-                <p>{total}</p>
+                <p>{product_description}</p>
               </div>
             </div>
             <div className="d-flex align-items-center border-danger border-start border-5 mx-auto mt-4 alert alert-danger border-0 rounded-0">
@@ -134,7 +220,7 @@ export const TransactionDetails = ({
 //           styles="GeneralBtnStyle1 btn all-btn text-white"
 //         />
 //       </div>
-//       <div class="card-body p-5 ">
+//       <div className="card-body p-5 ">
 //         <div className="row mb-2 align-self-center">
 //           <div className="col-lg-5 col-sm-12 mb-5">
 //             <img src={productImgLg} className="img-fluid" alt="" />

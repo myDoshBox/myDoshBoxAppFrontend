@@ -40,6 +40,88 @@
       "view": "......."
     }
   ],
+  "recent_notification": [
+    {
+      "id": 1,
+      "goalType": "Event Goal",
+      "subject": "Test Goal",
+      "targetAchievement": "Best Work 2022",
+      "date": "1 Jan 2022",
+      "status": "Unread",
+      "status_style": "unRead",
+      "action": "view more"
+    },
+    {
+      "id": 2,
+      "goalType": "Invoice Goal",
+      "subject": "Test Goal",
+      "targetAchievement": "Best Work 2022",
+      "date": "2 Jan 2022",
+      "status": "Unread",
+      "status_style": "unRead",
+      "action": "view more"
+    },
+    {
+      "id": 3,
+      "goalType": "Employee Goal",
+      "subject": "Test Goal",
+      "targetAchievement": "Best Work 2022",
+      "date": "3 Jan 2022",
+      "status": "Read",
+      "status_style": "read",
+      "action": "view more"
+    },
+    {
+      "id": 4,
+      "goalType": "Invoice Goal",
+      "subject": "Test Goal",
+      "targetAchievement": "Best Work 2022",
+      "date": "4 Jan 2022",
+      "status": "Read",
+      "status_style": "read",
+      "action": "view more"
+    },
+    {
+      "id": 5,
+      "goalType": "Project Goal",
+      "subject": "Test Goal",
+      "targetAchievement": "Best Work 2022",
+      "date": "5 Jan 2022",
+      "status": "Read",
+      "status_style": "read",
+      "action": "view more"
+    }
+  ],
+
+  "recent_transaction": [
+    {
+      "id": 1,
+      "name": "Martin Lewis",
+      "email": "martinslewis@gmail.com",
+      "paidDate": "2/01/23",
+      "paidAmount": 140,
+      "status": "Cancelled",
+      "status_style": "cancel"
+    },
+    {
+      "id": 2,
+      "name": "Martin Lewis",
+      "email": "martinslewis@gmail.com",
+      "paidDate": "2/01/23",
+      "paidAmount": 240,
+      "status": "Cancelled",
+      "status_style": "cancel"
+    },
+    {
+      "id": 3,
+      "name": "Martin Lewis",
+      "email": "martinslewis@gmail.com",
+      "paidDate": "2/01/23",
+      "paidAmount": 840,
+      "status": "Completed",
+      "status_style": "complete"
+    }
+  ],
 
   "transaction_agreed": [
     {
@@ -64,6 +146,72 @@
       "price": 3275.45,
       "date": "2/01/23",
       "status_name": "Completed",
+      "status_style": "completed",
+      "transaction_type": "buy"
+    },
+    {
+      "id": 2,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Awaiting Delivery",
+      "status_style": "awaiting",
+      "transaction_type": "buy"
+    },
+    {
+      "id": 3,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Refunded",
+      "status_style": "refunded",
+      "transaction_type": "buy"
+    },
+    {
+      "id": 4,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Canceled",
+      "status_style": "canceled",
+      "transaction_type": "buy"
+    },
+    {
+      "id": 5,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Resolved",
+      "status_style": "resolved",
+      "transaction_type": "buy"
+    },
+    {
+      "id": 6,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Resolved",
+      "status_style": "resolved",
+      "transaction_type": "buy"
+    },
+    {
+      "id": 7,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Resolved",
+      "status_style": "resolved",
+      "transaction_type": "buy"
+    }
+  ],
+
+  "mini_transaction": [
+    {
+      "id": 1,
+      "product": "35 cartorns of biscuits",
+      "price": 3275.45,
+      "date": "2/01/23",
+      "status_name": "Completed",
       "status_style": "completed"
     },
     {
@@ -81,38 +229,182 @@
       "date": "2/01/23",
       "status_name": "Refunded",
       "status_style": "refunded"
+    }
+  ],
+
+  "customercare_transaction": [
+    {
+      "id": 1,
+      "transaction_id": "34rsGDrb4rP3",
+      "buyer_name": "Jacob Jones",
+      "seller_name": "Guy Hawkins",
+      "products": "35 cartons of biscuit",
+      "date": "16-08-22",
+      "status_name": "Completed",
+      "status_style": "completed",
+      "view": "view"
+    },
+    {
+      "id": 2,
+      "transaction_id": "34rsGDrb4rP3",
+      "buyer_name": "Jacob Jones",
+      "seller_name": "Guy Hawkins",
+      "products": "35 cartons of biscuit",
+      "date": "16-08-22",
+      "status_name": "Awaiting Delivery",
+      "status_style": "awaiting",
+      "view": "view"
+    },
+    {
+      "id": 3,
+      "transaction_id": "34rsGDrb4rP3",
+      "buyer_name": "Jacob Jones",
+      "seller_name": "Guy Hawkins",
+      "products": "35 cartons of biscuit",
+      "date": "16-08-22",
+      "status_name": "Canceled",
+      "status_style": "canceled",
+      "view": "view"
     },
     {
       "id": 4,
-      "product": "35 cartorns of biscuits",
-      "price": 3275.45,
-      "date": "2/01/23",
-      "status_name": "Canceled",
-      "status_style": "canceled"
+      "transaction_id": "34rsGDrb4rP3",
+      "buyer_name": "Jacob Jones",
+      "seller_name": "Guy Hawkins",
+      "products": "35 cartons of biscuit",
+      "date": "16-08-22",
+      "status_name": "Refunded",
+      "status_style": "refunded",
+      "view": "view"
+    }
+  ],
+
+  "transaction_agreed": [
+    {
+      "id": 1,
+      "heading": "Transaction Agreed",
+      "sub_text": "The details of this transaction has been viewed and agreed to buy the seller",
+      "product": "./../images/contactImgs/calculator.png",
+      "email": "Opeyemi Andrewson",
+      "trans_id": "AXSQWEDSC",
+      "description": "AXSQWEDSC",
+      "quality": 30,
+      "price": "N 120,000",
+      "date": "14 Aug 2022",
+      "total": "N3,600,000",
+      "alert": " By clicking proceed you are hereby accepting the terms and conditions of the buyer as stated above"
+    }
+  ],
+  "user_recent_transaction": [
+    {
+      "item": "ROG Laptop",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Annisa Kim",
+      "amount": 1300,
+      "status": "Completed",
+      "status_color": "#239A3C",
+      "status_message": "You have successfully sent ₦1300 to Annisa Kim.",
+      "buyer_image": "../../../images/transact_person.png"
     },
     {
-      "id": 5,
-      "product": "35 cartorns of biscuits",
-      "price": 3275.45,
-      "date": "2/01/23",
-      "status_name": "Resolved",
-      "status_style": "resolved"
+      "item": "Macbook M1 Pro",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Alex Rons",
+      "amount": 1250,
+      "status": "Canceled",
+      "status_color": "#B51629",
+      "status_message": "Your transaction to Alex Rons was not successful.",
+      "buyer_image": "../../../images/transact_person.png"
     },
     {
-      "id": 6,
-      "product": "35 cartorns of biscuits",
-      "price": 3275.45,
-      "date": "2/01/23",
-      "status_name": "Resolved",
-      "status_style": "resolved"
+      "item": "Iphone 14",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Vinnales",
+      "amount": 1300,
+      "status": "Awaiting Delivery",
+      "status_color": "#F6B700",
+      "status_message": "Your transaction to Vinnales is awaiting delivery.",
+      "buyer_image": "../../../images/transact_person.png"
     },
     {
-      "id": 7,
-      "product": "35 cartorns of biscuits",
-      "price": 3275.45,
-      "date": "2/01/23",
-      "status_name": "Resolved",
-      "status_style": "resolved"
+      "item": "Samsung Fold",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Shakir Rai",
+      "amount": 1450,
+      "status": "Refunded",
+      "status_color": "#9747FF",
+      "status_message": "Your transaction to Shakir Rai has been refunded.",
+      "buyer_image": "../../../images/transact_person.png"
+    },
+    {
+      "item": "MSI Monitor",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Jack Guy",
+      "amount": 550,
+      "status": "Completed",
+      "status_color": "#239A3C",
+      "status_message": "You have successfully sent ₦550 to Jack Guy.",
+      "buyer_image": "../../../images/transact_person.png"
+    },
+    {
+      "item": "Samsung Fold",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Shakir Rai",
+      "amount": 1450,
+      "status": "Pending",
+      "status_color": "#B51629",
+      "status_message": "Your transaction to Shakir Rai is pending.",
+      "buyer_image": "../../../images/transact_person.png"
+    },
+    {
+      "item": "I Watch",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Jacob Onic",
+      "amount": 800,
+      "status": "Completed",
+      "status_color": "#239A3C",
+      "status_message": "You have successfully sent ₦800 to Jacob Onic.",
+      "buyer_image": "../../../images/transact_person.png"
+    },
+    {
+      "item": "Samsung Flip",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Michael",
+      "amount": 1350,
+      "status": "Pending",
+      "status_color": "#B51629",
+      "status_message": "Your transaction to Michael is pending.",
+      "buyer_image": "../../../images/transact_person.png"
+    },
+    {
+      "item": "Mi Watch",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Vin Diesel",
+      "amount": 750,
+      "status": "Approved",
+      "status_color": "#239A3C",
+      "status_message": "Your transaction to Vin Diesel has been approved.",
+      "buyer_image": "../../../images/transact_person.png"
+    },
+    {
+      "item": "Macbook M2",
+      "purchase_from": "Amazon",
+      "purchase_date": "5 Jan 2022",
+      "purchase_by": "Sugiyono",
+      "amount": 1250,
+      "status": "Resolved",
+      "status_color": "#F6B700",
+      "status_message": "Your transaction to Sugiyono has been resolved.",
+      "buyer_image": "../../../images/transact_person.png"
     }
   ],
 

@@ -24,5 +24,64 @@
       "transaction_id": "32422524",
       "status": " Ongoing"
     }
+  ],
+  "recent_dispute": [
+    {
+      "id": 1,
+      "image": "../../images/userDashboardImage/People.png",
+      "name": "Mostania Siaw",
+      "date": "3 Sept",
+      "status": "Pending",
+      "status_style": "pending"
+    },
+    {
+      "id": 2,
+      "image": "../../images/userDashboardImage/kabamaya.png",
+      "name": "Kabiaya Haua",
+      "date": "6 Sept",
+      "status": "Approved",
+      "status_style": "approved"
+    },
+    {
+      "id": 3,
+      "image": "../../images/userDashboardImage/Burnmaya.png",
+      "name": "Burnmaya Gou",
+      "date": "4 Sept",
+      "status": "Approved",
+      "status_style": "approved"
+    }
+  ],
+
+  "new_conflictsCard": [
+    {
+      "id": 1,
+      "icon": "../../images/userDashboardImage/openConflictsImage.png",
+      "text": "Open Conflicts",
+      "link": "closed-conflicts",
+      "btnNumber": 45,
+      "style": "OpenConflictLineStyling",
+      "styling": "openConflitBtnStyle",
+      "view": "View More"
+    },
+    {
+      "id": 2,
+      "icon": "../../images/userDashboardImage/ongoingConflictIcon.png",
+      "text": "Ongoing Conflicts",
+      "link": "ongoing-conflicts",
+      "btnNumber": 78,
+      "style": "OngoingConflictLineStyling",
+      "styling": "ongoingConflitBtnStyle",
+      "view": "View More"
+    },
+    {
+      "id": 3,
+      "icon": "../../images/userDashboardImage/closeConflictIcon.png",
+      "text": "Closed Conflicts",
+      "link": "closed-conflicts",
+      "btnNumber": 50,
+      "style": "CloseConflictLineStyling",
+      "styling": "closeConflitBtnStyle",
+      "view": "View More"
+    }
   ]
 }
