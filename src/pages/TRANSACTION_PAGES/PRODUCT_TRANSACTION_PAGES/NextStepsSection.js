@@ -234,25 +234,29 @@ const NextStepsSection = ({ transaction, userEmail }) => {
       style={{
         backgroundColor: nextSteps.bgColor,
         border: ` ${nextSteps.color}`,
-      }}>
+      }}
+    >
       {/* Clickable header to toggle expand/collapse */}
       <div
         className="d-flex align-items-center gap-3 mb-3"
         onClick={() => setIsExpanded(!isExpanded)}
-        style={{ cursor: "pointer" }}>
+        style={{ cursor: "pointer" }}
+      >
         <i
           className={`bi bi-${nextSteps.icon}`}
           style={{
             fontSize: "2rem",
             color: nextSteps.color,
             flexShrink: 0,
-          }}></i>
+          }}
+        ></i>
         <h6
           className="mb-0 fw-bold"
           style={{
             fontSize: "1rem",
             color: nextSteps.color,
-          }}>
+          }}
+        >
           {nextSteps.title}
         </h6>
         {/* Expand/collapse icon */}
@@ -261,7 +265,8 @@ const NextStepsSection = ({ transaction, userEmail }) => {
           style={{
             color: nextSteps.color,
             fontSize: "1.2rem",
-          }}></i>
+          }}
+        ></i>
       </div>
 
       {/* Collapsible content */}
@@ -276,7 +281,8 @@ const NextStepsSection = ({ transaction, userEmail }) => {
                   fontSize: "0.875rem",
                   color: "#1a1a1a",
                   lineHeight: "1.6",
-                }}>
+                }}
+              >
                 {step}
               </li>
             ))}

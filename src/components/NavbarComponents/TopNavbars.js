@@ -339,6 +339,7 @@ import { persistor } from "../../redux/store";
 
 export const GuestNavbar = () => {
   const { userInfo } = useSelector((state) => state.usersauth);
+  console.log(userInfo);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);

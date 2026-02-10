@@ -70,7 +70,8 @@ const getStatusBadge = (status) => {
         fontSize: "0.75rem",
         fontWeight: "500",
         padding: "4px 8px",
-      }}>
+      }}
+    >
       {config.text}
     </Badge>
   );
@@ -104,7 +105,7 @@ const ShippingDetailsPage = () => {
 
   // Find the specific shipping detail
   const selectedShipping = shippingDetails?.transactions?.find(
-    (shipping) => shipping._id === shippingId
+    (shipping) => shipping._id === shippingId,
   );
   console.log(selectedShipping, "selectedShipping");
 
@@ -116,12 +117,12 @@ const ShippingDetailsPage = () => {
       toast.info("Confirming product receipt...", { autoClose: 2000 });
 
       await buyerConfirmProduct(
-        selectedShipping?.product?.transaction_id
+        selectedShipping?.product?.transaction_id,
       ).unwrap();
 
       toast.success("Product confirmed successfully!");
       navigate(
-        "/userdashboard/transaction-history/confirm-escrow-product-transaction/settled-transactions-history"
+        "/userdashboard/transaction-history/confirm-escrow-product-transaction/settled-transactions-history",
       );
     } catch (error) {
       toast.error(error?.data?.message || "Failed to confirm product");
@@ -134,7 +135,7 @@ const ShippingDetailsPage = () => {
     return (
       selectedShipping &&
       userEmail === selectedShipping?.buyer_email &&
-      selectedShipping?.buyer_email !== selectedShipping?.vendor_email &&
+      userEmail !== selectedShipping?.product?.vendor_email &&
       selectedShipping?.product?.transaction_status === "in_transit"
     );
   };
@@ -142,7 +143,8 @@ const ShippingDetailsPage = () => {
   return (
     <div
       className="container-fluid px-0"
-      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}>
+      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}
+    >
       <div className="row g-0">
         <div className="col-12">
           <UserDashboardNavbar />
@@ -154,7 +156,8 @@ const ShippingDetailsPage = () => {
                 variant="outline-secondary"
                 size="sm"
                 onClick={() => navigate(-1)}
-                style={{ fontSize: "0.875rem" }}>
+                style={{ fontSize: "0.875rem" }}
+              >
                 <i className="bi bi-arrow-left me-2"></i>
                 Back to Shipping History
               </Button>
@@ -184,15 +187,17 @@ const ShippingDetailsPage = () => {
               <div className="text-center py-5">
                 <i
                   className="bi bi-box-seam"
-                  style={{ fontSize: "3rem", color: "#6c757d" }}></i>
+                  style={{ fontSize: "3rem", color: "#6c757d" }}
+                ></i>
                 <p className="mt-3 text-muted">Shipping details not found</p>
                 <Button
                   variant="outline-primary"
                   onClick={() =>
                     navigate(
-                      "/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-history"
+                      "/userdashboard/transaction-history/confirm-escrow-product-transaction/shipping-history",
                     )
-                  }>
+                  }
+                >
                   Return to Shipping History
                 </Button>
               </div>
@@ -206,10 +211,12 @@ const ShippingDetailsPage = () => {
                   <div>
                     <h3
                       className="fs-4 m-0 fw-bold mb-2"
-                      style={{ color: "#1a1a1a" }}>
+                      style={{ color: "#1a1a1a" }}
+                    >
                       <i
                         className="bi bi-box-seam me-2"
-                        style={{ color: "#006747EB" }}></i>
+                        style={{ color: "#006747EB" }}
+                      ></i>
                       Shipping Details
                     </h3>
                     <small className="text-muted">
@@ -217,7 +224,7 @@ const ShippingDetailsPage = () => {
                     </small>
                   </div>
                   {getStatusBadge(
-                    selectedShipping?.product?.transaction_status
+                    selectedShipping?.product?.transaction_status,
                   )}
                 </div>
 
@@ -241,7 +248,8 @@ const ShippingDetailsPage = () => {
                       fontSize: "0.95rem",
                       color: "#006747EB",
                       borderBottom: "2px solid #e5e7eb",
-                    }}>
+                    }}
+                  >
                     <i className="bi bi-receipt me-2"></i>
                     Transaction Information
                   </h6>
@@ -249,7 +257,8 @@ const ShippingDetailsPage = () => {
                     <div className="col-md-6">
                       <small
                         className="text-muted d-block mb-1"
-                        style={{ fontSize: "0.75rem" }}>
+                        style={{ fontSize: "0.75rem" }}
+                      >
                         Transaction ID
                       </small>
                       <code
@@ -259,18 +268,20 @@ const ShippingDetailsPage = () => {
                           backgroundColor: "#e7f5f1",
                           padding: "4px 8px",
                           borderRadius: "4px",
-                        }}>
+                        }}
+                      >
                         {selectedShipping?.product?.transaction_id}
                       </code>
                     </div>
                     <div className="col-md-6">
                       <small
                         className="text-muted d-block mb-1"
-                        style={{ fontSize: "0.75rem" }}>
+                        style={{ fontSize: "0.75rem" }}
+                      >
                         Transaction Status
                       </small>
                       {getStatusBadge(
-                        selectedShipping?.product?.transaction_status
+                        selectedShipping?.product?.transaction_status,
                       )}
                     </div>
                   </div>
@@ -284,7 +295,8 @@ const ShippingDetailsPage = () => {
                       fontSize: "0.95rem",
                       color: "#006747EB",
                       borderBottom: "2px solid #e5e7eb",
-                    }}>
+                    }}
+                  >
                     <i className="bi bi-truck me-2"></i>
                     Shipping Information
                   </h6>
@@ -292,23 +304,27 @@ const ShippingDetailsPage = () => {
                     <div className="col-md-6">
                       <div
                         className="p-3 rounded"
-                        style={{ backgroundColor: "#f8f9fa" }}>
+                        style={{ backgroundColor: "#f8f9fa" }}
+                      >
                         <div className="mb-2">
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Shipping Company
                           </small>
                           <span
                             className="fw-semibold"
-                            style={{ fontSize: "0.875rem" }}>
+                            style={{ fontSize: "0.875rem" }}
+                          >
                             {selectedShipping?.shipping_company}
                           </span>
                         </div>
                         <div className="mb-2">
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Delivery Person
                           </small>
                           <span style={{ fontSize: "0.875rem" }}>
@@ -318,7 +334,8 @@ const ShippingDetailsPage = () => {
                         <div>
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Contact Number
                           </small>
                           <span style={{ fontSize: "0.875rem" }}>
@@ -330,18 +347,21 @@ const ShippingDetailsPage = () => {
                     <div className="col-md-6">
                       <div
                         className="p-3 rounded"
-                        style={{ backgroundColor: "#f8f9fa" }}>
+                        style={{ backgroundColor: "#f8f9fa" }}
+                      >
                         <div className="mb-2">
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Delivery Date
                           </small>
                           <span
                             className="fw-semibold"
-                            style={{ fontSize: "0.875rem" }}>
+                            style={{ fontSize: "0.875rem" }}
+                          >
                             {new Date(
-                              selectedShipping?.delivery_date
+                              selectedShipping?.delivery_date,
                             ).toLocaleDateString("en-US", {
                               year: "numeric",
                               month: "long",
@@ -352,7 +372,8 @@ const ShippingDetailsPage = () => {
                         <div className="mb-2">
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Pick Up Address
                           </small>
                           <span style={{ fontSize: "0.875rem" }}>
@@ -362,7 +383,8 @@ const ShippingDetailsPage = () => {
                         <div>
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Delivery Person Email
                           </small>
                           <span style={{ fontSize: "0.875rem" }}>
@@ -382,7 +404,8 @@ const ShippingDetailsPage = () => {
                       fontSize: "0.95rem",
                       color: "#006747EB",
                       borderBottom: "2px solid #e5e7eb",
-                    }}>
+                    }}
+                  >
                     <i className="bi bi-box-seam me-2"></i>
                     Product Details (
                     {selectedShipping?.product?.products?.length || 0})
@@ -397,7 +420,8 @@ const ShippingDetailsPage = () => {
                               style={{
                                 backgroundColor: "#f8f9fa",
                                 border: "1px solid #e5e7eb",
-                              }}>
+                              }}
+                            >
                               {/* Product Image */}
                               {product.image && (
                                 <div style={{ flexShrink: 0 }}>
@@ -423,12 +447,14 @@ const ShippingDetailsPage = () => {
                                     style={{
                                       fontSize: "0.95rem",
                                       color: "#1a1a1a",
-                                    }}>
+                                    }}
+                                  >
                                     {product.name}
                                   </span>
                                   <small
                                     className="text-muted"
-                                    style={{ fontSize: "0.75rem" }}>
+                                    style={{ fontSize: "0.75rem" }}
+                                  >
                                     {product.description}
                                   </small>
                                 </div>
@@ -437,36 +463,42 @@ const ShippingDetailsPage = () => {
                                   <div>
                                     <small
                                       className="text-muted d-block"
-                                      style={{ fontSize: "0.7rem" }}>
+                                      style={{ fontSize: "0.7rem" }}
+                                    >
                                       Quantity
                                     </small>
                                     <span
                                       className="fw-semibold"
-                                      style={{ fontSize: "0.875rem" }}>
+                                      style={{ fontSize: "0.875rem" }}
+                                    >
                                       {product.quantity}
                                     </span>
                                   </div>
                                   <div>
                                     <small
                                       className="text-muted d-block"
-                                      style={{ fontSize: "0.7rem" }}>
+                                      style={{ fontSize: "0.7rem" }}
+                                    >
                                       Unit Price
                                     </small>
                                     <span
                                       className="fw-semibold"
-                                      style={{ fontSize: "0.875rem" }}>
+                                      style={{ fontSize: "0.875rem" }}
+                                    >
                                       ₦{product.price?.toLocaleString()}
                                     </span>
                                   </div>
                                   <div>
                                     <small
                                       className="text-muted d-block"
-                                      style={{ fontSize: "0.7rem" }}>
+                                      style={{ fontSize: "0.7rem" }}
+                                    >
                                       Subtotal
                                     </small>
                                     <span
                                       className="fw-semibold text-success"
-                                      style={{ fontSize: "0.875rem" }}>
+                                      style={{ fontSize: "0.875rem" }}
+                                    >
                                       ₦
                                       {(
                                         product.price * product.quantity
@@ -477,22 +509,25 @@ const ShippingDetailsPage = () => {
                               </div>
                             </div>
                           </div>
-                        )
+                        ),
                       )}
 
                       {/* Transaction Total */}
                       <div className="col-12">
                         <div
                           className="d-flex justify-content-between align-items-center p-3 rounded"
-                          style={{ backgroundColor: "#e7f5f1" }}>
+                          style={{ backgroundColor: "#e7f5f1" }}
+                        >
                           <span
                             className="fw-bold"
-                            style={{ fontSize: "0.95rem" }}>
+                            style={{ fontSize: "0.95rem" }}
+                          >
                             Transaction Total:
                           </span>
                           <span
                             className="fw-bold"
-                            style={{ fontSize: "1.1rem", color: "#006747EB" }}>
+                            style={{ fontSize: "1.1rem", color: "#006747EB" }}
+                          >
                             ₦
                             {selectedShipping?.product?.transaction_total?.toLocaleString()}
                           </span>
@@ -502,7 +537,8 @@ const ShippingDetailsPage = () => {
                   ) : (
                     <p
                       className="text-muted mb-0"
-                      style={{ fontSize: "0.875rem" }}>
+                      style={{ fontSize: "0.875rem" }}
+                    >
                       No product details available
                     </p>
                   )}
@@ -516,23 +552,27 @@ const ShippingDetailsPage = () => {
                       fontSize: "0.95rem",
                       color: "#006747EB",
                       borderBottom: "2px solid #e5e7eb",
-                    }}>
+                    }}
+                  >
                     <i className="bi bi-shop me-2"></i>
                     Vendor Information
                   </h6>
                   <div
                     className="p-3 rounded"
-                    style={{ backgroundColor: "#f8f9fa" }}>
+                    style={{ backgroundColor: "#f8f9fa" }}
+                  >
                     <div className="row g-2">
                       <div className="col-md-6">
                         <small
                           className="text-muted d-block"
-                          style={{ fontSize: "0.75rem" }}>
+                          style={{ fontSize: "0.75rem" }}
+                        >
                           Vendor Name
                         </small>
                         <span
                           className="fw-semibold"
-                          style={{ fontSize: "0.875rem" }}>
+                          style={{ fontSize: "0.875rem" }}
+                        >
                           {selectedShipping?.product?.vendor_name ||
                             selectedShipping?.vendor_name}
                         </span>
@@ -540,7 +580,8 @@ const ShippingDetailsPage = () => {
                       <div className="col-md-6">
                         <small
                           className="text-muted d-block"
-                          style={{ fontSize: "0.75rem" }}>
+                          style={{ fontSize: "0.75rem" }}
+                        >
                           Contact Email
                         </small>
                         <span style={{ fontSize: "0.875rem" }}>
@@ -553,7 +594,8 @@ const ShippingDetailsPage = () => {
                         <div className="col-md-6">
                           <small
                             className="text-muted d-block"
-                            style={{ fontSize: "0.75rem" }}>
+                            style={{ fontSize: "0.75rem" }}
+                          >
                             Phone Number
                           </small>
                           <span style={{ fontSize: "0.875rem" }}>
@@ -565,7 +607,8 @@ const ShippingDetailsPage = () => {
                       <div className="col-md-6">
                         <small
                           className="text-muted d-block"
-                          style={{ fontSize: "0.75rem" }}>
+                          style={{ fontSize: "0.75rem" }}
+                        >
                           Payment Status
                         </small>
                         {selectedShipping?.product?.verified_payment_status ? (
@@ -591,7 +634,8 @@ const ShippingDetailsPage = () => {
                       fontSize: "0.95rem",
                       color: "#006747EB",
                       borderBottom: "2px solid #e5e7eb",
-                    }}>
+                    }}
+                  >
                     <i className="bi bi-clock-history me-2"></i>
                     Timeline
                   </h6>
@@ -599,7 +643,7 @@ const ShippingDetailsPage = () => {
                     <div className="mb-2">
                       <strong>Purchase Date:</strong>{" "}
                       {new Date(
-                        selectedShipping?.product?.createdAt
+                        selectedShipping?.product?.createdAt,
                       ).toLocaleString("en-US", {
                         year: "numeric",
                         month: "long",
@@ -623,7 +667,8 @@ const ShippingDetailsPage = () => {
                         fontSize: "0.875rem",
                         fontWeight: "600",
                         padding: "10px 20px",
-                      }}>
+                      }}
+                    >
                       {isConfirming ? (
                         <>
                           <Spinner
@@ -642,14 +687,15 @@ const ShippingDetailsPage = () => {
                       )}
                     </Button>
                   )}
-                  {selectedShipping?.product?.transaction_status !==
-                    "completed" && (
+                  {shouldShowVerifyButton() && (
                     <Link
                       to={`/userdashboard/disputes/initiate-dispute/${selectedShipping?.product?.transaction_id}`}
-                      state={{ transaction: selectedShipping?.product }}>
+                      state={{ transaction: selectedShipping?.product }}
+                    >
                       <Button
                         variant="outline-danger"
-                        style={{ fontSize: "0.875rem", padding: "10px 20px" }}>
+                        style={{ fontSize: "0.875rem", padding: "10px 20px" }}
+                      >
                         <i className="bi bi-flag me-2"></i> Raise Dispute
                       </Button>
                     </Link>

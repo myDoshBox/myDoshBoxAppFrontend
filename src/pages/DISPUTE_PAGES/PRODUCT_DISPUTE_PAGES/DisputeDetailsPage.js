@@ -974,7 +974,7 @@ const getPendingProposalForCurrentUser = (dispute, userEmail) => {
 
   // Find the most recent pending proposal that's NOT from the current user
   const pendingProposals = dispute.resolution_proposals.filter(
-    (proposal) => proposal.status === "pending"
+    (proposal) => proposal.status === "pending",
   );
 
   if (pendingProposals.length === 0) return null;
@@ -1001,7 +1001,7 @@ const getCurrentUserPendingProposal = (dispute, userEmail) => {
   const userPendingProposals = dispute.resolution_proposals.filter(
     (proposal) =>
       proposal.status === "pending" &&
-      proposal.proposed_by_email.toLowerCase() === userEmail.toLowerCase()
+      proposal.proposed_by_email.toLowerCase() === userEmail.toLowerCase(),
   );
 
   return userPendingProposals.length > 0 ? userPendingProposals[0] : null;
@@ -1019,7 +1019,7 @@ const DisputeComponents = () => {
       disputeAPISlice.util.invalidateTags([
         "Escrow Dispute",
         { type: "Dispute Details", id: transaction_id },
-      ])
+      ]),
     );
   };
 
@@ -1039,7 +1039,7 @@ const DisputeComponents = () => {
     ];
 
     const email = possibleEmails.find(
-      (e) => e && typeof e === "string" && e.trim()
+      (e) => e && typeof e === "string" && e.trim(),
     );
     return email ? email.toLowerCase().trim() : null;
   };
@@ -1196,7 +1196,7 @@ const DisputeComponents = () => {
       toast.success(
         respondAction === "accept"
           ? "Resolution accepted! Dispute resolved."
-          : "Resolution rejected. You can propose a new resolution."
+          : "Resolution rejected. You can propose a new resolution.",
       );
       setShowRespondModal(false);
       setResponseDescription("");
@@ -1214,7 +1214,7 @@ const DisputeComponents = () => {
     try {
       await requestMediator(transaction_id).unwrap();
       toast.success(
-        "Mediator requested successfully. A mediator will be assigned soon."
+        "Mediator requested successfully. A mediator will be assigned soon.",
       );
       setShowMediatorModal(false);
       refetch();
@@ -1303,7 +1303,8 @@ const DisputeComponents = () => {
           <Button
             variant="link"
             className="text-decoration-none p-0 mb-2"
-            onClick={() => navigate(-1)}>
+            onClick={() => navigate(-1)}
+          >
             <i className="bi bi-arrow-left me-2"></i>Back to Transactions
           </Button>
           <h2 className="fw-bold mb-0" style={{ color: "#1a1a1a" }}>
@@ -1311,8 +1312,14 @@ const DisputeComponents = () => {
           </h2>
         </div>
         <div className="d-flex gap-2 align-items-center">
-          {getDisputeStatusBadge(dispute.dispute_status)}
-          {getStageBadge(dispute.dispute_stage)}
+          <div className="d-flex flex-column">
+            <span className="small text-muted mb-1">Dispute Status</span>
+            {getDisputeStatusBadge(statusInfo.dispute_status)}
+          </div>
+          <div className="d-flex flex-column">
+            <span className="small text-muted mb-1">Dispute Stage</span>
+            {getStageBadge(dispute.dispute_stage)}
+          </div>
         </div>
       </div>
       {/* ✅ FIX: Alert for Mediator Escalation - Role-specific messaging */}
@@ -1374,7 +1381,8 @@ const DisputeComponents = () => {
           <Button
             variant="warning"
             size="sm"
-            onClick={() => setShowRespondModal(true)}>
+            onClick={() => setShowRespondModal(true)}
+          >
             <i className="bi bi-eye me-2"></i>Review Proposal
           </Button>
         </Alert>
@@ -1427,7 +1435,8 @@ const DisputeComponents = () => {
                   <Badge
                     bg={
                       dispute.dispute_raised_by === "buyer" ? "primary" : "info"
-                    }>
+                    }
+                  >
                     {dispute.dispute_raised_by === "buyer" ? "Buyer" : "Seller"}
                     {dispute.dispute_raised_by === userRole && " (You)"}
                   </Badge>
@@ -1472,13 +1481,15 @@ const DisputeComponents = () => {
                 <div className="text-center py-4">
                   <i
                     className="bi bi-inbox text-muted"
-                    style={{ fontSize: "3rem" }}></i>
+                    style={{ fontSize: "3rem" }}
+                  ></i>
                   <p className="text-muted mt-2">No resolution proposals yet</p>
                   {canPropose && (
                     <Button
                       variant="outline-success"
                       size="sm"
-                      onClick={() => setShowProposeModal(true)}>
+                      onClick={() => setShowProposeModal(true)}
+                    >
                       Be the first to propose a resolution
                     </Button>
                   )}
@@ -1495,7 +1506,8 @@ const DisputeComponents = () => {
                       return (
                         <Accordion.Item
                           eventKey={String(index)}
-                          key={proposal._id || index}>
+                          key={proposal._id || index}
+                        >
                           <Accordion.Header>
                             <div className="d-flex justify-content-between align-items-center w-100 me-3">
                               <span className="fw-semibold">
@@ -1530,7 +1542,7 @@ const DisputeComponents = () => {
                               </small>
                               <span>
                                 {new Date(
-                                  proposal.proposal_date
+                                  proposal.proposal_date,
                                 ).toLocaleString()}
                               </span>
                             </div>
@@ -1564,7 +1576,7 @@ const DisputeComponents = () => {
                                     </small>
                                     <span>
                                       {new Date(
-                                        proposal.response_date
+                                        proposal.response_date,
                                       ).toLocaleString()}
                                     </span>
                                   </div>
@@ -1625,7 +1637,8 @@ const DisputeComponents = () => {
                     disabled={
                       dispute.dispute_status === "resolved" ||
                       dispute.dispute_status === "cancelled"
-                    }>
+                    }
+                  >
                     <i className="bi bi-lightbulb me-2"></i>
                     Propose Resolution
                   </Button>
@@ -1637,7 +1650,8 @@ const DisputeComponents = () => {
                   !isMediatorInvolved && (
                     <Button
                       variant="warning"
-                      onClick={() => setShowRespondModal(true)}>
+                      onClick={() => setShowRespondModal(true)}
+                    >
                       <i className="bi bi-reply me-2"></i>Respond to Proposal
                     </Button>
                   )}
@@ -1646,7 +1660,8 @@ const DisputeComponents = () => {
                 {canRequestMediator && !isMediatorInvolved && (
                   <Button
                     variant="danger"
-                    onClick={() => setShowMediatorModal(true)}>
+                    onClick={() => setShowMediatorModal(true)}
+                  >
                     <i className="bi bi-person-badge me-2"></i>Request Mediator
                   </Button>
                 )}
@@ -1655,7 +1670,8 @@ const DisputeComponents = () => {
                 {canCancelDispute && !isMediatorInvolved && (
                   <Button
                     variant="outline-secondary"
-                    onClick={() => setShowCancelModal(true)}>
+                    onClick={() => setShowCancelModal(true)}
+                  >
                     <i className="bi bi-x-circle me-2"></i>Cancel Dispute
                   </Button>
                 )}
@@ -1772,7 +1788,8 @@ const DisputeComponents = () => {
                     dispute.transaction_state_snapshot?.verified_payment_status
                       ? "success"
                       : "warning"
-                  }>
+                  }
+                >
                   {dispute.transaction_state_snapshot?.verified_payment_status
                     ? "Paid"
                     : "Not Paid"}
@@ -1786,7 +1803,8 @@ const DisputeComponents = () => {
                     dispute.transaction_state_snapshot?.shipping_submitted
                       ? "success"
                       : "warning"
-                  }>
+                  }
+                >
                   {dispute.transaction_state_snapshot?.shipping_submitted
                     ? "Shipped"
                     : "Not Shipped"}
@@ -1800,7 +1818,8 @@ const DisputeComponents = () => {
                     dispute.transaction_state_snapshot?.buyer_confirm_status
                       ? "success"
                       : "warning"
-                  }>
+                  }
+                >
                   {dispute.transaction_state_snapshot?.buyer_confirm_status
                     ? "Confirmed"
                     : "Pending"}
@@ -1817,7 +1836,8 @@ const DisputeComponents = () => {
       <Modal
         show={showProposeModal}
         onHide={() => setShowProposeModal(false)}
-        centered>
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Propose Resolution</Modal.Title>
         </Modal.Header>
@@ -1841,13 +1861,15 @@ const DisputeComponents = () => {
         <Modal.Footer>
           <Button
             variant="secondary"
-            onClick={() => setShowProposeModal(false)}>
+            onClick={() => setShowProposeModal(false)}
+          >
             Cancel
           </Button>
           <Button
             variant="success"
             onClick={handleProposeResolution}
-            disabled={isSubmitting || !proposalDescription.trim()}>
+            disabled={isSubmitting || !proposalDescription.trim()}
+          >
             {isSubmitting ? (
               <Spinner animation="border" size="sm" />
             ) : (
@@ -1860,7 +1882,8 @@ const DisputeComponents = () => {
       <Modal
         show={showRespondModal}
         onHide={() => setShowRespondModal(false)}
-        centered>
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Respond to Proposal</Modal.Title>
         </Modal.Header>
@@ -1885,7 +1908,8 @@ const DisputeComponents = () => {
                           ? "success"
                           : "outline-success"
                       }
-                      onClick={() => setRespondAction("accept")}>
+                      onClick={() => setRespondAction("accept")}
+                    >
                       <i className="bi bi-check-circle me-2"></i>Accept
                       Resolution
                     </Button>
@@ -1893,7 +1917,8 @@ const DisputeComponents = () => {
                       variant={
                         respondAction === "reject" ? "danger" : "outline-danger"
                       }
-                      onClick={() => setRespondAction("reject")}>
+                      onClick={() => setRespondAction("reject")}
+                    >
                       <i className="bi bi-x-circle me-2"></i>Reject Resolution
                     </Button>
                   </div>
@@ -1919,7 +1944,8 @@ const DisputeComponents = () => {
         <Modal.Footer>
           <Button
             variant="secondary"
-            onClick={() => setShowRespondModal(false)}>
+            onClick={() => setShowRespondModal(false)}
+          >
             Cancel
           </Button>
           <Button
@@ -1927,7 +1953,8 @@ const DisputeComponents = () => {
             onClick={handleRespondToResolution}
             disabled={
               isSubmitting || !respondAction || !responseDescription.trim()
-            }>
+            }
+          >
             {isSubmitting ? (
               <Spinner animation="border" size="sm" />
             ) : (
@@ -1940,7 +1967,8 @@ const DisputeComponents = () => {
       <Modal
         show={showMediatorModal}
         onHide={() => setShowMediatorModal(false)}
-        centered>
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Request Mediator</Modal.Title>
         </Modal.Header>
@@ -1961,13 +1989,15 @@ const DisputeComponents = () => {
         <Modal.Footer>
           <Button
             variant="secondary"
-            onClick={() => setShowMediatorModal(false)}>
+            onClick={() => setShowMediatorModal(false)}
+          >
             Cancel
           </Button>
           <Button
             variant="danger"
             onClick={handleRequestMediator}
-            disabled={isSubmitting}>
+            disabled={isSubmitting}
+          >
             {isSubmitting ? (
               <Spinner animation="border" size="sm" />
             ) : (
@@ -1980,7 +2010,8 @@ const DisputeComponents = () => {
       <Modal
         show={showCancelModal}
         onHide={() => setShowCancelModal(false)}
-        centered>
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Cancel Dispute</Modal.Title>
         </Modal.Header>
@@ -2000,7 +2031,8 @@ const DisputeComponents = () => {
           <Button
             variant="danger"
             onClick={handleCancelDispute}
-            disabled={isSubmitting}>
+            disabled={isSubmitting}
+          >
             {isSubmitting ? (
               <Spinner animation="border" size="sm" />
             ) : (

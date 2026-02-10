@@ -1740,7 +1740,7 @@ export const RecentTransactionTable = ({
                 </Accordion.Item>
 
                 {/* Dispute Details */}
-                {selectedTransaction?.transaction_status === "inDispute" && (
+                {selectedTransaction?.dispute_status === "inDispute" && (
                   <Accordion.Item eventKey="1">
                     <Accordion.Header>
                       <span
@@ -1955,6 +1955,111 @@ export const RecentTransactionTable = ({
                         >
                           <i className="bi bi-arrow-right-circle me-2"></i>
                           View Dispute Details
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* Dispute Alert - Resolved Dispute */}
+                {selectedTransaction?.dispute_status === "resolved" && (
+                  <div className="mt-4">
+                    <div
+                      className="alert d-flex align-items-center justify-content-between p-3 mb-0 border-success"
+                      style={{
+                        backgroundColor: "#d1e7dd",
+                        border: "1px solid #198754",
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-3">
+                        <i
+                          className="bi bi-check-circle-fill"
+                          style={{ fontSize: "2rem", color: "#0f5132" }}
+                        ></i>
+                        <div>
+                          <h6
+                            className="mb-1 fw-bold"
+                            style={{ color: "#0f5132" }}
+                          >
+                            Dispute Resolved
+                          </h6>
+                          <p className="mb-0 small text-muted">
+                            This transaction previously contained a dispute that
+                            has been resolved
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <Link
+                        to={`/userdashboard/disputes/dispute-details/${selectedTransaction?.transaction_id}`}
+                        className="text-decoration-none"
+                      >
+                        <Button
+                          variant="success"
+                          className="fw-semibold border-0"
+                          style={{
+                            fontSize: "0.875rem",
+                            padding: "8px 20px",
+                            whiteSpace: "nowrap",
+                            backgroundColor: "#198754",
+                            color: "#ffffff",
+                          }}
+                        >
+                          <i className="bi bi-eye me-2"></i>
+                          View Resolution Details
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* Dispute Alert - Cancelled Dispute */}
+                {selectedTransaction?.dispute_status === "cancelled" && (
+                  <div className="mt-4">
+                    <div
+                      className="alert d-flex align-items-center justify-content-between p-3 mb-0 border-secondary"
+                      style={{
+                        backgroundColor: "#e2e3e5",
+                        border: "1px solid #6c757d",
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-3">
+                        <i
+                          className="bi bi-x-circle-fill"
+                          style={{ fontSize: "2rem", color: "#495057" }}
+                        ></i>
+                        <div>
+                          <h6
+                            className="mb-1 fw-bold"
+                            style={{ color: "#495057" }}
+                          >
+                            Dispute Cancelled
+                          </h6>
+                          <p className="mb-0 small text-muted">
+                            This transaction had a dispute that was cancelled
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <Link
+                        to={`/userdashboard/disputes/dispute-details/${selectedTransaction?.transaction_id}`}
+                        className="text-decoration-none"
+                      >
+                        <Button
+                          variant="secondary"
+                          className="fw-semibold border-0"
+                          style={{
+                            fontSize: "0.875rem",
+                            padding: "8px 20px",
+                            whiteSpace: "nowrap",
+                            backgroundColor: "#6c757d",
+                            color: "#ffffff",
+                          }}
+                        >
+                          <i className="bi bi-eye me-2"></i>
+                          View Dispute History
                         </Button>
                       </Link>
                     </div>
