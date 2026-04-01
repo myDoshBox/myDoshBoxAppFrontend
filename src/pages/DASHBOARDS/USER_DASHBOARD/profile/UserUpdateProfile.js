@@ -7,6 +7,10 @@ import {
   useUpdateProfileMutation,
 } from "../../../../redux/slices/profileSlice/profileAPISlice";
 import { setProfileInfo } from "../../../../redux/slices/profileSlice/profileAuthslice";
+import {
+  Alert,
+  AlertDescription,
+} from "../../../../components/NotificationComponent/Alert";
 
 export const UserUpdateProfile = () => {
   const navigate = useNavigate();
@@ -41,9 +45,11 @@ export const UserUpdateProfile = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [currentImage, setCurrentImage] = useState(null);
 
-  // UI states
+  // Alert states
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   // Determine user type and role for conditional rendering
   const userRole = userInfo?.role || userInfo?.userInfo?.role;
@@ -55,7 +61,6 @@ export const UserUpdateProfile = () => {
   /**
    * Update form data when profile is fetched
    */
-  // Update the useEffect to handle image properly
   useEffect(() => {
     if (profileData?.data?.profile) {
       const profile = profileData.data.profile;
@@ -87,11 +92,16 @@ export const UserUpdateProfile = () => {
    */
   useEffect(() => {
     if (fetchError) {
-      setError(fetchError?.data?.message || "Error loading profile data");
+      const errorMsg =
+        fetchError?.data?.message || "Error loading profile data";
+      setError(errorMsg);
+      setShowErrorAlert(true);
     }
 
     if (updateError) {
-      setError(updateError?.data?.message || "Error updating profile");
+      const errorMsg = updateError?.data?.message || "Error updating profile";
+      setError(errorMsg);
+      setShowErrorAlert(true);
     }
   }, [fetchError, updateError]);
 
@@ -109,6 +119,8 @@ export const UserUpdateProfile = () => {
     // Clear messages on input change
     setError("");
     setSuccess("");
+    setShowErrorAlert(false);
+    setShowSuccessAlert(false);
   };
 
   /**
@@ -121,12 +133,14 @@ export const UserUpdateProfile = () => {
       // Validate file type
       if (!file.type.startsWith("image/")) {
         setError("Please select a valid image file");
+        setShowErrorAlert(true);
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         setError("Image size should not exceed 5MB");
+        setShowErrorAlert(true);
         return;
       }
 
@@ -140,6 +154,7 @@ export const UserUpdateProfile = () => {
       reader.readAsDataURL(file);
 
       setError("");
+      setShowErrorAlert(false);
     }
   };
 
@@ -167,6 +182,7 @@ export const UserUpdateProfile = () => {
   const validateForm = () => {
     if (formData.phone_number && formData.phone_number.length < 10) {
       setError("Phone number must be at least 10 digits");
+      setShowErrorAlert(true);
       return false;
     }
 
@@ -186,6 +202,8 @@ export const UserUpdateProfile = () => {
 
     setError("");
     setSuccess("");
+    setShowErrorAlert(false);
+    setShowSuccessAlert(false);
 
     try {
       // Create FormData for multipart/form-data
@@ -199,7 +217,10 @@ export const UserUpdateProfile = () => {
       const result = await updateProfile(submitData).unwrap();
 
       if (result.status === "success") {
-        setSuccess(result.message || "Profile updated successfully!");
+        const successMessage =
+          result.message || "Profile updated successfully!";
+        setSuccess(successMessage);
+        setShowSuccessAlert(true);
 
         // Update current image if new one was uploaded
         if (result.data?.profile?.image) {
@@ -221,6 +242,7 @@ export const UserUpdateProfile = () => {
       const errorMsg =
         err?.data?.message || "Error updating profile. Please try again.";
       setError(errorMsg);
+      setShowErrorAlert(true);
       console.error("Profile update error:", err);
     }
   };
@@ -238,7 +260,8 @@ export const UserUpdateProfile = () => {
         <div className="col-lg-8 col-md-10 col-12">
           <div
             className="card shadow-sm border-0"
-            style={{ borderRadius: "12px" }}>
+            style={{ borderRadius: "12px" }}
+          >
             <div className="card-body p-4 p-md-5">
               {/* Page Header with User Role Badge */}
               <div className="text-center mb-4">
@@ -248,7 +271,8 @@ export const UserUpdateProfile = () => {
                     color: "#1E3A2F",
                     fontWeight: "600",
                     fontSize: "1.75rem",
-                  }}>
+                  }}
+                >
                   Update Profile
                 </h3>
 
@@ -260,27 +284,28 @@ export const UserUpdateProfile = () => {
                       backgroundColor: isIndividual
                         ? "#2D7A5E"
                         : isOrganization
-                        ? "#1E40AF"
-                        : isMediator
-                        ? "#7C3AED"
-                        : isAdmin
-                        ? "#DC2626"
-                        : "#6B7280",
+                          ? "#1E40AF"
+                          : isMediator
+                            ? "#7C3AED"
+                            : isAdmin
+                              ? "#DC2626"
+                              : "#6B7280",
                       color: "white",
                       padding: "6px 12px",
                       borderRadius: "20px",
                       fontSize: "0.8rem",
                       fontWeight: "500",
-                    }}>
+                    }}
+                  >
                     {isIndividual
                       ? "Individual User"
                       : isOrganization
-                      ? "Organization User"
-                      : isMediator
-                      ? "Mediator"
-                      : isAdmin
-                      ? "Administrator"
-                      : "User"}
+                        ? "Organization User"
+                        : isMediator
+                          ? "Mediator"
+                          : isAdmin
+                            ? "Administrator"
+                            : "User"}
                   </span>
                 </div>
 
@@ -288,6 +313,41 @@ export const UserUpdateProfile = () => {
                   Update your personal information
                 </p>
               </div>
+
+              {/* Custom Alert Components */}
+              {showErrorAlert && (
+                <Alert
+                  variant="destructive"
+                  show={showErrorAlert}
+                  onClose={() => {
+                    setShowErrorAlert(false);
+                    setError("");
+                  }}
+                  autoClose={true}
+                  autoCloseTime={5000}
+                >
+                  <AlertDescription>
+                    <strong>Error!</strong> {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {showSuccessAlert && (
+                <Alert
+                  variant="success"
+                  show={showSuccessAlert}
+                  onClose={() => {
+                    setShowSuccessAlert(false);
+                    setSuccess("");
+                  }}
+                  autoClose={true}
+                  autoCloseTime={3000}
+                >
+                  <AlertDescription>
+                    <strong>Success!</strong> {success}
+                  </AlertDescription>
+                </Alert>
+              )}
 
               {/* Loading State for Initial Data Fetch */}
               {fetching ? (
@@ -301,82 +361,20 @@ export const UserUpdateProfile = () => {
                 </div>
               ) : (
                 <>
-                  {/* Error Alert */}
-                  {error && (
-                    <div
-                      className="alert alert-danger d-flex align-items-center"
-                      role="alert">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="me-2 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M12 8V12M12 16H12.01"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      <span>{error}</span>
-                      <button
-                        type="button"
-                        className="btn-close ms-auto"
-                        onClick={() => setError("")}></button>
-                    </div>
-                  )}
-
-                  {/* Success Alert */}
-                  {success && (
-                    <div
-                      className="alert alert-success d-flex align-items-center"
-                      role="alert">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="me-2 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M22 11.08V12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C15.18 2 17.98 3.39 19.88 5.53"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M22 4L12 14.01L9 11.01"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span>{success}</span>
-                    </div>
-                  )}
-
                   {/* User Role Specific Information */}
                   {isOrganization && (
                     <div
-                      className="alert alert-info d-flex align-items-center"
-                      role="alert">
+                      className="alert alert-info d-flex align-items-center mb-4"
+                      role="alert"
+                    >
                       <svg
                         width="18"
                         height="18"
                         viewBox="0 0 24 24"
                         fill="none"
                         className="me-2 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
                           stroke="currentColor"
@@ -406,7 +404,8 @@ export const UserUpdateProfile = () => {
                           color: "#1E3A2F",
                           fontWeight: "500",
                           fontSize: "0.95rem",
-                        }}>
+                        }}
+                      >
                         Profile Image
                       </label>
 
@@ -423,7 +422,8 @@ export const UserUpdateProfile = () => {
                             cursor: "pointer",
                             backgroundColor: "#F3F4F6",
                           }}
-                          onClick={handleImageClick}>
+                          onClick={handleImageClick}
+                        >
                           {imagePreview || currentImage ? (
                             <img
                               src={imagePreview || currentImage}
@@ -437,13 +437,15 @@ export const UserUpdateProfile = () => {
                           ) : (
                             <div
                               className="d-flex flex-column justify-content-center align-items-center h-100"
-                              style={{ color: "#6B7280" }}>
+                              style={{ color: "#6B7280" }}
+                            >
                               <svg
                                 width="40"
                                 height="40"
                                 viewBox="0 0 24 24"
                                 fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
                                 <path
                                   d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
                                   stroke="currentColor"
@@ -476,13 +478,15 @@ export const UserUpdateProfile = () => {
                             }
                             onMouseLeave={(e) =>
                               (e.currentTarget.style.opacity = 0)
-                            }>
+                            }
+                          >
                             <svg
                               width="30"
                               height="30"
                               viewBox="0 0 24 24"
                               fill="none"
-                              xmlns="http://www.w3.org/2000/svg">
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
                               <path
                                 d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z"
                                 stroke="white"
@@ -516,14 +520,16 @@ export const UserUpdateProfile = () => {
                             type="button"
                             className="btn btn-sm btn-outline-primary"
                             onClick={handleImageClick}
-                            style={{ borderRadius: "6px" }}>
+                            style={{ borderRadius: "6px" }}
+                          >
                             <svg
                               width="16"
                               height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               className="me-1"
-                              xmlns="http://www.w3.org/2000/svg">
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
                               <path
                                 d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
                                 stroke="currentColor"
@@ -554,14 +560,16 @@ export const UserUpdateProfile = () => {
                               type="button"
                               className="btn btn-sm btn-outline-danger"
                               onClick={handleRemoveImage}
-                              style={{ borderRadius: "6px" }}>
+                              style={{ borderRadius: "6px" }}
+                            >
                               <svg
                                 width="16"
                                 height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 className="me-1"
-                                xmlns="http://www.w3.org/2000/svg">
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
                                 <path
                                   d="M18 6L6 18"
                                   stroke="currentColor"
@@ -597,7 +605,8 @@ export const UserUpdateProfile = () => {
                           color: "#1E3A2F",
                           fontWeight: "500",
                           fontSize: "0.95rem",
-                        }}>
+                        }}
+                      >
                         {isOrganization ? "Organization Name" : "Full Name"}
                       </label>
                       <input
@@ -635,7 +644,8 @@ export const UserUpdateProfile = () => {
                           color: "#1E3A2F",
                           fontWeight: "500",
                           fontSize: "0.95rem",
-                        }}>
+                        }}
+                      >
                         {isOrganization ? "Contact Number" : "Phone Number"}
                       </label>
                       <input
@@ -663,6 +673,7 @@ export const UserUpdateProfile = () => {
                           : "Include country code (e.g., +234 for Nigeria)"}
                       </small>
                     </div>
+
                     {/* Action Buttons */}
                     <div className="d-flex gap-3 mt-4 align-items-center justify-content-end">
                       {/* Cancel Button */}
@@ -692,7 +703,8 @@ export const UserUpdateProfile = () => {
                               "transparent";
                             e.currentTarget.style.color = "#6B7280";
                           }
-                        }}>
+                        }}
+                      >
                         Cancel
                       </button>
 
@@ -731,13 +743,15 @@ export const UserUpdateProfile = () => {
                           if (!updating && !fetching) {
                             e.currentTarget.style.transform = "translateY(0)";
                           }
-                        }}>
+                        }}
+                      >
                         {updating ? (
                           <>
                             <span
                               className="spinner-border spinner-border-sm me-2"
                               role="status"
-                              aria-hidden="true"></span>
+                              aria-hidden="true"
+                            ></span>
                             Updating...
                           </>
                         ) : (
@@ -752,7 +766,8 @@ export const UserUpdateProfile = () => {
                                 display: "inline-block",
                                 verticalAlign: "middle",
                               }}
-                              xmlns="http://www.w3.org/2000/svg">
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
                               <path
                                 d="M22 11.08V12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C15.18 2 17.98 3.39 19.88 5.53"
                                 stroke="currentColor"
@@ -787,7 +802,8 @@ export const UpdateProfilePage = () => {
   return (
     <div
       className="contestPage"
-      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}>
+      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}
+    >
       <div className="row g-0">
         <div className="col-lg-3 col-sm-12"></div>
 

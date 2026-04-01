@@ -51,7 +51,7 @@ export const useTokenRefresh = () => {
 
       // Send refresh token in body as fallback (in case cookies are blocked)
       const response = await refreshToken(
-        refreshTokenValue ? { refreshToken: refreshTokenValue } : undefined
+        refreshTokenValue ? { refreshToken: refreshTokenValue } : undefined,
       ).unwrap();
 
       if (!mountedRef.current) {
@@ -71,7 +71,7 @@ export const useTokenRefresh = () => {
             accessToken: response.accessToken,
             refreshToken: response.refreshToken,
             user: response.user,
-          })
+          }),
         );
         console.log("Token refreshed and stored successfully");
         return response.accessToken;
@@ -99,7 +99,7 @@ export const useTokenRefresh = () => {
         error?.originalStatus === 403
       ) {
         console.log("🚪 Authentication failed, logging out...");
-        dispatch(logout());
+        // dispatch(logout());
         window.location.href = "/signin";
       } else if (error?.status === 500) {
         // Server error - don't logout immediately, will retry
@@ -152,7 +152,7 @@ export const useTokenRefresh = () => {
         const refreshMinutes = Math.floor(refreshTime / 60000);
 
         console.log(
-          `⏰ Token expires in ${expiryMinutes}m, scheduling refresh in ${refreshMinutes}m`
+          `⏰ Token expires in ${expiryMinutes}m, scheduling refresh in ${refreshMinutes}m`,
         );
 
         refreshTimerRef.current = setTimeout(async () => {
@@ -170,7 +170,7 @@ export const useTokenRefresh = () => {
         window.location.href = "/signin";
       }
     },
-    [clearRefreshTimer, performRefresh, dispatch]
+    [clearRefreshTimer, performRefresh, dispatch],
   );
 
   const checkAndRefreshToken = useCallback(async () => {

@@ -9,17 +9,10 @@ import {
   Modal,
   Accordion,
   Spinner,
+  Badge,
 } from "react-bootstrap";
 import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-import {
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
-import { CancelButton } from "../../../components/ButtonsComponent/OtherButtons";
-import { ProceedButton } from "../../../components/ButtonsComponent/TransactionButtons";
-
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setEscrowProduct } from "../../../redux/slices/escrowProductSlices/escrowProductContentSlice";
 import {
@@ -27,28 +20,70 @@ import {
   useEditEscrowProductTransactionMutation,
   useFetchSingleTransactionsQuery,
 } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
-import { useAppContext } from "../../../context/appContext";
 import {
   Alert,
   AlertDescription,
 } from "../../../components/NotificationComponent/Alert";
 
+// ============================================
+// DELIVERY OPTIONS CONFIG
+// ============================================
+const DELIVERY_OPTIONS = [
+  {
+    value: "pickup",
+    label: "Pickup",
+    description: "Buyer picks up from seller's location",
+    icon: "bi-person-walking",
+  },
+  {
+    value: "pay_on_delivery",
+    label: "Pay on Delivery",
+    description: "Delivery fee paid on receipt",
+    icon: "bi-cash-coin",
+  },
+  {
+    value: "agreed_delivery_fee",
+    label: "Agreed Delivery Fee",
+    description: "Fixed delivery fee agreed upon by both parties",
+    icon: "bi-truck",
+  },
+];
+
+const DELIVERY_TIME_RANGES = [
+  { value: "1-3 days", label: "1–3 Business Days" },
+  { value: "3-5 days", label: "3–5 Business Days" },
+  { value: "5-7 days", label: "5–7 Business Days" },
+  { value: "1-2 weeks", label: "1–2 Weeks" },
+  { value: "2-4 weeks", label: "2–4 Weeks" },
+  { value: "custom_date", label: "Pick a Specific Date" },
+];
+
+// ============================================
+// EMPTY PRODUCT TEMPLATE
+// ============================================
+const emptyProduct = {
+  product_name: "",
+  quantity: "",
+  price: "",
+  product_description: "",
+  product_image: "",
+};
+
 const InitiateProductEscrowForm = () => {
   return (
-    <>
-      <div
-        className="container-fluid px-0"
-        style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}>
-        <div className="row g-0">
-          <div className="col-12">
-            <UserDashboardNavbar />
-            <div className="px-3 px-lg-4 py-2">
-              <InitiateEscrowForm />
-            </div>
+    <div
+      className="container-fluid px-0"
+      style={{ backgroundColor: "#F9F9FB", minHeight: "100vh" }}
+    >
+      <div className="row g-0">
+        <div className="col-12">
+          <UserDashboardNavbar />
+          <div className="px-3 px-lg-4 py-2">
+            <InitiateEscrowForm />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -59,11 +94,6 @@ const InitiateEscrowForm = () => {
   const transactionId = searchParams.get("transaction_id");
 
   const { userInfo } = useSelector((state) => state.usersauth);
-  const userToken = userInfo?.token;
-
-  console.log("Current userInfo:", userInfo);
-
-  // Try different possible email paths
   const userEmail =
     userInfo?.user?.email ||
     userInfo?.email ||
@@ -73,100 +103,127 @@ const InitiateEscrowForm = () => {
   // API Hooks
   const [initiateTransaction, { isLoading }] =
     useInitiateEscrowProductTransactionMutation();
-
   const [editTransaction, { isLoading: isEditLoading }] =
     useEditEscrowProductTransactionMutation();
-
-  // Fetch single transaction if editing
   const {
     data: transactionData,
     isLoading: isFetchingTransaction,
     isError: fetchError,
     error: fetchErrorData,
-  } = useFetchSingleTransactionsQuery(transactionId, {
-    skip: !transactionId, // Skip query if no transactionId
-  });
+  } = useFetchSingleTransactionsQuery(transactionId, { skip: !transactionId });
 
-  // Alert State
+  // ── UI State ──────────────────────────────────────────────
   const [showAlert, setShowAlert] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     variant: "default",
     message: "",
   });
-
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [productToRemove, setProductToRemove] = useState(null);
+  const [productImageURL, setProductImageURL] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [sumTotal, setSumTotal] = useState(0);
+  const [transactionTotal, setTransactionTotal] = useState(0);
 
-  // State
+  // ── Edit-product-on-table state ───────────────────────────
+  const [editingProductIndex, setEditingProductIndex] = useState(null); // which row is being edited
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
+  const [editingProductData, setEditingProductData] = useState({
+    ...emptyProduct,
+  });
+  const [editProductImageURL, setEditProductImageURL] = useState("");
+  const [isUploadingEditImage, setIsUploadingEditImage] = useState(false);
+
+  // ── Form State ────────────────────────────────────────────
   const [vendor, setVendor] = useState({
     vendor_name: "",
     vendor_phone_number: "",
     vendor_email: "",
   });
 
-  const [product, setProduct] = useState({
-    product_name: "",
-    quantity: "",
-    price: "",
-    product_description: "",
-    product_image: "",
-  });
-
+  const [product, setProduct] = useState({ ...emptyProduct });
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [productList, setProductList] = useState([]);
-  const [productImageURL, setProductImageURL] = useState("");
-  const [formErrors, setFormErrors] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [productToRemove, setProductToRemove] = useState(null);
-  const [sumTotal, setSumTotal] = useState(0);
-  const [transactionTotal, setTransactionTotal] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Alert function
+  // ── Delivery option state ─────────────────────────────────
+  const [deliveryOption, setDeliveryOption] = useState("");
+  const [agreedDeliveryFee, setAgreedDeliveryFee] = useState("");
+
+  // ── Expected delivery state ───────────────────────────────
+  const [deliveryTimeType, setDeliveryTimeType] = useState(""); // "range" | "custom_date"
+  const [deliveryTimeRange, setDeliveryTimeRange] = useState("");
+  const [deliveryCustomDate, setDeliveryCustomDate] = useState("");
+
+  // ── Helpers ───────────────────────────────────────────────
   const showAlertMessage = (message, variant = "default") => {
     setAlertConfig({ message, variant });
     setShowAlert(true);
   };
 
-  // Load transaction data when fetched
+  const getTodayString = () => new Date().toISOString().split("T")[0];
+
+  const getDeliveryDisplay = () => {
+    if (!deliveryOption) return "—";
+    const opt = DELIVERY_OPTIONS.find((o) => o.value === deliveryOption);
+    let base = opt?.label || deliveryOption;
+    if (deliveryOption === "agreed_delivery_fee" && agreedDeliveryFee) {
+      base += ` (₦${Number(agreedDeliveryFee).toLocaleString()})`;
+    }
+    return base;
+  };
+
+  const getExpectedDeliveryDisplay = () => {
+    if (deliveryTimeType === "custom_date" && deliveryCustomDate) {
+      return new Date(deliveryCustomDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    }
+    if (deliveryTimeRange) {
+      const found = DELIVERY_TIME_RANGES.find(
+        (r) => r.value === deliveryTimeRange,
+      );
+      return found?.label || deliveryTimeRange;
+    }
+    return "—";
+  };
+
+  // ── Load transaction data for edit mode ───────────────────
   useEffect(() => {
     if (transactionData && transactionId) {
       const transaction = transactionData.data || transactionData;
 
-      // console.log("📦 Loaded transaction data:", transaction);
-      console.log("📦 Loaded transaction data:", transaction);
-
-      // Check if transaction can be edited
       if (transaction.seller_confirmed) {
         showAlertMessage(
           "This transaction cannot be edited as the seller has already confirmed it.",
-          "destructive"
+          "destructive",
         );
         setTimeout(() => navigate("/userdashboard/transaction-history"), 2000);
         return;
       }
-
       if (transaction.verified_payment_status) {
         showAlertMessage(
           "This transaction cannot be edited as payment has already been made.",
-          "destructive"
+          "destructive",
         );
         setTimeout(() => navigate("/userdashboard/transaction-history"), 2000);
         return;
       }
-
-      // Verify user is the buyer
       if (transaction.buyer_email !== userEmail) {
         showAlertMessage(
-          `You are not authorized to edit this transaction....${userEmail}, ${transaction.buyer_email}`,
-          "destructive"
+          "You are not authorized to edit this transaction.",
+          "destructive",
         );
         setTimeout(() => navigate("/userdashboard/transaction-history"), 2000);
         return;
       }
 
-      // Load transaction data into form
       setIsEditMode(true);
+
       setVendor({
         vendor_name: transaction.vendor_name,
         vendor_phone_number: transaction.vendor_phone_number,
@@ -175,14 +232,37 @@ const InitiateEscrowForm = () => {
 
       setDeliveryAddress(transaction.delivery_address || "");
 
-      // Convert products to the format used by the form
+      if (transaction.delivery_option) {
+        setDeliveryOption(transaction.delivery_option);
+
+        if (
+          transaction.delivery_option === "agreed_delivery_fee" &&
+          transaction.agreed_delivery_fee != null
+        ) {
+          setAgreedDeliveryFee(String(transaction.agreed_delivery_fee));
+        }
+      }
+
+      if (transaction.expected_delivery_date != null) {
+        setDeliveryTimeType("custom_date");
+        setDeliveryCustomDate(transaction.expected_delivery_date.split("T")[0]);
+        setDeliveryTimeRange(""); // clear range
+      } else if (
+        transaction.expected_delivery_range != null &&
+        transaction.expected_delivery_range !== ""
+      ) {
+        setDeliveryTimeType("range");
+        setDeliveryTimeRange(transaction.expected_delivery_range);
+        setDeliveryCustomDate(""); // clear custom date
+      }
+
       const formattedProducts = transaction.products.map((p) => ({
         name: p.name,
         quantity: Number(p.quantity),
         price: Number(p.price),
         description: p.description || "",
         image: p.image || "",
-        total_price: p.quantity * p.price,
+        total_price: Number(p.quantity) * Number(p.price),
       }));
 
       setProductList(formattedProducts);
@@ -190,119 +270,180 @@ const InitiateEscrowForm = () => {
     }
   }, [transactionData, transactionId, userEmail, navigate]);
 
-  // Handle fetch error
   useEffect(() => {
     if (fetchError) {
-      console.error("Error fetching transaction:", fetchErrorData);
       showAlertMessage(
         "Failed to load transaction data. Please try again.",
-        "destructive"
+        "destructive",
       );
       setTimeout(() => navigate("/userdashboard/transaction-history"), 2000);
     }
-  }, [fetchError, fetchErrorData, navigate]);
+  }, [fetchError]);
 
-  // Vendor input
+  // ── Totals ────────────────────────────────────────────────
+  useEffect(() => {
+    const productsTotal = productList.reduce(
+      (sum, item) => sum + Number(item.total_price),
+      0,
+    );
+    const deliveryFeeAmount =
+      deliveryOption === "agreed_delivery_fee" && agreedDeliveryFee
+        ? Number(agreedDeliveryFee)
+        : 0;
+    const base = productsTotal + deliveryFeeAmount;
+    const commission = base * 0.01;
+    setSumTotal(productsTotal);
+    setTransactionTotal((base + commission).toFixed(2));
+  }, [productList, deliveryOption, agreedDeliveryFee]);
+
+  // ── Vendor handlers ───────────────────────────────────────
   const handleVendorChange = (e) => {
     const { name, value } = e.target;
     setVendor((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Product input
+  // ── Product handlers ──────────────────────────────────────
+  const uploadImage = async (file, onSuccess, onError, setUploading) => {
+    if (!file || !["image/png", "image/jpeg"].includes(file.type)) {
+      showAlertMessage("Please upload only PNG or JPEG images.", "destructive");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ldk7mrmm");
+    formData.append("cloud_name", "dotkplv0d");
+    setUploading(true);
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dotkplv0d/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+      const data = await res.json();
+      onSuccess(data.secure_url);
+      showAlertMessage("Image uploaded successfully!", "success");
+    } catch {
+      onError();
+      showAlertMessage("Image upload failed. Please try again.", "destructive");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleProductChange = (e) => {
     const { name, type, value, files } = e.target;
     if (type === "file") {
-      const file = files[0];
-      if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", "ldk7mrmm");
-        formData.append("cloud_name", "dotkplv0d");
-
-        setIsProcessing(true);
-        fetch("https://api.cloudinary.com/v1_1/dotkplv0d/image/upload", {
-          method: "POST",
-          body: formData,
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setProductImageURL(data.secure_url);
-            setProduct((prev) => ({ ...prev, product_image: data.secure_url }));
-            showAlertMessage("Product image uploaded successfully!", "success");
-          })
-          .catch(() => {
-            showAlertMessage(
-              "Image upload failed. Please try again.",
-              "destructive"
-            );
-          })
-          .finally(() => {
-            setIsProcessing(false);
-          });
-      } else {
-        showAlertMessage(
-          "Please upload only PNG or JPEG images.",
-          "destructive"
-        );
-      }
+      uploadImage(
+        files[0],
+        (url) => {
+          setProductImageURL(url);
+          setProduct((prev) => ({ ...prev, product_image: url }));
+        },
+        () => {},
+        setIsProcessing,
+      );
     } else {
       setProduct((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  // Validation
-  const validateProduct = () => {
+  const validateProduct = (p) => {
     const errors = {};
-    if (!product.product_name) errors.product_name = "Product name required";
-    if (!product.quantity || product.quantity <= 0)
+    if (!p.product_name) errors.product_name = "Product name required";
+    if (!p.quantity || p.quantity <= 0)
       errors.quantity = "Valid quantity required";
-    if (!product.price || product.price <= 0)
-      errors.price = "Valid price required";
-    if (!product.product_description)
+    if (!p.price || p.price <= 0) errors.price = "Valid price required";
+    if (!p.product_description)
       errors.product_description = "Description required";
-    if (!product.product_image) errors.product_image = "Product image required";
+    if (!p.product_image) errors.product_image = "Product image required";
     return errors;
   };
 
-  // Add product
   const handleAddProduct = () => {
-    const errors = validateProduct();
+    const errors = validateProduct(product);
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) {
       showAlertMessage(
         "Please fill all product details correctly.",
-        "destructive"
+        "destructive",
       );
       return;
     }
-
     const newProduct = {
       name: product.product_name,
       quantity: Number(product.quantity),
       price: Number(product.price),
       description: product.product_description,
       image: product.product_image,
-      total_price: product.quantity * product.price,
+      total_price: Number(product.quantity) * Number(product.price),
     };
-
     setProductList((prev) => [...prev, newProduct]);
-    setProduct({
-      product_name: "",
-      quantity: "",
-      price: "",
-      product_description: "",
-      product_image: "",
-    });
+    setProduct({ ...emptyProduct });
     setProductImageURL("");
     showAlertMessage("Product added successfully!", "success");
   };
 
-  // Remove product
+  // ── Edit product on table ─────────────────────────────────
+  const handleOpenEditProduct = (index) => {
+    const p = productList[index];
+    setEditingProductIndex(index);
+    setEditingProductData({
+      product_name: p.name,
+      quantity: String(p.quantity),
+      price: String(p.price),
+      product_description: p.description,
+      product_image: p.image,
+    });
+    setEditProductImageURL(p.image || "");
+    setShowEditProductModal(true);
+  };
+
+  const handleEditProductChange = (e) => {
+    const { name, type, value, files } = e.target;
+    if (type === "file") {
+      uploadImage(
+        files[0],
+        (url) => {
+          setEditProductImageURL(url);
+          setEditingProductData((prev) => ({ ...prev, product_image: url }));
+        },
+        () => {},
+        setIsUploadingEditImage,
+      );
+    } else {
+      setEditingProductData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSaveEditProduct = () => {
+    const errors = validateProduct(editingProductData);
+    if (Object.keys(errors).length > 0) {
+      showAlertMessage("Please fix errors before saving.", "destructive");
+      return;
+    }
+    const updated = [...productList];
+    updated[editingProductIndex] = {
+      name: editingProductData.product_name,
+      quantity: Number(editingProductData.quantity),
+      price: Number(editingProductData.price),
+      description: editingProductData.product_description,
+      image: editingProductData.product_image,
+      total_price:
+        Number(editingProductData.quantity) * Number(editingProductData.price),
+    };
+    setProductList(updated);
+    setShowEditProductModal(false);
+    setEditingProductIndex(null);
+    showAlertMessage("Product updated successfully!", "success");
+  };
+
+  // ── Remove product ────────────────────────────────────────
   const handleRemoveProduct = (index) => {
     setProductToRemove(index);
     setShowRemoveModal(true);
   };
-
   const confirmRemoveProduct = () => {
     const updatedList = [...productList];
     updatedList.splice(productToRemove, 1);
@@ -311,17 +452,19 @@ const InitiateEscrowForm = () => {
     showAlertMessage("Product removed successfully!", "success");
   };
 
-  // Totals
-  useEffect(() => {
-    const total = productList.reduce(
-      (sum, item) => sum + Number(item.total_price),
-      0
-    );
-    setSumTotal(total);
-    setTransactionTotal((total * 0.01).toFixed(2));
-  }, [productList]);
+  // ── Delivery time handler ─────────────────────────────────
+  const handleDeliveryTimeRangeChange = (value) => {
+    if (value === "custom_date") {
+      setDeliveryTimeType("custom_date");
+      setDeliveryTimeRange("");
+    } else {
+      setDeliveryTimeType("range");
+      setDeliveryTimeRange(value);
+      setDeliveryCustomDate("");
+    }
+  };
 
-  // Proceed
+  // ── Proceed / submit ──────────────────────────────────────
   const handleProceed = () => {
     if (
       !vendor.vendor_name ||
@@ -330,7 +473,7 @@ const InitiateEscrowForm = () => {
     ) {
       showAlertMessage(
         "Please fill in all vendor details before proceeding.",
-        "destructive"
+        "destructive",
       );
       return;
     }
@@ -338,17 +481,31 @@ const InitiateEscrowForm = () => {
       showAlertMessage("Please provide a delivery address.", "destructive");
       return;
     }
+    if (!deliveryOption) {
+      showAlertMessage("Please select a delivery option.", "destructive");
+      return;
+    }
+    if (deliveryOption === "agreed_delivery_fee" && !agreedDeliveryFee) {
+      showAlertMessage("Please enter the agreed delivery fee.", "destructive");
+      return;
+    }
+    if (!deliveryTimeRange && !deliveryCustomDate) {
+      showAlertMessage(
+        "Please select an expected delivery timeframe.",
+        "destructive",
+      );
+      return;
+    }
     if (productList.length === 0) {
       showAlertMessage(
         "Please add at least one product before proceeding.",
-        "destructive"
+        "destructive",
       );
       return;
     }
     setShowModal(true);
   };
 
-  // Confirm Proceed (Create or Update)
   const confirmProceed = async () => {
     const payload = {
       buyer_email: userEmail,
@@ -364,51 +521,43 @@ const InitiateEscrowForm = () => {
         description: p.description,
       })),
       delivery_address: deliveryAddress,
+      delivery_option: deliveryOption,
+      ...(deliveryOption === "agreed_delivery_fee" && {
+        agreed_delivery_fee: Number(agreedDeliveryFee),
+      }),
+      ...(deliveryTimeType === "custom_date"
+        ? { expected_delivery_date: deliveryCustomDate }
+        : { expected_delivery_range: deliveryTimeRange }),
     };
-
-    console.log("📦 Payload being sent to backend:", payload);
 
     try {
       setShowModal(false);
       setIsProcessing(true);
-
       let res;
       if (isEditMode && transactionId) {
-        // Update existing transaction using Redux mutation
         res = await editTransaction({
           transaction_id: transactionId,
           ...payload,
         }).unwrap();
-
         showAlertMessage("Transaction updated successfully!", "success");
       } else {
-        // Create new transaction
         res = await initiateTransaction(payload).unwrap();
         showAlertMessage("Transaction initiated successfully!", "success");
       }
-
       dispatch(setEscrowProduct(res));
-
-      // Show success message for 2 seconds before navigating
-      setTimeout(() => {
-        navigate("/userdashboard/transaction-history");
-      }, 2000);
+      setTimeout(() => navigate("/userdashboard/transaction-history"), 2000);
     } catch (error) {
-      console.error("Transaction Error:", error);
       showAlertMessage(
         error?.data?.message ||
           error?.message ||
           "Failed to process transaction",
-        "destructive"
+        "destructive",
       );
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleCancel = () => navigate("/userdashboard/transaction-history");
-
-  // Show loading spinner while fetching transaction data
   if (isFetchingTransaction) {
     return (
       <div className="text-center mt-5">
@@ -418,6 +567,7 @@ const InitiateEscrowForm = () => {
     );
   }
 
+  // ── RENDER ────────────────────────────────────────────────
   return (
     <div className="px-lg-5">
       <Form className="w-100 mt-5 p-4 p-lg-5 rounded shadow bg-white">
@@ -427,7 +577,6 @@ const InitiateEscrowForm = () => {
             : "Initiate Product Escrow"}
         </h3>
 
-        {/* Edit Mode Badge */}
         {isEditMode && (
           <div className="alert alert-info text-center mb-4" role="alert">
             <i className="bi bi-pencil-square me-2"></i>
@@ -436,19 +585,19 @@ const InitiateEscrowForm = () => {
           </div>
         )}
 
-        {/* Alert Component */}
         {showAlert && (
           <Alert
             variant={alertConfig.variant}
             show={showAlert}
             onClose={() => setShowAlert(false)}
-            autoClose={true}
-            autoCloseTime={5000}>
+            autoClose
+            autoCloseTime={5000}
+          >
             <AlertDescription>{alertConfig.message}</AlertDescription>
           </Alert>
         )}
 
-        {/* Vendor Details */}
+        {/* ── VENDOR DETAILS ── */}
         <div className="mb-4">
           <h5 className="fw-semibold text-success mb-3">Vendor Details</h5>
           <Row className="g-4">
@@ -488,13 +637,12 @@ const InitiateEscrowForm = () => {
           </Row>
         </div>
 
-        {/* Delivery Address */}
+        {/* ── DELIVERY ADDRESS ── */}
         <div className="mb-4">
           <h5 className="fw-semibold text-success mb-3">Delivery Address</h5>
           <FloatingLabel label="Enter Delivery Address">
             <Form.Control
               as="textarea"
-              name="delivery_address"
               value={deliveryAddress}
               onChange={(e) => setDeliveryAddress(e.target.value)}
               style={{ height: "80px" }}
@@ -503,10 +651,169 @@ const InitiateEscrowForm = () => {
           </FloatingLabel>
         </div>
 
-        {/* Product Details */}
+        {/* ── DELIVERY OPTION ── */}
         <div className="mb-4">
           <h5 className="fw-semibold text-success mb-3">
-            {isEditMode ? "Add/Modify Products" : "Product Details"}
+            Delivery Option <span className="text-danger">*</span>
+          </h5>
+          <Row className="g-3 mb-3">
+            {DELIVERY_OPTIONS.map((opt) => (
+              <Col md={4} key={opt.value}>
+                <div
+                  onClick={() => {
+                    setDeliveryOption(opt.value);
+                    if (opt.value !== "agreed_delivery_fee")
+                      setAgreedDeliveryFee("");
+                  }}
+                  style={{
+                    cursor: "pointer",
+                    border: `2px solid ${deliveryOption === opt.value ? "#198754" : "#dee2e6"}`,
+                    borderRadius: 10,
+                    padding: "14px 16px",
+                    backgroundColor:
+                      deliveryOption === opt.value ? "#ECFDF5" : "#fff",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <div className="d-flex align-items-center gap-2 mb-1">
+                    <i
+                      className={`bi ${opt.icon}`}
+                      style={{
+                        color:
+                          deliveryOption === opt.value ? "#198754" : "#6B7280",
+                        fontSize: "1.1rem",
+                      }}
+                    ></i>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        color:
+                          deliveryOption === opt.value ? "#198754" : "#1a1a1a",
+                      }}
+                    >
+                      {opt.label}
+                    </span>
+                    {deliveryOption === opt.value && (
+                      <i
+                        className="bi bi-check-circle-fill ms-auto"
+                        style={{ color: "#198754" }}
+                      ></i>
+                    )}
+                  </div>
+                  <p
+                    style={{ fontSize: "0.78rem", color: "#6B7280", margin: 0 }}
+                  >
+                    {opt.description}
+                  </p>
+                </div>
+              </Col>
+            ))}
+          </Row>
+
+          {/* Agreed delivery fee input */}
+          {deliveryOption === "agreed_delivery_fee" && (
+            <div
+              style={{
+                backgroundColor: "#F0FDF4",
+                border: "1px solid #BBF7D0",
+                borderRadius: 10,
+                padding: "1rem 1.25rem",
+                marginTop: "0.5rem",
+              }}
+            >
+              <Form.Label
+                className="fw-semibold"
+                style={{ fontSize: "0.9rem", color: "#065F46" }}
+              >
+                <i className="bi bi-truck me-2"></i>Agreed Delivery Fee (₦){" "}
+                <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control
+                type="number"
+                min="0"
+                value={agreedDeliveryFee}
+                onChange={(e) => setAgreedDeliveryFee(e.target.value)}
+                placeholder="Enter the delivery fee agreed by both parties"
+                style={{ maxWidth: 320, borderColor: "#6EE7B7" }}
+              />
+              <small style={{ color: "#15803D", fontSize: "0.8rem" }}>
+                This amount will be included in the total transaction cost.
+              </small>
+            </div>
+          )}
+        </div>
+
+        {/* ── EXPECTED DELIVERY ── */}
+        <div className="mb-4">
+          <h5 className="fw-semibold text-success mb-3">
+            Expected Delivery Timeframe <span className="text-danger">*</span>
+          </h5>
+          <Row className="g-3 align-items-end">
+            <Col md={6}>
+              <Form.Label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
+                Select a timeframe
+              </Form.Label>
+              <Form.Select
+                value={
+                  deliveryTimeType === "custom_date"
+                    ? "custom_date"
+                    : deliveryTimeRange
+                }
+                onChange={(e) => handleDeliveryTimeRangeChange(e.target.value)}
+                style={{ borderColor: "#dee2e6", padding: "12px 14px" }}
+              >
+                <option value="">-- Select delivery timeframe --</option>
+                {DELIVERY_TIME_RANGES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+
+            {/* Custom date picker */}
+            {deliveryTimeType === "custom_date" && (
+              <Col md={4}>
+                <Form.Label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
+                  Pick a date
+                </Form.Label>
+                <Form.Control
+                  type="date"
+                  min={getTodayString()}
+                  value={deliveryCustomDate}
+                  onChange={(e) => setDeliveryCustomDate(e.target.value)}
+                  style={{ borderColor: "#dee2e6", padding: "11px 14px" }}
+                />
+              </Col>
+            )}
+
+            {/* Display selected */}
+            {(deliveryTimeRange || deliveryCustomDate) && (
+              <Col md="auto">
+                <div
+                  style={{
+                    backgroundColor: "#ECFDF5",
+                    border: "1px solid #6EE7B7",
+                    borderRadius: 8,
+                    padding: "8px 14px",
+                    fontSize: "0.85rem",
+                    color: "#065F46",
+                    fontWeight: 500,
+                  }}
+                >
+                  <i className="bi bi-calendar2-check me-2"></i>
+                  {getExpectedDeliveryDisplay()}
+                </div>
+              </Col>
+            )}
+          </Row>
+        </div>
+
+        {/* ── PRODUCT DETAILS ── */}
+        <div className="mb-4">
+          <h5 className="fw-semibold text-success mb-3">
+            {isEditMode ? "Add / Modify Products" : "Product Details"}
           </h5>
           <Row className="g-4">
             <Col md={4}>
@@ -523,7 +830,6 @@ const InitiateEscrowForm = () => {
                 <small className="text-danger">{formErrors.product_name}</small>
               )}
             </Col>
-
             <Col md={4}>
               <FloatingLabel label="Quantity">
                 <Form.Control
@@ -538,7 +844,6 @@ const InitiateEscrowForm = () => {
                 <small className="text-danger">{formErrors.quantity}</small>
               )}
             </Col>
-
             <Col md={4}>
               <FloatingLabel label="Price (₦)">
                 <Form.Control
@@ -553,7 +858,6 @@ const InitiateEscrowForm = () => {
                 <small className="text-danger">{formErrors.price}</small>
               )}
             </Col>
-
             <Col md={12}>
               <FloatingLabel label="Product Description">
                 <Form.Control
@@ -571,7 +875,6 @@ const InitiateEscrowForm = () => {
                 </small>
               )}
             </Col>
-
             <Col md={12}>
               <Form.Label>Product Image</Form.Label>
               <Form.Control
@@ -599,48 +902,91 @@ const InitiateEscrowForm = () => {
                 </div>
               )}
             </Col>
-
             <Col md={12} className="text-center mt-3">
               <Button
                 variant="success"
                 onClick={handleAddProduct}
-                disabled={isProcessing}>
-                {isProcessing ? "Processing..." : "Add Product"}
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Uploading..." : "Add Product"}
               </Button>
             </Col>
           </Row>
         </div>
 
-        {/* Product Table */}
+        {/* ── PRODUCT TABLE ── */}
         {productList.length > 0 && (
           <div className="table-responsive mt-4">
             <Table bordered hover>
               <thead className="table-light">
                 <tr>
                   <th>#</th>
+                  <th>Image</th>
                   <th>Product Name</th>
-                  <th>Quantity</th>
+                  <th>Qty</th>
                   <th>Price (₦)</th>
                   <th>Total (₦)</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {productList.map((p, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{p.name}</td>
-                    <td>{p.quantity}</td>
-                    <td>{p.price}</td>
-                    <td>{p.total_price}</td>
                     <td>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleRemoveProduct(index)}
-                        disabled={isProcessing}>
-                        Remove
-                      </Button>
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          style={{
+                            width: 44,
+                            height: 44,
+                            objectFit: "cover",
+                            borderRadius: 6,
+                          }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: "0.75rem", color: "#9CA3AF" }}>
+                          No image
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <span className="fw-semibold">{p.name}</span>
+                      {p.description && (
+                        <small
+                          className="d-block text-muted"
+                          style={{ fontSize: "0.75rem" }}
+                        >
+                          {p.description.slice(0, 40)}
+                          {p.description.length > 40 ? "…" : ""}
+                        </small>
+                      )}
+                    </td>
+                    <td>{p.quantity}</td>
+                    <td>{Number(p.price).toLocaleString()}</td>
+                    <td>{Number(p.total_price).toLocaleString()}</td>
+                    <td>
+                      <div className="d-flex gap-1">
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={() => handleOpenEditProduct(index)}
+                          disabled={isProcessing}
+                          title="Edit product"
+                        >
+                          <i className="bi bi-pencil"></i>
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleRemoveProduct(index)}
+                          disabled={isProcessing}
+                          title="Remove product"
+                        >
+                          <i className="bi bi-trash"></i>
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -649,29 +995,48 @@ const InitiateEscrowForm = () => {
           </div>
         )}
 
-        {/* Totals */}
-        <div className="mt-4">
+        {/* ── TOTALS ── */}
+        <div
+          className="mt-4 p-3 rounded"
+          style={{ backgroundColor: "#F9FAFB", border: "1px solid #E5E7EB" }}
+        >
           <div className="d-flex justify-content-between fw-semibold">
-            <span>Sum Total (Product Price):</span>
-            <span>₦ {sumTotal.toFixed(2)}</span>
+            <span>Products Subtotal:</span>
+            <span>₦ {sumTotal.toLocaleString()}</span>
           </div>
+          {deliveryOption === "agreed_delivery_fee" && agreedDeliveryFee && (
+            <div className="d-flex justify-content-between fw-semibold mt-2">
+              <span>Agreed Delivery Fee:</span>
+              <span>₦ {Number(agreedDeliveryFee).toLocaleString()}</span>
+            </div>
+          )}
           <div className="d-flex justify-content-between fw-semibold mt-2">
-            <span>Transaction Total (1% Commission):</span>
-            <span>₦ {transactionTotal}</span>
+            <span>Platform Commission (1%):</span>
+            <span>
+              ₦{" "}
+              {(
+                (sumTotal +
+                  (deliveryOption === "agreed_delivery_fee" && agreedDeliveryFee
+                    ? Number(agreedDeliveryFee)
+                    : 0)) *
+                0.01
+              ).toFixed(2)}
+            </span>
           </div>
           <div className="d-flex justify-content-between fw-bold fs-5 mt-3 border-top pt-2">
-            <span> Total</span>
-            <span>₦ {(sumTotal + Number(transactionTotal)).toFixed(2)}</span>
+            <span>Total Payable:</span>
+            <span>₦ {Number(transactionTotal).toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Buttons */}
+        {/* ── BUTTONS ── */}
         <div className="d-flex justify-content-center gap-3 mt-4">
           <Button
             variant="outline-danger"
-            onClick={handleCancel}
+            onClick={() => navigate("/userdashboard/transaction-history")}
             style={{ width: "140px" }}
-            disabled={isProcessing}>
+            disabled={isProcessing}
+          >
             Cancel
           </Button>
           <Button
@@ -683,20 +1048,24 @@ const InitiateEscrowForm = () => {
               isLoading ||
               isEditLoading ||
               isProcessing
-            }>
-            {isProcessing
-              ? "Processing..."
-              : isLoading || isEditLoading
+            }
+          >
+            {isProcessing || isLoading || isEditLoading
               ? "Processing..."
               : isEditMode
-              ? "Update"
-              : "Proceed"}
+                ? "Update"
+                : "Proceed"}
           </Button>
         </div>
       </Form>
 
-      {/* Confirmation Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      {/* ══ CONFIRMATION MODAL ══ */}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>
             {isEditMode ? "Update Transaction Summary" : "Transaction Summary"}
@@ -704,34 +1073,79 @@ const InitiateEscrowForm = () => {
         </Modal.Header>
         <Modal.Body>
           <h6 className="fw-bold">Vendor Details</h6>
-          <p>Name: {vendor.vendor_name}</p>
-          <p>Email: {vendor.vendor_email}</p>
-          <p>Phone: {vendor.vendor_phone_number}</p>
+          <p className="mb-1">Name: {vendor.vendor_name}</p>
+          <p className="mb-1">Email: {vendor.vendor_email}</p>
+          <p className="mb-3">Phone: {vendor.vendor_phone_number}</p>
+
+          <div className="d-flex gap-3 mb-3">
+            <div
+              style={{
+                flex: 1,
+                backgroundColor: "#F9FAFB",
+                borderRadius: 8,
+                padding: "10px 14px",
+                border: "1px solid #E5E7EB",
+              }}
+            >
+              <small
+                className="text-muted d-block"
+                style={{ fontSize: "0.75rem" }}
+              >
+                Delivery Option
+              </small>
+              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                {getDeliveryDisplay()}
+              </span>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                backgroundColor: "#F9FAFB",
+                borderRadius: 8,
+                padding: "10px 14px",
+                border: "1px solid #E5E7EB",
+              }}
+            >
+              <small
+                className="text-muted d-block"
+                style={{ fontSize: "0.75rem" }}
+              >
+                Expected Delivery
+              </small>
+              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                {getExpectedDeliveryDisplay()}
+              </span>
+            </div>
+          </div>
 
           <hr />
           <h6 className="fw-bold mb-3">Products</h6>
-
           <Accordion>
             {productList.map((p, i) => (
               <Accordion.Item eventKey={i.toString()} key={i}>
                 <Accordion.Header>
                   <strong className="text-success">{p.name}</strong>
+                  <Badge bg="secondary" className="ms-2">
+                    {p.quantity} × ₦{Number(p.price).toLocaleString()}
+                  </Badge>
                 </Accordion.Header>
                 <Accordion.Body>
                   <div className="mb-2">
-                    <strong>Product Name:</strong> {p.name}
+                    <strong>Qty:</strong> {p.quantity}
                   </div>
                   <div className="mb-2">
-                    <strong>Quantity:</strong> {p.quantity}
+                    <strong>Unit Price:</strong> ₦
+                    {Number(p.price).toLocaleString()}
                   </div>
                   <div className="mb-2">
-                    <strong>Price (₦):</strong> {p.price.toLocaleString()}
-                  </div>
-                  <div className="mb-2">
-                    <strong> Delivery Address:</strong> {deliveryAddress}
+                    <strong>Line Total:</strong> ₦
+                    {Number(p.total_price).toLocaleString()}
                   </div>
                   <div className="mb-2">
                     <strong>Description:</strong> {p.description}
+                  </div>
+                  <div className="mb-2">
+                    <strong>Delivery Address:</strong> {deliveryAddress}
                   </div>
                   {p.image && (
                     <div className="mt-3 text-center">
@@ -749,27 +1163,37 @@ const InitiateEscrowForm = () => {
           </Accordion>
 
           <hr />
-
-          {/* Totals */}
-          <div className="mt-4">
+          <div
+            className="mt-3 p-3 rounded"
+            style={{ backgroundColor: "#F9FAFB", border: "1px solid #E5E7EB" }}
+          >
             <div className="d-flex justify-content-between fw-semibold">
-              <span className="bg-success text-white p-1 rounded-1">
-                Sum Total (Product Price):
-              </span>
-              <span>₦ {sumTotal.toFixed(2)}</span>
+              <span>Products Subtotal:</span>
+              <span>₦ {sumTotal.toLocaleString()}</span>
             </div>
+            {deliveryOption === "agreed_delivery_fee" && agreedDeliveryFee && (
+              <div className="d-flex justify-content-between fw-semibold mt-2">
+                <span>Delivery Fee:</span>
+                <span>₦ {Number(agreedDeliveryFee).toLocaleString()}</span>
+              </div>
+            )}
             <div className="d-flex justify-content-between fw-semibold mt-2">
-              <span className="bg-success text-white p-1 rounded-1">
-                Transaction Total (1% Commission):
+              <span>Commission (1%):</span>
+              <span>
+                ₦{" "}
+                {(
+                  (sumTotal +
+                    (deliveryOption === "agreed_delivery_fee" &&
+                    agreedDeliveryFee
+                      ? Number(agreedDeliveryFee)
+                      : 0)) *
+                  0.01
+                ).toFixed(2)}
               </span>
-              <span>₦ {transactionTotal}</span>
             </div>
             <div className="d-flex justify-content-between fw-bold fs-5 mt-3 border-top pt-2">
-              <span className="bg-success text-white p-1 rounded-1">
-                {" "}
-                Total
-              </span>
-              <span>₦ {(sumTotal + Number(transactionTotal)).toFixed(2)}</span>
+              <span>Total Payable:</span>
+              <span>₦ {Number(transactionTotal).toLocaleString()}</span>
             </div>
           </div>
         </Modal.Body>
@@ -777,41 +1201,159 @@ const InitiateEscrowForm = () => {
           <Button
             variant="secondary"
             onClick={() => setShowModal(false)}
-            disabled={isProcessing}>
+            disabled={isProcessing}
+          >
             Cancel
           </Button>
           <Button
             variant="success"
             onClick={confirmProceed}
-            disabled={isProcessing}>
+            disabled={isProcessing}
+          >
             {isProcessing
               ? "Processing..."
               : isEditMode
-              ? "Confirm Update"
-              : "Confirm & Proceed"}
+                ? "Confirm Update"
+                : "Confirm & Proceed"}
           </Button>
         </Modal.Footer>
       </Modal>
 
-      {/* Remove Product Modal */}
+      {/* ══ EDIT PRODUCT MODAL ══ */}
+      <Modal
+        show={showEditProductModal}
+        onHide={() => setShowEditProductModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Product</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row className="g-3">
+            <Col md={12}>
+              <FloatingLabel label="Product Name">
+                <Form.Control
+                  type="text"
+                  name="product_name"
+                  value={editingProductData.product_name}
+                  onChange={handleEditProductChange}
+                  placeholder="Product Name"
+                />
+              </FloatingLabel>
+            </Col>
+            <Col md={6}>
+              <FloatingLabel label="Quantity">
+                <Form.Control
+                  type="number"
+                  name="quantity"
+                  value={editingProductData.quantity}
+                  onChange={handleEditProductChange}
+                  placeholder="Quantity"
+                />
+              </FloatingLabel>
+            </Col>
+            <Col md={6}>
+              <FloatingLabel label="Price (₦)">
+                <Form.Control
+                  type="number"
+                  name="price"
+                  value={editingProductData.price}
+                  onChange={handleEditProductChange}
+                  placeholder="Price"
+                />
+              </FloatingLabel>
+            </Col>
+            <Col md={12}>
+              <FloatingLabel label="Description">
+                <Form.Control
+                  as="textarea"
+                  name="product_description"
+                  value={editingProductData.product_description}
+                  onChange={handleEditProductChange}
+                  style={{ height: "80px" }}
+                  placeholder="Description"
+                />
+              </FloatingLabel>
+            </Col>
+            <Col md={12}>
+              <Form.Label>Replace Image (optional)</Form.Label>
+              <Form.Control
+                type="file"
+                name="product_image"
+                onChange={handleEditProductChange}
+                disabled={isUploadingEditImage}
+              />
+              {isUploadingEditImage && (
+                <small className="text-info">Uploading...</small>
+              )}
+              {editProductImageURL && (
+                <div className="text-center mt-2">
+                  <img
+                    src={editProductImageURL}
+                    alt="preview"
+                    className="img-fluid rounded"
+                    style={{ maxWidth: "160px" }}
+                  />
+                </div>
+              )}
+            </Col>
+          </Row>
+          {editingProductData.quantity && editingProductData.price && (
+            <div
+              className="mt-3 p-2 rounded text-center"
+              style={{
+                backgroundColor: "#ECFDF5",
+                border: "1px solid #6EE7B7",
+              }}
+            >
+              <small style={{ color: "#065F46", fontWeight: 600 }}>
+                Updated line total: ₦
+                {(
+                  Number(editingProductData.quantity) *
+                  Number(editingProductData.price)
+                ).toLocaleString()}
+              </small>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowEditProductModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="success"
+            onClick={handleSaveEditProduct}
+            disabled={isUploadingEditImage}
+          >
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* ══ REMOVE PRODUCT MODAL ══ */}
       <Modal
         show={showRemoveModal}
         onHide={() => setShowRemoveModal(false)}
         centered
-        size="sm">
+        size="sm"
+      >
         <Modal.Body className="text-center p-4">
           <p className="fw-semibold mb-3">
             Are you sure you want to remove this product?
           </p>
           <div className="d-flex justify-content-center gap-2">
             <Button variant="danger" size="sm" onClick={confirmRemoveProduct}>
-              Yes
+              Yes, Remove
             </Button>
             <Button
               variant="success"
               size="sm"
-              onClick={() => setShowRemoveModal(false)}>
-              No
+              onClick={() => setShowRemoveModal(false)}
+            >
+              Cancel
             </Button>
           </div>
         </Modal.Body>

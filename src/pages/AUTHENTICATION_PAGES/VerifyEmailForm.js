@@ -65,14 +65,16 @@ const VerifyEmailForm = () => {
         <div className="text-center">
           <button
             type="submit"
-            class="ll-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white ">
+            class="ll-btn border-0 mt-3 GeneralBtnStyle1 btn all-btn text-white "
+          >
             Verify Account
           </button>
 
           <Link
             to={"../ResetPassword"}
             className="text-success text-decoration-none"
-            style={{ fontSize: "14px" }}>
+            style={{ fontSize: "14px" }}
+          >
             Reset Password
           </Link>
         </div>

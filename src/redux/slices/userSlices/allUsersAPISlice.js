@@ -20,6 +20,8 @@ const AUTH_ENDPOINTS = [
   "createIndUser",
   "createOrgUser",
   "verifyUser",
+  "verifyEmailAndBank",
+  "verifyBankAccountOnly",
   "forgotPasswordIndividual",
   "forgotPasswordOrganization",
   "resetPasswordIndividual",
@@ -119,6 +121,22 @@ export const usersAPISlice = createApi({
       query: (token) => ({
         url: `individual/verify-email?token=${token}`,
         method: "GET",
+      }),
+    }),
+
+    verifyEmailAndBank: builder.mutation({
+      query: ({ token, bankDetails }) => ({
+        url: `individual/verify-emailAndBank?token=${token}`,
+        method: "POST",
+        body: bankDetails,
+      }),
+    }),
+
+    verifyBankAccountOnly: builder.mutation({
+      query: ({ account_number, bank_code }) => ({
+        url: "individual/verifyBankAccountOnly",
+        method: "POST",
+        body: { account_number, bank_code },
       }),
     }),
 
@@ -235,6 +253,8 @@ export const {
   useGetGoogleUrlQuery,
   useCreateIndividualGoogleMutation,
   useVerifyUserMutation,
+  useVerifyEmailAndBankMutation,
+  useVerifyBankAccountOnlyMutation,
   useLogoutMutation,
   useRefreshTokenMutation,
   useGoogleLoginMutation,

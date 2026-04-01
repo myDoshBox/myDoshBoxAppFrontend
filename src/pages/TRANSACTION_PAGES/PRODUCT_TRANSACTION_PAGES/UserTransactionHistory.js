@@ -1,726 +1,3 @@
-// import React from "react";
-// import { useEffect, useState, useMemo } from "react";
-// import { toast } from "react-toastify";
-// import TransactionData from "../../../data/dummyData/transactionData.json";
-// import { PaginationBar } from "../../../components/PaginationComponent";
-// import { UserDashboardNavbar } from "../../../components/NavbarComponents/TopNavbars";
-// import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { Button, Modal, Accordion } from "react-bootstrap";
-// import Dropdown from "react-bootstrap/Dropdown";
-// import buyerImage from "../../../images/transact_person.png";
-// import { useFetchSingleTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
-// import { useVerifyEscrowProductTransactionPaymentMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
-// import { useCancelTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
-// import { useBuyerConfirmsProductMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice";
-// import { useFetchAllTransactionsQuery } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // Assume this is the query hook for fetching transactions
-// import { useFetchDisputeDetailsQuery } from "../../../redux/slices/disputeSlices/disputeAPISlice"; // Assume this is the query hook for fetching transactions
-// import { useSellerConfirmsTransactionMutation } from "../../../redux/slices/escrowProductSlices/escrowProductsAPISlice"; // NEW
-
-// import { useSelector } from "react-redux";
-
-// const UserTransactionHistory = () => {
-//   return (
-//     <div className="contestPage" style={{ "background-color": "#F9F9FB" }}>
-//       <div className="row">
-//         <div className="col-lg-3 col-sm-12"></div>
-
-//         <div className="col-lg-9 col-sm-12">
-//           <UserDashboardNavbar />
-//           <div className="mt-5 center-card">
-//             <RecentTransactionTable />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export const RecentTransactionTable = () => {
-// const { userInfo } = useSelector((state) => state.usersauth);
-// const userEmail =
-//   userInfo?.user?.email ||
-//   userInfo?.email ||
-//   userInfo?.organization_email ||
-//   userInfo?.userInfo?.email;
-
-//   const {
-//     data: transactions,
-//     isLoading,
-//     error,
-//     refetch,
-//   } = useFetchAllTransactionsQuery(userEmail, {
-//     refetchOnMountOrArgChange: true,
-//   });
-
-//   const [cancelTransaction] = useCancelTransactionMutation();
-//   const [buyerConfirmsProduct] = useBuyerConfirmsProductMutation();
-//   const [sellerConfirmsTransaction] = useSellerConfirmsTransactionMutation(); // NEW
-
-//   const itemsPerPage = 10;
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [totalPages, setTotalPages] = useState(0);
-//   const [selectedTransaction, setSelectedTransaction] = useState(null);
-//   const [show, setShow] = useState(false);
-//   const [confirmCancel, setConfirmCancel] = useState(false);
-//   const [showVendorConfirmModal, setShowVendorConfirmModal] = useState(false); // NEW
-
-//   const navigate = useNavigate();
-
-//   // Fetch dispute details when selectedTransaction is in dispute
-//   const {
-//     data: allDisputes,
-//     isLoading: disputeLoading,
-//     error: disputeError,
-//   } = useFetchDisputeDetailsQuery(userEmail, {
-//     skip: !userEmail,
-//   });
-
-//   // Find the dispute that belongs to the selected transaction
-//   const currentDispute = allDisputes?.fetchDisputeDetails?.find(
-//     (d) => d.transaction_id === selectedTransaction?.transaction_id
-//   );
-
-//   const handlePageChange = (page) => {
-//     if (page > 0 && page <= totalPages) setCurrentPage(page);
-//   };
-
-//   const handleShowMore = (transaction) => {
-//     setSelectedTransaction(transaction);
-//     setShow(true);
-//   };
-
-//   const handleCloseModal = () => {
-//     setShow(false);
-//     setSelectedTransaction(null);
-//   };
-
-//   const handleRaiseDispute = (transaction) => {
-//     navigate(
-//       `/userdashboard/disputes/initiate-dispute/${transaction?.transaction_id}`,
-//       {
-//         state: { transaction },
-//       }
-//     );
-//   };
-
-//   const handleResolveConflict = (transaction) => {
-//     navigate(
-//       `/userdashboard/disputes/resolve-dispute/${transaction?.transaction_id}`,
-//       {
-//         state: { transaction },
-//       }
-//     );
-//   };
-
-//   const handleCancelTransaction = async () => {
-//     if (!selectedTransaction) return;
-
-//     try {
-//       toast.info("Cancelling transaction...", { autoClose: 2000 });
-
-//       await cancelTransaction(selectedTransaction?.transaction_id).unwrap();
-
-//       toast.success("Transaction cancelled successfully!");
-//       setConfirmCancel(false);
-//       setShow(false);
-
-//       refetch();
-//       navigate("/userdashboard/transaction-history/cancelled-transactions");
-//     } catch (err) {
-//       toast.error(err?.data?.message || "Failed to cancel transaction");
-//     }
-//   };
-
-//   // NEW: Handle vendor confirmation
-//   const handleVendorConfirmTransaction = async (confirmation) => {
-//     if (!selectedTransaction) return;
-
-//     try {
-//       toast.info(
-//         confirmation ? "Confirming transaction..." : "Declining transaction...",
-//         { autoClose: 2000 }
-//       );
-
-//       await sellerConfirmsTransaction({
-//         transaction_id: selectedTransaction.transaction_id,
-//         confirmation: confirmation,
-//         vendor_email: userEmail,
-//       }).unwrap();
-
-//       if (confirmation) {
-//         toast.success(
-//           "Transaction confirmed! Buyer has been notified to proceed with payment."
-//         );
-//       } else {
-//         toast.info("Transaction declined. Buyer has been notified.");
-//       }
-
-//       setShowVendorConfirmModal(false);
-//       setShow(false);
-//       refetch();
-//     } catch (err) {
-//       toast.error(err?.data?.message || "Failed to process confirmation");
-//     }
-//   };
-
-//   // NEW: Handle proceed to payment
-//   const handleProceedToPayment = () => {
-//     navigate(
-//       `/userdashboard/transaction-history/payment/${selectedTransaction.transaction_id}`,
-//       {
-//         state: { transaction: selectedTransaction },
-//       }
-//     );
-//   };
-
-//   const getSlicedData = () => {
-//     if (!transactions?.transactions?.length) return [];
-//     const startIndex = (currentPage - 1) * itemsPerPage;
-//     return transactions?.transactions?.slice(
-//       startIndex,
-//       startIndex + itemsPerPage
-//     );
-//   };
-
-//   const slicedData = getSlicedData();
-
-//   return (
-//     <div className="bg-white rounded-1 p-3 w-100">
-//       {/* Header */}
-//       <div className="d-md-flex justify-content-between align-items-center mb-3">
-//         <h3 className="fs-6 m-0 mb-3 mb-md-0">All Transactions</h3>
-//         <div className="d-flex">
-//           <Link to="../initiate-escrow" className="text-decoration-none me-2">
-//             <Button
-//               className="border-0 my-1 rounded-1 all-btn text-white fs-sm"
-//               style={{ backgroundColor: "#006747EB" }}>
-//               Create Transaction
-//             </Button>
-//           </Link>
-//           <Link to="../initiate-escrow" className="text-decoration-none">
-//             <Button
-//               className="border-0 my-1 rounded-1 all-btn text-white fs-sm"
-//               style={{ backgroundColor: "#006747EB" }}>
-//               Download Transaction Slip
-//             </Button>
-//           </Link>
-//         </div>
-//       </div>
-
-//       {/* Transaction Table */}
-//       <div className="table-responsive">
-//         <table className="table fs-sm">
-//           <thead>
-//             <tr className="d-md-none lightTextColor">
-//               <th className="fs-6">Product</th>
-//               <th className="fs-6 text-center">Date</th>
-//               <th className="fs-6 text-center">Status</th>
-//               <th className="fs-6 text-center">Action</th>
-//             </tr>
-//             <tr className="d-none d-md-table-row lightTextColor">
-//               <th>Product Name</th>
-//               <th className="text-center">Vendor</th>
-//               <th className="text-center">Purchase Date</th>
-//               <th className="text-center">Product Price</th>
-//               <th className="text-center">Transaction Type</th>
-//               <th className="text-center">Transaction Status</th>
-//               <th className="text-center">Action</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {getSlicedData()?.map((history) => (
-//               <React.Fragment key={history.id}>
-//                 {/* Small screen row */}
-//                 <tr className="d-md-none">
-//                   <td>{history?.product_name}</td>
-//                   <td className="text-center">
-//                     {history?.createdAt?.slice(0, 10)}
-//                   </td>
-//                   <td className="text-center">{history?.transaction_status}</td>
-//                   <td className="text-center">
-//                     <Button
-//                       variant={
-//                         history?.transaction_status === "inDispute"
-//                           ? "outline-danger"
-//                           : "outline-success"
-//                       }
-//                       size="sm"
-//                       onClick={() => handleShowMore(history)}>
-//                       {history?.transaction_status === "inDispute"
-//                         ? "View "
-//                         : "View "}
-//                     </Button>
-//                   </td>
-//                 </tr>
-
-//                 {/* Desktop row */}
-//                 <tr className="d-none d-md-table-row">
-//                   <td>{history?.products?.[0]?.name || "N/A"}</td>
-//                   <td className="text-center">{history?.vendor_name}</td>
-//                   <td className="text-center">
-//                     {history?.createdAt?.slice(0, 10)}
-//                   </td>
-//                   <td className="text-center">
-//                     ₦{history?.products?.[0]?.price?.toLocaleString() || "N/A"}
-//                   </td>
-//                   <td className="text-center">{history?.transaction_type}</td>
-//                   <td className="text-center">{history?.transaction_status}</td>
-//                   <td className="text-center">
-//                     <Button
-//                       variant={
-//                         history?.transaction_status === "inDispute"
-//                           ? "outline-danger"
-//                           : "outline-success"
-//                       }
-//                       size="sm"
-//                       onClick={() => handleShowMore(history)}>
-//                       View More
-//                     </Button>
-//                   </td>
-//                 </tr>
-//               </React.Fragment>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-
-//       {/* Pagination */}
-//       <PaginationBar
-//         data={transactions?.transactions || []}
-//         currentPage={currentPage}
-//         handlePageChange={handlePageChange}
-//         itemsPerPage={itemsPerPage}
-//         totalPages={totalPages}
-//         setTotalPages={setTotalPages}
-//       />
-
-//       {/* Transaction Details Modal */}
-//       <Modal show={show} onHide={handleCloseModal} size="lg">
-//         <Modal.Header closeButton>
-//           <Modal.Title>
-//             {selectedTransaction?.transaction_status === "inDispute"
-//               ? "Transaction & Dispute Details"
-//               : "Transaction Details"}
-//           </Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>
-//           {selectedTransaction ? (
-//             <>
-//               <Accordion defaultActiveKey="0">
-//                 {/* Transaction Details Accordion */}
-//                 <Accordion.Item eventKey="0">
-//                   <Accordion.Header>
-//                     <span
-//                       style={{
-//                         color: "#0f5132",
-//                         backgroundColor: "#d1e7dd",
-//                         padding: "8px 12px",
-//                         borderRadius: "8px",
-//                         width: "100%",
-//                         fontWeight: "600",
-//                       }}>
-//                       Transaction Details
-//                     </span>
-//                   </Accordion.Header>
-
-//                   <Accordion.Body>
-//                     <p>
-//                       <strong>Transaction ID:</strong>{" "}
-//                       {selectedTransaction?.transaction_id}
-//                     </p>
-//                     <p>
-//                       <strong>Transaction Status:</strong>{" "}
-//                       {selectedTransaction?.transaction_status}
-//                     </p>
-//                     <p>
-//                       <strong>Purchase Date:</strong>{" "}
-//                       {selectedTransaction?.createdAt?.slice(0, 10)}
-//                     </p>
-//                     <p>
-//                       <strong>Purchase Time:</strong>{" "}
-//                       {selectedTransaction?.createdAt?.slice(11, 19)}
-//                     </p>
-
-//                     {/* Nested Accordions for Vendor, Buyer, and Products */}
-//                     <Accordion
-//                       defaultActiveKey={[
-//                         "vendor-info",
-//                         "buyer-info",
-//                         "product-0",
-//                       ]}
-//                       alwaysOpen
-//                       className="mt-3">
-//                       {/* Vendor Info Accordion */}
-//                       <Accordion.Item eventKey="vendor-info">
-//                         <Accordion.Header>
-//                           <span
-//                             style={{
-//                               color: "#0a3622",
-//                               backgroundColor: "#d1e7dd",
-//                               padding: "6px 10px",
-//                               borderRadius: "6px",
-//                               width: "100%",
-//                               fontWeight: "500",
-//                               fontSize: "0.95rem",
-//                             }}>
-//                             Vendor Information
-//                           </span>
-//                         </Accordion.Header>
-//                         <Accordion.Body>
-//                           <p>
-//                             <strong>Vendor Name:</strong>{" "}
-//                             {selectedTransaction?.vendor_name}
-//                           </p>
-//                           <p>
-//                             <strong>Vendor Email:</strong>{" "}
-//                             {selectedTransaction?.vendor_email}
-//                           </p>
-//                           <p className="mb-0">
-//                             <strong>Vendor Phone:</strong>{" "}
-//                             {selectedTransaction?.vendor_phone_number}
-//                           </p>
-//                         </Accordion.Body>
-//                       </Accordion.Item>
-
-//                       {/* Buyer Info Accordion */}
-//                       <Accordion.Item eventKey="buyer-info">
-//                         <Accordion.Header>
-//                           <span
-//                             style={{
-//                               color: "#0a3622",
-//                               backgroundColor: "#d1e7dd",
-//                               padding: "6px 10px",
-//                               borderRadius: "6px",
-//                               width: "100%",
-//                               fontWeight: "500",
-//                               fontSize: "0.95rem",
-//                             }}>
-//                             Buyer Information
-//                           </span>
-//                         </Accordion.Header>
-//                         <Accordion.Body>
-//                           <p>
-//                             <strong>Buyer Email:</strong>{" "}
-//                             {selectedTransaction?.buyer_email}
-//                           </p>
-//                           <p className="mb-0">
-//                             <strong>Delivery Address:</strong>{" "}
-//                             {selectedTransaction?.delivery_address}
-//                           </p>
-//                         </Accordion.Body>
-//                       </Accordion.Item>
-//                     </Accordion>
-
-//                     {/* Products Information Header */}
-//                     <h6 className="fw-semibold text-success mt-3 mb-2">
-//                       Products Information
-//                     </h6>
-
-//                     <Accordion defaultActiveKey="product-0">
-//                       {/* Products Accordions */}
-//                       {selectedTransaction?.products?.map((product, index) => (
-//                         <Accordion.Item
-//                           eventKey={`product-${index}`}
-//                           key={product._id || index}>
-//                           <Accordion.Header>
-//                             <span
-//                               style={{
-//                                 color: "#084298",
-//                                 backgroundColor: "#cfe2ff",
-//                                 padding: "6px 10px",
-//                                 borderRadius: "6px",
-//                                 width: "100%",
-//                                 fontWeight: "500",
-//                                 fontSize: "0.95rem",
-//                               }}>
-//                               {product.name}{" "}
-//                               {selectedTransaction?.products?.length > 1
-//                                 ? `(${index + 1} of ${
-//                                     selectedTransaction.products.length
-//                                   })`
-//                                 : ""}
-//                             </span>
-//                           </Accordion.Header>
-
-//                           <Accordion.Body>
-//                             <p>
-//                               <strong>Product Name:</strong> {product.name}
-//                             </p>
-//                             <p>
-//                               <strong>Quantity:</strong> {product.quantity}
-//                             </p>
-//                             <p>
-//                               <strong>Price:</strong> ₦
-//                               {product.price?.toLocaleString()}
-//                             </p>
-//                             <p>
-//                               <strong>Subtotal:</strong> ₦
-//                               {(
-//                                 product.price * product.quantity
-//                               )?.toLocaleString()}
-//                             </p>
-//                             <p>
-//                               <strong>Description:</strong>{" "}
-//                               {product.description || "N/A"}
-//                             </p>
-
-//                             {product.image && (
-//                               <div className="mt-2">
-//                                 <strong>Product Image:</strong>
-//                                 <br />
-//                                 <img
-//                                   src={product.image}
-//                                   alt={product.name}
-//                                   style={{
-//                                     maxWidth: "150px",
-//                                     borderRadius: "8px",
-//                                     border: "1px solid #ccc",
-//                                     marginTop: "6px",
-//                                   }}
-//                                   onError={(e) => {
-//                                     e.target.style.display = "none";
-//                                   }}
-//                                 />
-//                               </div>
-//                             )}
-//                           </Accordion.Body>
-//                         </Accordion.Item>
-//                       ))}
-//                     </Accordion>
-
-//                     {/* Total Amount */}
-//                     <div
-//                       className="mt-3 p-2"
-//                       style={{
-//                         backgroundColor: "#f8f9fa",
-//                         borderRadius: "6px",
-//                       }}>
-//                       <p className="mb-1 ">
-//                         <strong className="bg-success text-white p-1 rounded-1">
-//                           Sum Total:
-//                         </strong>{" "}
-//                         ₦{selectedTransaction?.sum_total?.toLocaleString()}
-//                       </p>
-//                     </div>
-//                   </Accordion.Body>
-//                 </Accordion.Item>
-
-//                 {/* Dispute Details Accordion (only when inDispute) */}
-//                 {selectedTransaction?.transaction_status === "inDispute" && (
-//                   <Accordion.Item eventKey="1">
-//                     <Accordion.Header>
-//                       <span
-//                         style={{
-//                           color: "#842029",
-//                           backgroundColor: "#f8d7da",
-//                           padding: "8px 12px",
-//                           borderRadius: "8px",
-//                           width: "100%",
-//                           fontWeight: "600",
-//                         }}>
-//                         Dispute Details
-//                       </span>
-//                     </Accordion.Header>
-
-//                     <Accordion.Body>
-//                       {disputeLoading ? (
-//                         <p>Loading dispute details...</p>
-//                       ) : disputeError ? (
-//                         <p style={{ color: "red" }}>
-//                           Error loading disputes:{" "}
-//                           {disputeError?.data?.message || disputeError?.message}
-//                         </p>
-//                       ) : currentDispute ? (
-//                         <>
-//                           <p>
-//                             <strong>Reason for Dispute:</strong>{" "}
-//                             {currentDispute?.reason_for_dispute || "N/A"}
-//                           </p>
-//                           <p>
-//                             <strong>Dispute Description:</strong>{" "}
-//                             {currentDispute?.dispute_description || "N/A"}
-//                           </p>
-//                         </>
-//                       ) : (
-//                         <p>
-//                           No dispute details available for this transaction.
-//                         </p>
-//                       )}
-//                     </Accordion.Body>
-//                   </Accordion.Item>
-//                 )}
-//               </Accordion>
-
-//               {/* ✅ Action Buttons Section - UPDATED */}
-//               {selectedTransaction?.buyer_initiated &&
-//                 !selectedTransaction?.seller_confirmed &&
-//                 selectedTransaction?.transaction_status === "processing" && (
-//                   <div className="mt-3 d-flex gap-2 flex-wrap">
-//                     {/* Buyer Actions */}
-//                     {userEmail === selectedTransaction?.buyer_email && (
-//                       <Button
-//                         variant="outline-danger"
-//                         onClick={() => setConfirmCancel(true)}>
-//                         Cancel Transaction
-//                       </Button>
-//                     )}
-
-//                     {/* Vendor Actions - UPDATED */}
-//                     {userEmail === selectedTransaction?.vendor_email && (
-//                       <>
-//                         <Button
-//                           variant="outline-primary"
-//                           onClick={() => setShowVendorConfirmModal(true)}>
-//                           Confirm Transaction
-//                         </Button>
-//                         <Button
-//                           variant="outline-warning"
-//                           onClick={() =>
-//                             handleRaiseDispute(selectedTransaction)
-//                           }>
-//                           Raise Dispute
-//                         </Button>
-//                       </>
-//                     )}
-//                   </div>
-//                 )}
-
-//               {/* NEW: Buyer Proceed to Payment Button (after vendor confirms) */}
-//               {selectedTransaction?.seller_confirmed &&
-//                 selectedTransaction?.transaction_status ===
-//                   "awaiting_payment" &&
-//                 userEmail === selectedTransaction?.buyer_email && (
-//                   <div className="mt-3">
-//                     <Button
-//                       variant="success"
-//                       size="lg"
-//                       onClick={handleProceedToPayment}
-//                       className="w-100">
-//                       Proceed to Payment
-//                     </Button>
-//                   </div>
-//                 )}
-
-//               {/* In Dispute Buttons */}
-//               {selectedTransaction?.transaction_status === "inDispute" && (
-//                 <div className="mt-3 d-flex gap-2 flex-wrap">
-//                   {userEmail === selectedTransaction?.buyer_email && (
-//                     <>
-//                       <Button
-//                         variant="outline-danger"
-//                         onClick={() => setConfirmCancel(true)}>
-//                         Cancel Transaction
-//                       </Button>
-//                       <Button
-//                         variant="outline-success"
-//                         onClick={() =>
-//                           handleResolveConflict(selectedTransaction)
-//                         }>
-//                         Resolve Dispute
-//                       </Button>
-//                     </>
-//                   )}
-//                   {userEmail === selectedTransaction?.vendor_email && (
-//                     <Button
-//                       variant="outline-warning"
-//                       onClick={() => toast.info("Mediator has been involved!")}>
-//                       Involve Mediator
-//                     </Button>
-//                   )}
-//                 </div>
-//               )}
-//             </>
-//           ) : (
-//             <p>No transaction details available.</p>
-//           )}
-//         </Modal.Body>
-
-//         <Modal.Footer>
-//           <Button variant="secondary" onClick={handleCloseModal}>
-//             Close
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-
-//       {/* NEW: Vendor Confirmation Modal */}
-//       <Modal
-//         show={showVendorConfirmModal}
-//         onHide={() => setShowVendorConfirmModal(false)}
-//         centered>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Confirm Transaction</Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>Are you sure you want to confirm transaction?</Modal.Body>
-//         <Modal.Footer>
-//           <Button
-//             variant="secondary"
-//             onClick={() => {
-//               handleVendorConfirmTransaction(false);
-//             }}>
-//             No
-//           </Button>
-//           <Button
-//             variant="success"
-//             onClick={() => {
-//               handleVendorConfirmTransaction(true);
-//             }}>
-//             Yes
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-
-//       {/* Confirm Cancel Modal */}
-//       <Modal
-//         show={confirmCancel}
-//         onHide={() => setConfirmCancel(false)}
-//         centered>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Cancel Transaction</Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>
-//           Are you sure you want to cancel this transaction?
-//         </Modal.Body>
-//         <Modal.Footer>
-//           <Button variant="secondary" onClick={() => setConfirmCancel(false)}>
-//             No
-//           </Button>
-//           <Button variant="danger" onClick={handleCancelTransaction}>
-//             Yes, Cancel
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// /* Table Row Component */
-// export const RecentTransactionTableData = ({
-//   product_name,
-//   vendor_name,
-//   createdAt,
-//   transaction_status,
-//   onViewMore,
-// }) => {
-//   return (
-//     <tr className="border-bottom">
-//       <td className="py-md-3">{product_name}</td>
-//       <td className="text-center">{vendor_name}</td>
-//       <td className="text-center">{createdAt?.slice(0, 10)}</td>
-//       <td className="text-center">{transaction_status}</td>
-//       <td className="text-center">
-//         <Button
-//           variant="outline-primary"
-//           className="rounded-1 fs-sm"
-//           onClick={onViewMore}>
-//           View Details
-//         </Button>
-//       </td>
-//     </tr>
-//   );
-// };
-
-// export default UserTransactionHistory;
-
 import React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -736,6 +13,7 @@ import { useSellerConfirmsTransactionMutation } from "../../../redux/slices/escr
 import { useInitiatePaymentMutation } from "../../../redux/slices/paymentSlices/paymentAPISlice";
 import { useSelector } from "react-redux";
 import NextStepsSection from "./NextStepsSection";
+import EscrowAgreementModal from "../../../components/utils/EscrowAgreementModal";
 
 import {
   TRANSACTION_FILTERS,
@@ -828,6 +106,7 @@ export const RecentTransactionTable = ({
   customFilter = TRANSACTION_FILTERS.ALL,
   showHeaderActions = true,
 }) => {
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
   const { userInfo } = useSelector((state) => state.usersauth);
   const userEmail =
     userInfo?.user?.email ||
@@ -1015,7 +294,10 @@ export const RecentTransactionTable = ({
         </h3>
         {showHeaderActions && (
           <div className="d-flex gap-2 flex-wrap">
-            <Link to="../initiate-escrow" className="text-decoration-none">
+            <Link
+              to="/userdashboard/initiate-escrow"
+              className="text-decoration-none"
+            >
               <Button
                 className="border-0 rounded-1 text-white"
                 style={{
@@ -1503,7 +785,7 @@ export const RecentTransactionTable = ({
                     </div>
 
                     {/* Vendor & Buyer Info */}
-                    <div className="row g-3 mb-4">
+                    <div className="row g-3 mb-0">
                       <div className="col-md-6">
                         <div
                           className="p-3 rounded"
@@ -1594,6 +876,105 @@ export const RecentTransactionTable = ({
                         </div>
                       </div>
                     </div>
+
+                    {/* ── DELIVERY & TIMELINE INFO ── */}
+                    {(selectedTransaction?.delivery_option ||
+                      selectedTransaction?.expected_delivery_range ||
+                      selectedTransaction?.expected_delivery_date) && (
+                      <div className="row g-3 mt-0 mb-5">
+                        {selectedTransaction?.delivery_option && (
+                          <div className="col-md-6">
+                            <div
+                              className="p-3 rounded"
+                              style={{
+                                backgroundColor: "#f8f9fa",
+                                border: "1px solid #e5e7eb",
+                              }}
+                            >
+                              <small
+                                className="text-muted d-block mb-1"
+                                style={{ fontSize: "0.75rem", fontWeight: 600 }}
+                              >
+                                <i className="bi bi-truck me-1"></i> Delivery
+                                Option
+                              </small>
+                              <span
+                                style={{
+                                  fontSize: "0.875rem",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {selectedTransaction.delivery_option ===
+                                "pickup"
+                                  ? "Pickup"
+                                  : selectedTransaction.delivery_option ===
+                                      "pay_on_delivery"
+                                    ? "Pay on Delivery"
+                                    : "Agreed Delivery Fee"}
+                              </span>
+                              {selectedTransaction.delivery_option ===
+                                "agreed_delivery_fee" &&
+                                selectedTransaction.agreed_delivery_fee !=
+                                  null && (
+                                  <span
+                                    className="ms-2"
+                                    style={{
+                                      fontSize: "0.8rem",
+                                      backgroundColor: "#ECFDF5",
+                                      color: "#065F46",
+                                      border: "1px solid #6EE7B7",
+                                      borderRadius: 99,
+                                      padding: "2px 8px",
+                                    }}
+                                  >
+                                    ₦
+                                    {Number(
+                                      selectedTransaction.agreed_delivery_fee,
+                                    ).toLocaleString()}
+                                  </span>
+                                )}
+                            </div>
+                          </div>
+                        )}
+
+                        {(selectedTransaction?.expected_delivery_range ||
+                          selectedTransaction?.expected_delivery_date) && (
+                          <div className="col-md-6">
+                            <div
+                              className="p-3 rounded"
+                              style={{
+                                backgroundColor: "#f8f9fa",
+                                border: "1px solid #e5e7eb",
+                              }}
+                            >
+                              <small
+                                className="text-muted d-block mb-1"
+                                style={{ fontSize: "0.75rem", fontWeight: 600 }}
+                              >
+                                <i className="bi bi-calendar2-check me-1"></i>{" "}
+                                Expected Delivery
+                              </small>
+                              <span
+                                style={{
+                                  fontSize: "0.875rem",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {selectedTransaction.expected_delivery_date
+                                  ? new Date(
+                                      selectedTransaction.expected_delivery_date,
+                                    ).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })
+                                  : selectedTransaction.expected_delivery_range}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Products */}
                     <div className="mb-4">
@@ -1694,6 +1075,7 @@ export const RecentTransactionTable = ({
                         </span>
                       </div>
                     </div>
+
                     {/* Shipping Details Button - For Vendor after payment verification */}
                     {selectedTransaction?.verified_payment_status &&
                       userEmail === selectedTransaction?.vendor_email &&
@@ -2210,6 +1592,7 @@ export const RecentTransactionTable = ({
                   flexShrink: 0,
                 }}
               />
+              {/* Inside the Terms checkbox label — replace the Link */}
               <label
                 htmlFor="accept-terms"
                 style={{
@@ -2220,21 +1603,30 @@ export const RecentTransactionTable = ({
                 }}
               >
                 I have read and agree to the{" "}
-                <Link
-                  to="/escrow-agreement"
-                  target="_blank"
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAgreementModal(true);
+                  }}
                   style={{
                     color: "#006747EB",
                     fontWeight: "600",
                     textDecoration: "underline",
+                    cursor: "pointer",
                   }}
-                  onClick={(e) => e.stopPropagation()}
                 >
                   Escrow Agreement Terms
-                </Link>{" "}
+                </span>{" "}
                 and understand that my payment will be held securely until
                 delivery is confirmed.
               </label>
+
+              {/* Add this right after the Payment Modal closing tag */}
+              <EscrowAgreementModal
+                show={showAgreementModal}
+                onClose={() => setShowAgreementModal(false)}
+                transaction={selectedTransaction}
+              />
             </div>
           </div>
         </Modal.Body>

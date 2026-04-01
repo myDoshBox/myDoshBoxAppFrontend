@@ -62,7 +62,7 @@ import AdminSideNav from "./components/NavbarComponents/AdminSideNav";
 import UserProfile from "./pages/DASHBOARDS/USER_DASHBOARD/UserProfile";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import VerifyEmail from "./pages/AUTHENTICATION_PAGES/EmailVerification";
+import VerifyEmailWithBankDetails from "./pages/AUTHENTICATION_PAGES/EmailVerification";
 // react_toastify ends
 import PrivateRoute from "./components/PrivateRoute";
 import InitiateProductEscrowForm from "./pages/TRANSACTION_PAGES/PRODUCT_TRANSACTION_PAGES/InitiateProductEscrowForm";
@@ -265,7 +265,10 @@ function App() {
         <Route path="ForgotPassword" element={<ForgotPassword />} />
         <Route path="auth/reset-password" element={<ResetPassword />} />
         <Route path="linkverification" element={<EmailVerificationMsg />} />
-        <Route path={`auth/verify-email`} element={<VerifyEmail />} />
+        <Route
+          path={`auth/verify-email`}
+          element={<VerifyEmailWithBankDetails />}
+        />
         <Route path="*" element={<Error404 />} />
       </Routes>
       <Footer />
